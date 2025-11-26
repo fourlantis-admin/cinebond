@@ -1,0 +1,9 @@
+{
+    "email": "E-mail",
+    "password": "Password",
+    "submit": "Submit",
+    "change_theme": "Change Theme",
+    "change_lang": "Change Language",
+    "empty_fields": "Please enter a valid value."
+
+}
