@@ -1,3 +1,4 @@
+import 'package:cinebond/utils/loading/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
@@ -32,36 +33,16 @@ class _MainMenuViewState extends State<MainMenuView> {
     return Scaffold(
       backgroundColor: AppColor.MAIN_SCAFFOLD_COLOR,
       extendBody: true,
-      appBar: AppBar(
-        toolbarHeight: 75,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Image.asset(ImagesIcons.LOGO, height: 75),
-        actions: [
-          // GestureDetector(
-          //   onTap: () => print("Profile Tapped"),
-          //   child: Image.asset(ImagesIcons.AVATAR_ICON, height: 50),
-          // ),
-          // HorizontalSpacing(16),
-
-          GestureDetector(
-            onTap: () => print("Leaderboard Icon Tapped"),
-            child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),
+      appBar: _buildAppBar(),
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            child: _views[_currentIndex],
           ),
-          HorizontalSpacing(16),
-          GestureDetector(
-            onTap: () {
-              print("Exit Icon Tapped");
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginView()),
-                (Route<dynamic> route) => false,
-              );
-            },
-            child: Image.asset(ImagesIcons.EXIT_ICON, height: 55),
-          ),
+          LoadingOverlay(),
         ],
       ),
-      body: _views[_currentIndex],
       bottomNavigationBar: _buildNavBar(),
     );
   }
@@ -157,6 +138,37 @@ class _MainMenuViewState extends State<MainMenuView> {
           ],
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget? _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 75,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Image.asset(ImagesIcons.LOGO, height: 75),
+      actions: [
+        // GestureDetector(
+        //   onTap: () => print("Profile Tapped"),
+        //   child: Image.asset(ImagesIcons.AVATAR_ICON, height: 50),
+        // ),
+        // HorizontalSpacing(16),
+        GestureDetector(
+          onTap: () => print("Leaderboard Icon Tapped"),
+          child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),
+        ),
+        HorizontalSpacing(16),
+        GestureDetector(
+          onTap: () {
+            print("Exit Icon Tapped");
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LoginView()),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: Image.asset(ImagesIcons.EXIT_ICON, height: 55),
+        ),
+      ],
     );
   }
 }

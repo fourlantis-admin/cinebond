@@ -12,7 +12,6 @@ class PrimaryButton extends StatelessWidget {
   final Color? customColor;
   final bool isButtonDisabled;
 
-  // 🔥 YENİ PARAMETRE — ister Icon widget ister path ver
   final Widget? trailing;
   final String? trailingImagePath;
 
@@ -89,7 +88,7 @@ class PrimaryButton extends StatelessWidget {
                   color: isButtonDisabled
                       ? scheme.onSurface.withOpacity(0.4)
                       : Colors.white,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               

@@ -67,7 +67,15 @@ flutter:
     - assets/images/
     - assets/animations/
     - assets/icons/
-
+    - assets/fonts/
+    
+  fonts:
+    - family: ScienceGothic
+      fonts:
+        - asset: assets/fonts/ScienceGothic_ExtraCondensed-ExtraLight.ttf
+        - asset: assets/fonts/ScienceGothic-ExtraBold.ttf
+        - asset: assets/fonts/ScienceGothic-Light.ttf
+        - asset: assets/fonts/ScienceGothic-Regular.ttf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
