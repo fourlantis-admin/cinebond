@@ -1,14 +1,13 @@
 import 'package:cinebond/utils/loading/loading_overlay.dart';
+import 'package:cinebond/view/main/match/match_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
-import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:cinebond/view/login/login_view.dart';
 import 'package:cinebond/view/main/explore/explore_view.dart';
 import 'package:cinebond/view/main/inbox/inbox.view.dart';
-import 'package:cinebond/view/main/match/match_view.dart';
 import 'package:cinebond/view/main/play/play_view.dart';
 import 'dart:ui' as ui;
 
@@ -52,7 +51,7 @@ class _MainMenuViewState extends State<MainMenuView> {
       margin: const EdgeInsets.only(left: 15, right: 15, bottom: 8),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 169, 163, 171).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(50),topRight: Radius.circular(50)),
         boxShadow: [
           BoxShadow(
             color: const Color.fromARGB(255, 36, 36, 36).withOpacity(0.2),
@@ -148,11 +147,6 @@ class _MainMenuViewState extends State<MainMenuView> {
       elevation: 0,
       title: Image.asset(ImagesIcons.LOGO, height: 75),
       actions: [
-        // GestureDetector(
-        //   onTap: () => print("Profile Tapped"),
-        //   child: Image.asset(ImagesIcons.AVATAR_ICON, height: 50),
-        // ),
-        // HorizontalSpacing(16),
         GestureDetector(
           onTap: () => print("Leaderboard Icon Tapped"),
           child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),

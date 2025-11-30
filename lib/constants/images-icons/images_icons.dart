@@ -20,6 +20,10 @@ class ImagesIcons {
   static const LEADERBOARD_ICON = "assets/icons/leaderboard_icon.png";
   static const EXIT_ICON = "assets/icons/exit_icon.png";
   static const AVATAR_ICON = "assets/icons/avatar_icon.png";
+  static const LIKE_ICON = "assets/icons/like_icon.svg";
+  static const DISLIKE_ICON = "assets/icons/dislike_icon.svg";
+  static const SUPERLIKE_ICON = "assets/icons/superlike_icon.svg";
+  static const RETURN_ICON = "assets/icons/return_icon.svg";
 
 
 

@@ -53,7 +53,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
   
   Widget _buildTitleWidgetFinder() {
-    return Text("Film bulma oyunları");
+    return Text("Bugün ne izlesem?",style: Theme.of(context).textTheme.titleMedium);
   }
   
   Widget _buildListWidgetFinder() {
@@ -76,7 +76,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
   
   Widget _buildTitleWidgetFeed() {
-    return Text("Keşfet");
+    return Text("Keşfet",style: Theme.of(context).textTheme.titleMedium);
   }
   
   Widget _buildListWidgetFeed() {
@@ -85,7 +85,7 @@ class _ExploreViewState extends State<ExploreView> {
         itemCount: 100,
         itemBuilder: (context, index) => Padding(
           padding: EdgeInsets.all(8.0),
-          child: MoviePosterItem(),
+          child: MoviePosterItem(index: index,),
         ),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
