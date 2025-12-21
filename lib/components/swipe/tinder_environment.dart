@@ -1,7 +1,10 @@
+import 'package:cinebond/components/buttons/tinder_button.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
+import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Profile {
   final String nameAge;
@@ -19,38 +22,44 @@ class Profile {
 }
 
 class TinderEnvironment extends StatelessWidget {
-  final List<Profile> profiles;
-  const TinderEnvironment({super.key, required this.profiles});
+  const TinderEnvironment({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SwipeCubit(profiles: profiles),
-      child: BlocBuilder<SwipeCubit, SwipeState>(
-        builder: (context, state) {
-          if (state.profiles.isEmpty) return _noCardWidget(context);
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                child: Stack(
-                  children: state.profiles
-                      .asMap()
-                      .entries
-                      .take(4)
-                      .map(
-                        (entry) => _buildCard(context, entry.key, entry.value),
-                      )
-                      .toList()
-                      .reversed
-                      .toList(),
+    return BlocBuilder<SwipeCubit, SwipeState>(
+      builder: (context, state) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final cardHeight = constraints.maxHeight * 0.8;
+            return Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                SizedBox(
+                  height: cardHeight,
+                  width: constraints.maxWidth,
+                  child: _buildCards(context, state),
                 ),
-              );
-            },
-          );
-        },
-      ),
+
+                /// BUTONLAR
+                _buildButtons(context),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCards(BuildContext context, SwipeState state) {
+    return Stack(
+      children: state.profiles
+          .asMap()
+          .entries
+          .take(4)
+          .map((entry) => _buildCard(context, entry.key, entry.value))
+          .toList()
+          .reversed
+          .toList(),
     );
   }
 
@@ -92,20 +101,22 @@ class TinderEnvironment extends StatelessWidget {
   Widget _cardContent(Profile profile, BuildContext ctx, bool top) {
     final cubit = ctx.watch<SwipeCubit>();
     final opacity = cubit.state.swipeOpacity;
+
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
             color: profile.color,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             child: SizedBox.expand(
               child: FittedBox(fit: BoxFit.cover, child: profile.picture),
             ),
           ),
         ),
+
         if (top)
           Positioned(
             top: 40,
@@ -129,24 +140,7 @@ class TinderEnvironment extends StatelessWidget {
         Positioned(
           bottom: 70,
           left: 20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                profile.nameAge,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              VerticalSpacing(5),
-              Text(profile.occupation, style: TextStyle(color: Colors.white70)),
-              VerticalSpacing(5),
-
-              Text(profile.interests, style: TextStyle(color: Colors.white70)),
-            ],
-          ),
+          child: _buildSwipeCard(profile),
         ),
       ],
     );
@@ -157,7 +151,9 @@ class TinderEnvironment extends StatelessWidget {
       angle: text == "NOPE" ? -0.25 : 0.25,
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(border: Border.all(color: color, width: 5)),
+        decoration: BoxDecoration(
+          border: Border.all(color: color, width: 5),
+        ),
         child: Text(
           text,
           style: TextStyle(
@@ -170,7 +166,47 @@ class TinderEnvironment extends StatelessWidget {
     );
   }
 
-  Widget _noCardWidget(BuildContext context) {
-    return Center(child: Text("Kart kalmadı", style: TextStyle(fontSize: 24)));
+  Widget _buildSwipeCard(Profile profile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(profile.nameAge,
+            style: const TextStyle(
+                fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+        VerticalSpacing(5),
+        Text(profile.occupation,
+            style: const TextStyle(color: Colors.white70)),
+        VerticalSpacing(5),
+        Text(profile.interests,
+            style: const TextStyle(color: Colors.white70)),
+      ],
+    );
+  }
+
+  Widget _buildButtons(BuildContext context) {
+    final cubit = context.read<SwipeCubit>();
+
+    return Positioned(
+      bottom: 110,
+      left: 0,
+      right: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          TinderButton(
+            onClickBtnFunc: () {},
+            icon: SvgPicture.asset(ImagesIcons.RETURN_ICON),
+          ),
+          TinderButton(
+            onClickBtnFunc: () => cubit.swipeLeft(),
+            icon: SvgPicture.asset(ImagesIcons.DISLIKE_ICON),
+          ),
+          TinderButton(
+            onClickBtnFunc: () => cubit.swipeRight(),
+            icon: SvgPicture.asset(ImagesIcons.LIKE_ICON),
+          ),
+        ],
+      ),
+    );
   }
 }

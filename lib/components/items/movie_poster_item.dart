@@ -9,17 +9,18 @@ class MoviePosterItem extends StatefulWidget {
   const MoviePosterItem({super.key, required this.index});
 
   @override
-  State<MoviePosterItem> createState() => _MoviePosterItemState(); // State sınıfı adı düzeltildi
+  State<MoviePosterItem> createState() => _MoviePosterItemState();
 }
 
 class _MoviePosterItemState extends State<MoviePosterItem> {
   bool _isOverlayVisible = false;
-  List<Color> activeGradientColors = [
-    Color(0xFF8A2BE2), // Mor (Blue Violet)
-    Color(0xFF1E90FF), // Mavi (Dodger Blue)
-  ];
-  // Pasif durumda şeffaf border için (Animasyon yumuşak olsun diye pasif renk tanımlanmalı)
+  bool _isFavorite = false;
+  bool _isAddedToWatchList = false;
+
+  List<Color> activeGradientColors = [Color(0xFF8A2BE2), Color(0xFF1E90FF)];
+
   List<Color> inactiveGradientColors = [Colors.transparent, Colors.transparent];
+
   void _toggleOverlay() {
     setState(() {
       _isOverlayVisible = !_isOverlayVisible;
@@ -28,6 +29,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
 
   static const double overlayHeightRatio = 0.48;
   double get _overlayHeight => widget.posterHeight * overlayHeightRatio;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -50,10 +52,10 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     )
-                  : LinearGradient(
-                      colors: inactiveGradientColors, // Şeffaf gradient
-                    ),
-              border:_isOverlayVisible ? Border.all(width: 2,color: const Color.fromARGB(255, 255, 255, 255)) : null,
+                  : LinearGradient(colors: inactiveGradientColors),
+              border: _isOverlayVisible
+                  ? Border.all(width: 2, color: Colors.white)
+                  : null,
               image: DecorationImage(
                 image: NetworkImage(
                   'https://picsum.photos/id/${1018 + (widget.index as num)}/200/300',
@@ -61,7 +63,6 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                 fit: BoxFit.cover,
               ),
             ),
-
             child: Stack(
               children: [
                 Positioned(
@@ -87,26 +88,69 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.favorite, size: 28),
-                              color: Colors.red,
                               onPressed: () {
-                                /* Like Aksiyonu */
+                                setState(() {
+                                  _isFavorite = !_isFavorite;
+                                });
                               },
+                              icon: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 350),
+                                transitionBuilder:
+                                    (Widget child, Animation<double> anim) {
+                                      return ScaleTransition(
+                                        scale: CurvedAnimation(
+                                          parent: anim,
+                                          curve: Curves.easeInOutSine,
+                                        ),
+                                        child: child,
+                                      );
+                                    },
+                                child: Icon(
+                                  _isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  key: ValueKey(_isFavorite),
+                                  size: 30,
+                                  color: _isFavorite
+                                      ? Colors.red
+                                      : Colors.white,
+                                ),
+                              ),
                             ),
 
                             IconButton(
-                              icon: const Icon(Icons.bookmark_add, size: 28),
-                              color: Colors.amber,
                               onPressed: () {
-                                /* Watchlist Aksiyonu */
+                                setState(() {
+                                  _isAddedToWatchList = !_isAddedToWatchList;
+                                });
                               },
+                              icon: AnimatedSwitcher(
+                                duration: Duration(milliseconds: 350),
+                                transitionBuilder: (child, anim) =>
+                                    ScaleTransition(
+                                      scale: CurvedAnimation(
+                                        parent: anim,
+                                        curve: Curves.easeInOutSine,
+                                      ),
+                                      child: child,
+                                    ),
+                                child: Icon(
+                                  _isAddedToWatchList
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_border,
+                                  key: ValueKey(_isAddedToWatchList),
+                                  size: 30,
+                                  color: _isAddedToWatchList
+                                      ? Colors.amber
+                                      : Colors.white,
+                                ),
+                              ),
                             ),
+
                             IconButton(
                               icon: const Icon(Icons.more_horiz, size: 28),
                               color: Colors.green,
-                              onPressed: () {
-                                /* Like Aksiyonu */
-                              },
+                              onPressed: () {},
                             ),
                           ],
                         ),

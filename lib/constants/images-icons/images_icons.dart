@@ -1,7 +1,7 @@
 class ImagesIcons {
   //ANIMATIONS
   static const LOADING_ANIMATION =
-      "assets/animations/loading/loading.json";
+      "assets/animations/loading.json";
   //LOGOS
   static const LOGO = "assets/images/logo.png";
   static const LOGO_W_BACKGROUND = "assets/images/logo_w_background.png";

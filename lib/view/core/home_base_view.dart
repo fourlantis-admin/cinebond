@@ -16,8 +16,8 @@ class HomeBaseView extends StatelessWidget {
     this.appBar,
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,
-    this.horizontalPadding = 16,
-    this.verticalPadding = 16,
+    this.horizontalPadding = 6,
+    this.verticalPadding = 6,
   });
 
   @override
@@ -30,6 +30,7 @@ class HomeBaseView extends StatelessWidget {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
+          fit: StackFit.expand, 
           children: [
             Center(
               child: Image.asset(
