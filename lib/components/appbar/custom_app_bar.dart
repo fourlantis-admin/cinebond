@@ -1,48 +1,39 @@
+import 'package:cinebond/components/spacings/horizontal_spacing.dart';
+import 'package:cinebond/constants/images-icons/images_icons.dart';
+import 'package:cinebond/view/login/login_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:cinebond/utils/theme/app_color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final bool isAtlas;
-  final bool isDDA;
-  final Widget? titleWidget;
-  final bool showBackButton;
-  final VoidCallback? onBackButtonPressed;
-  final bool showNotifications;
-  final int notificationCount;
-  final VoidCallback? onSignOutPressed;
-  final bool showSignOut;
-  final String? title;
-  final Color? backgroundColor;
+
 
   const CustomAppBar({
     Key? key,
-    this.backgroundColor,
-    this.isAtlas = false,
-    this.isDDA = false,
-    this.titleWidget,
-    this.showSignOut = true,
-    this.showBackButton = true,
-    this.onBackButtonPressed,
-    this.showNotifications = true,
-    this.notificationCount = 0,
-    this.onSignOutPressed,
-    this.title,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor:
-          backgroundColor == null
-              ? Theme.of(context).appBarTheme.backgroundColor
-              : Theme.of(context).scaffoldBackgroundColor,
+      toolbarHeight: 55,
+      backgroundColor: Colors.black,
       elevation: 0,
-      titleSpacing: 0,
-      actions: null, //_buildActions(),
-      title: null, //_buildTitleWidget(context),
-      centerTitle: false,
-      leading: null,//showBackButton ? _buildBackButton(context) : null,
+      title: Image.asset(ImagesIcons.LOGO, height: 55),
+      actions: [
+        GestureDetector(
+          onTap: () => print("Leaderboard Icon Tapped"),
+          child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),
+        ),
+        HorizontalSpacing(16),
+        GestureDetector(
+          onTap: () {
+            print("Exit Icon Tapped");
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LoginView()),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: Image.asset(ImagesIcons.EXIT_ICON, height: 55),
+        ),
+      ],
     );
   }
   @override

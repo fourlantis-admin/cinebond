@@ -1,6 +1,10 @@
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
+import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/utils/loading/loading_overlay.dart';
 import 'package:cinebond/view/main/match/match_view.dart';
+import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
@@ -9,7 +13,6 @@ import 'package:cinebond/view/login/login_view.dart';
 import 'package:cinebond/view/main/explore/explore_view.dart';
 import 'package:cinebond/view/main/inbox/inbox.view.dart';
 import 'package:cinebond/view/main/play/play_view.dart';
-import 'dart:ui' as ui;
 
 class MainMenuView extends StatefulWidget {
   const MainMenuView({super.key});
@@ -28,33 +31,30 @@ class _MainMenuViewState extends State<MainMenuView> {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.MAIN_SCAFFOLD_COLOR,
-      extendBody: true,
-      appBar: _buildAppBar(),
-      body: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            child: _views[_currentIndex],
-          ),
-          LoadingOverlay(),
-        ],
+Widget build(BuildContext context) {
+  return BlocProvider(
+    create: (_) => LoadingCubit(),
+    child: HomeBaseView(
+      isLoadingActive: true, 
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        child: _views[_currentIndex],
       ),
       bottomNavigationBar: _buildNavBar(),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget? _buildNavBar() {
     return Container(
-      margin: const EdgeInsets.only(left: 15, right: 15, bottom: 8),
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 8),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 169, 163, 171).withOpacity(0.15),
+        color:  Color.fromARGB(255, 169, 163, 171).withOpacity(0.15),
         borderRadius: BorderRadius.only(topLeft: Radius.circular(50),topRight: Radius.circular(50)),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 36, 36, 36).withOpacity(0.2),
+            color:  Color.fromARGB(255, 36, 36, 36).withOpacity(0.2),
             blurRadius: 20,
             spreadRadius: -5,
           ),
@@ -125,44 +125,19 @@ class _MainMenuViewState extends State<MainMenuView> {
                 SvgPicture.asset(iconPath, height: index == 2 ? 25 : 28),
               ],
             ),
-            // VerticalSpacing(5),
-            // Text(
-            //   label,
-            //   style: TextStyle(
-            //     color: isSelected ? Colors.white : Colors.white70,
-            //     fontSize: 12,
-            //     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            //   ),
-            // ),
+            VerticalSpacing(5),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.white70,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget? _buildAppBar() {
-    return AppBar(
-      toolbarHeight: 75,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      title: Image.asset(ImagesIcons.LOGO, height: 75),
-      actions: [
-        GestureDetector(
-          onTap: () => print("Leaderboard Icon Tapped"),
-          child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),
-        ),
-        HorizontalSpacing(16),
-        GestureDetector(
-          onTap: () {
-            print("Exit Icon Tapped");
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => LoginView()),
-              (Route<dynamic> route) => false,
-            );
-          },
-          child: Image.asset(ImagesIcons.EXIT_ICON, height: 55),
-        ),
-      ],
-    );
-  }
 }

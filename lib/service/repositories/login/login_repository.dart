@@ -1,3 +1,4 @@
+import 'package:cinebond/models/login/login_resp.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cinebond/models/login/login_req.dart';
@@ -5,30 +6,16 @@ import 'package:cinebond/service/network_manager.dart';
 
 class LoginRepository {
   NetworkManager manager = NetworkManager();
+  LoginRepository();
 
-  //LoginRepository();
 
-  // Future<UrlResponse> getURLs(BuildContext context) async {
-  //   try {
-  //     final response =
-  //         await apiHelper.getMais(context, "api/atlas/atlas-env-settings");
-  //     print(response);
-  //     return UrlResponse.fromJson(response);
-  //   } catch (e) {
-  //     throw e;
-  //   }
-  // }
-
-  //****************************************************************************************************************** */
-  //****************************************** VEHICLE **********************************************************
-  //****************************************************************************************************************** */
-  Future<String> authenticate(
+  Future<LoginResp> login(
       BuildContext context, LoginReq req) async {
     try {
       final response = await manager.post(
-          context, req.toMap(), "user/login");
+          context, req.toMap(), "api/auth/login");
       print(response);
-      return response;
+      return LoginResp.fromJson(response);
     } catch (e) {
       throw e;
     }

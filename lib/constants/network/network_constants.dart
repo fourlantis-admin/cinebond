@@ -9,7 +9,8 @@ class ResponseCode {
   static const int UNAUTHORIZED= 401; //token expired
 }
 class ResponseMessage {
-  static const String SUCCESS = "success"; // success with data
+  static const String SUCCESS = "SUCCESS"; 
+  static const String FAIL = "FAIL"; 
   static const String NO_CONTENT =  "success with not content";// success with no data (no content)
   static const String BAD_REQUEST =   "Kötü istek. tekrar deneyin veya yetkili bir kişiyle görüşün";// failure, API rejected request
   static const String UNAUTHORIZED = "Kullanıcı yetkisi bulunmamakta, tekrar deneyin veya yetkili bir kişiyle görüşün"; // failure, user is not authorised

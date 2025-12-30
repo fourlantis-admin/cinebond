@@ -1,12 +1,16 @@
+import 'package:cinebond/controller/movie/favorites_movie_cubit.dart';
+import 'package:cinebond/models/movie/movie_resp.dart';
+import 'package:cinebond/view/movie/movie_detail_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MoviePosterItem extends StatefulWidget {
-  final int? index;
+  final MovieResp movie;
 
-  final double posterWidth = 120;
-  final double posterHeight = 180;
-  final Duration animationDuration = const Duration(milliseconds: 450);
-  const MoviePosterItem({super.key, required this.index});
+  const MoviePosterItem({
+    super.key,
+    required this.movie,
+  });
 
   @override
   State<MoviePosterItem> createState() => _MoviePosterItemState();
@@ -14,12 +18,14 @@ class MoviePosterItem extends StatefulWidget {
 
 class _MoviePosterItemState extends State<MoviePosterItem> {
   bool _isOverlayVisible = false;
-  bool _isFavorite = false;
-  bool _isAddedToWatchList = false;
 
-  List<Color> activeGradientColors = [Color(0xFF8A2BE2), Color(0xFF1E90FF)];
+  static const String _imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
-  List<Color> inactiveGradientColors = [Colors.transparent, Colors.transparent];
+  static const double posterWidth = 120;
+  static const double posterHeight = 180;
+  static const double overlayHeightRatio = 0.58;
+
+  double get _overlayHeight => posterHeight * overlayHeightRatio;
 
   void _toggleOverlay() {
     setState(() {
@@ -27,133 +33,107 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
     });
   }
 
-  static const double overlayHeightRatio = 0.48;
-  double get _overlayHeight => widget.posterHeight * overlayHeightRatio;
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleOverlay,
-      child: AnimatedContainer(
-        duration: widget.animationDuration,
-        curve: Curves.easeIn,
-        child: AnimatedOpacity(
-          opacity: 1,
-          duration: widget.animationDuration,
+    final posterPath = widget.movie.poster_path;
+
+    return BlocBuilder<FavoritesCubit, List<MovieResp>>(
+      builder: (context, favorites) {
+        final bool isFavorite =
+            favorites.any((m) => m.id == widget.movie.id);
+
+        return GestureDetector(
+          onTap: _toggleOverlay,
           child: Container(
-            width: widget.posterWidth,
-            height: widget.posterHeight,
+            width: posterWidth,
+            height: posterHeight,
             decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(3),
-              gradient: _isOverlayVisible
-                  ? LinearGradient(
-                      colors: activeGradientColors,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : LinearGradient(colors: inactiveGradientColors),
-              border: _isOverlayVisible
-                  ? Border.all(width: 2, color: Colors.white)
-                  : null,
-              image: DecorationImage(
-                image: NetworkImage(
-                  'https://picsum.photos/id/${1018 + (widget.index as num)}/200/300',
-                ),
-                fit: BoxFit.cover,
-              ),
+              borderRadius: BorderRadius.circular(4),
+              image: posterPath == null
+                  ? null
+                  : DecorationImage(
+                      image: NetworkImage(_imageBaseUrl + posterPath),
+                      fit: BoxFit.cover,
+                    ),
             ),
             child: Stack(
               children: [
+                /// OVERLAY
                 Positioned(
+                  bottom: 0,
                   left: 0,
                   right: 0,
-                  bottom: 0,
                   child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
                     height: _isOverlayVisible ? _overlayHeight : 0,
-                    duration: widget.animationDuration,
-                    curve: Curves.easeOut,
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withOpacity(0.75),
                       borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
+                        bottomLeft: Radius.circular(6),
+                        bottomRight: Radius.circular(6),
                       ),
                     ),
                     child: AnimatedOpacity(
-                      opacity: _isOverlayVisible ? 1.0 : 0.0,
-                      duration: widget.animationDuration,
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isFavorite = !_isFavorite;
-                                });
-                              },
-                              icon: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 350),
-                                transitionBuilder:
-                                    (Widget child, Animation<double> anim) {
-                                      return ScaleTransition(
-                                        scale: CurvedAnimation(
-                                          parent: anim,
-                                          curve: Curves.easeInOutSine,
-                                        ),
-                                        child: child,
-                                      );
-                                    },
-                                child: Icon(
-                                  _isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  key: ValueKey(_isFavorite),
-                                  size: 30,
-                                  color: _isFavorite
-                                      ? Colors.red
-                                      : Colors.white,
-                                ),
-                              ),
-                            ),
-
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isAddedToWatchList = !_isAddedToWatchList;
-                                });
-                              },
-                              icon: AnimatedSwitcher(
-                                duration: Duration(milliseconds: 350),
-                                transitionBuilder: (child, anim) =>
-                                    ScaleTransition(
-                                      scale: CurvedAnimation(
-                                        parent: anim,
-                                        curve: Curves.easeInOutSine,
+                      opacity: _isOverlayVisible ? 1 : 0,
+                      duration: const Duration(milliseconds: 250),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) {
+                              return ScaleTransition(
+                                scale: Tween<double>(
+                                  begin: 0.6,
+                                  end: 1.0,
+                                )
+                                    .chain(
+                                      CurveTween(
+                                        curve: Curves.easeInOut,
                                       ),
-                                      child: child,
-                                    ),
-                                child: Icon(
-                                  _isAddedToWatchList
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_border,
-                                  key: ValueKey(_isAddedToWatchList),
-                                  size: 30,
-                                  color: _isAddedToWatchList
-                                      ? Colors.amber
-                                      : Colors.white,
-                                ),
+                                    )
+                                    .animate(animation),
+                                child: child,
+                              );
+                            },
+                            child: IconButton(
+                              key: ValueKey<bool>(isFavorite),
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color:
+                                    isFavorite ? Colors.red : Colors.white,
+                                size: 36,
                               ),
+                              onPressed: () {
+                                context
+                                    .read<FavoritesCubit>()
+                                    .toggleFavorite(widget.movie);
+                              },
                             ),
+                          ),
 
-                            IconButton(
-                              icon: const Icon(Icons.more_horiz, size: 28),
-                              color: Colors.green,
-                              onPressed: () {},
+                          /// ℹ️ DETAIL
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_circle_right_outlined,
+                              color: Colors.white,
+                              size: 36,
                             ),
-                          ],
-                        ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MovieDetailView(
+                                    movieId:
+                                        widget.movie.id.toString(),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -161,8 +141,8 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

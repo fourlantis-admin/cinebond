@@ -1,3 +1,4 @@
+import 'package:cinebond/controller/movie/favorites_movie_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -13,7 +14,7 @@ void main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('tr'),Locale('en'),],
+      supportedLocales: const [Locale('tr'), Locale('en')],
       fallbackLocale: Locale('tr'),
       startLocale: Locale('tr'),
       path: 'assets/translations',
@@ -22,6 +23,7 @@ void main() async {
           BlocProvider(create: (_) => ThemeCubit()),
           BlocProvider(create: (_) => LoadingCubit()),
           BlocProvider(create: (_) => FormValidationCubit()),
+          BlocProvider<FavoritesCubit>(create: (_) => FavoritesCubit()),
         ],
         child: const MyApp(),
       ),

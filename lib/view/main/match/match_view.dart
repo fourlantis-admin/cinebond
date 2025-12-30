@@ -1,7 +1,7 @@
 import 'package:cinebond/components/swipe/tinder_environment.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
-import 'package:cinebond/view/core/home_base_view.dart';
+import 'package:cinebond/view/wrapper/loading/loading_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,7 +57,6 @@ class _MatchViewState extends State<MatchView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SwipeCubit(profiles: _initialProfiles)),
-        BlocProvider(create: (_) => LoadingCubit()),
       ],
       child: Builder(
         builder: (context) {
@@ -65,9 +64,7 @@ class _MatchViewState extends State<MatchView> {
             listener: (context, state) async {
               if (state.shouldLoadMore) {
                 context.read<LoadingCubit>().show();
-
                 await Future.delayed(const Duration(seconds: 2));
-
                 context.read<SwipeCubit>().addProfiles([
                   Profile(
                     nameAge: "Brit, 22",
@@ -84,12 +81,10 @@ class _MatchViewState extends State<MatchView> {
                 context.read<LoadingCubit>().hide();
               }
             },
-            child: HomeBaseView(
-              body: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.65,
+            child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.9,
                 child: TinderEnvironment(),
-              ),
-            ),
+              )
           );
         },
       ),

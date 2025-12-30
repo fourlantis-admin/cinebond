@@ -30,7 +30,7 @@ class TinderEnvironment extends StatelessWidget {
       builder: (context, state) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final cardHeight = constraints.maxHeight * 0.8;
+            final cardHeight = constraints.maxHeight * 0.9;
             return Stack(
               alignment: Alignment.topCenter,
               children: [
@@ -41,7 +41,11 @@ class TinderEnvironment extends StatelessWidget {
                 ),
 
                 /// BUTONLAR
-                _buildButtons(context),
+                Positioned(
+                  bottom: 20,
+                  left:45,
+                  right:45,
+                  child: _buildButtons(context)),
               ],
             );
           },
@@ -65,35 +69,27 @@ class TinderEnvironment extends StatelessWidget {
 
   Widget _buildCard(BuildContext context, int index, Profile profile) {
     final cubit = context.read<SwipeCubit>();
-
     final isTop = index == 0;
-    final scale = 1 - (index * 0.05);
-    final verticalOffset = index * 10.0;
 
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 250),
-      left: 0,
-      right: 0,
-      top: verticalOffset,
-      bottom: -verticalOffset,
-      child: Transform.scale(
-        scale: isTop ? 1 : scale,
-        child: isTop
-            ? GestureDetector(
-                onPanUpdate: (d) => cubit.onPanUpdate(d, context),
-                onPanEnd: (_) => cubit.onPanEnd(),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  transform: Matrix4.identity()
-                    ..translate(
-                      cubit.state.cardOffset.dx,
-                      cubit.state.cardOffset.dy,
-                    )
-                    ..rotateZ(cubit.state.rotation),
-                  child: _cardContent(profile, context, true),
-                ),
+    return Positioned.fill(
+      child: Transform.translate(
+        offset: Offset(0, index * 1),
+        child: GestureDetector(
+          onPanUpdate: isTop ? (d) => cubit.onPanUpdate(d, context) : null,
+          onPanEnd: isTop ? (d) => cubit.onPanEnd(d, context) : null,
+          child: Transform(
+            transform: Matrix4.identity()
+              ..translate(
+                isTop ? cubit.state.cardOffset.dx : 0.0,
+                isTop ? cubit.state.cardOffset.dy : 0.0,
               )
-            : _cardContent(profile, context, false),
+              ..rotateZ(isTop ? cubit.state.rotation : 0.0),
+            child: Transform.scale(
+              scale: isTop ? 1.0 : 1.0, // 🔥 SABİT, ANİMASYON YOK
+              child: _cardContent(profile, context, isTop),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -137,11 +133,7 @@ class TinderEnvironment extends StatelessWidget {
             ),
           ),
 
-        Positioned(
-          bottom: 70,
-          left: 20,
-          child: _buildSwipeCard(profile),
-        ),
+        Positioned(bottom: 70, left: 20, child: _buildSwipeCard(profile)),
       ],
     );
   }
@@ -151,9 +143,7 @@ class TinderEnvironment extends StatelessWidget {
       angle: text == "NOPE" ? -0.25 : 0.25,
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          border: Border.all(color: color, width: 5),
-        ),
+        decoration: BoxDecoration(border: Border.all(color: color, width: 5)),
         child: Text(
           text,
           style: TextStyle(
@@ -170,15 +160,18 @@ class TinderEnvironment extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(profile.nameAge,
-            style: const TextStyle(
-                fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text(
+          profile.nameAge,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         VerticalSpacing(5),
-        Text(profile.occupation,
-            style: const TextStyle(color: Colors.white70)),
+        Text(profile.occupation, style: const TextStyle(color: Colors.white70)),
         VerticalSpacing(5),
-        Text(profile.interests,
-            style: const TextStyle(color: Colors.white70)),
+        Text(profile.interests, style: const TextStyle(color: Colors.white70)),
       ],
     );
   }
@@ -186,15 +179,11 @@ class TinderEnvironment extends StatelessWidget {
   Widget _buildButtons(BuildContext context) {
     final cubit = context.read<SwipeCubit>();
 
-    return Positioned(
-      bottom: 110,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TinderButton(
-            onClickBtnFunc: () {},
+            onClickBtnFunc: () => cubit.undoSwipe(context),
             icon: SvgPicture.asset(ImagesIcons.RETURN_ICON),
           ),
           TinderButton(
@@ -206,7 +195,6 @@ class TinderEnvironment extends StatelessWidget {
             icon: SvgPicture.asset(ImagesIcons.LIKE_ICON),
           ),
         ],
-      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cinebond/mixins/popup_mixin.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +17,7 @@ import 'package:cinebond/models/login/login_req.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
 import 'package:cinebond/service/repositories/login/login_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
-import 'package:cinebond/view/core/home_base_view.dart';
+import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -26,65 +27,96 @@ class LoginView extends StatefulWidget {
   State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> with ViewStateMixin {
+class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<LoginCubit>(
-          create: (_) => LoginCubit(LoginRepository(), GoogleAuthService()),
-        ),
-        BlocProvider<FormValidationCubit>(create: (_) => FormValidationCubit()),
-      ],
-      child: Builder(
-        builder: (context) {
-          return BlocListener<LoginCubit, LoginState>(
-            listenWhen: (prev, curr) => prev.isLoading != curr.isLoading,
-            listener: (context, state) {
-              if (state.isLoading) {
-                context.read<LoadingCubit>().show();
-              } else {
-                context.read<LoadingCubit>().hide();
-              }
-              if (state.success) {
-                print("Login Success!");
+@override
+Widget build(BuildContext context) {
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<LoginCubit>(
+        create: (_) => LoginCubit(LoginRepository(), GoogleAuthService()),
+      ),
+      BlocProvider<FormValidationCubit>(
+        create: (_) => FormValidationCubit(),
+      ),
+    ],
+    child: Builder( 
+      builder: (context) {
+        return MultiBlocListener(
+          listeners: [
+            
+            BlocListener<LoginCubit, LoginState>(
+              listenWhen: (prev, curr) =>
+                  prev.isLoading != curr.isLoading,
+              listener: (context, state) {
+                if (state.isLoading) {
+                  context.read<LoadingCubit>().show();
+                } else {
+                  context.read<LoadingCubit>().hide();
+                }
+              },
+            ),
+
+            BlocListener<LoginCubit, LoginState>(
+              listenWhen: (prev, curr) =>
+                  prev.success != curr.success && curr.success,
+              listener: (context, state) {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => MainMenuView()),
-                  (Route<dynamic> route) => false,
+                  MaterialPageRoute(builder: (_) => MainMenuView()),
+                  (_) => false,
                 );
-              }
-            },
-            child: HomeBaseView(
-              body: SingleChildScrollView(
-                child: Container(
-                  height: MediaQuery.of(context).size.height - 40,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(flex: 4, child: _buildLogo()),
-                      Flexible(flex: 4, child: _buildForm(context)),
-                      VerticalSpacing(30),
-                    ],
-                  ),
+              },
+            ),
+
+            BlocListener<LoginCubit, LoginState>(
+              listenWhen: (prev, curr) =>
+                  prev.errorResp != curr.errorResp &&
+                  curr.errorResp != null,
+              listener: (context, state) {
+                showGenericPopup(
+                  title: state.errorResp!.error ?? "Error",
+                  message: state.errorResp!.error_description ?? "",
+                  primaryButtonText: "Tamam",
+                  onPrimaryButtonPressed: (_) {
+                    context.read<LoginCubit>().clearError();
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ],
+          child: HomeBaseView(
+            isAppbarActive: false,
+            isLoadingActive: true,
+            body: SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height - 40,
+                child: Column(
+                  children: [
+                    Flexible(flex: 4, child: _buildLogo()),
+                    Flexible(flex: 4, child: _buildForm(context)),
+                    VerticalSpacing(30),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
+
 
   Widget _buildForm(BuildContext context) {
     return Form(
       key: _formKey,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, // BEYAZ ARKA PLAN
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -115,8 +147,15 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin {
   }
 
   void onSubmitClicked(BuildContext context) {
-    final req = LoginReq(username: "safa@nodelabs.com", password: "123456");
-    context.read<LoginCubit>().authenticate(req, context);
+    final req = LoginReq(
+      username: "kubilay.kitapcioglu@cinebond.com",
+      password: "123456",
+    );
+    try {
+      context.read<LoginCubit>().authenticate(req, context);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void onThemeClicked(BuildContext context) {
