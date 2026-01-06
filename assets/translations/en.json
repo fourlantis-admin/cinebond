@@ -4,6 +4,6 @@
     "submit": "Submit",
     "change_theme": "Change Theme",
     "change_lang": "Change Language",
-    "empty_fields": "Please enter a valid value."
-
+    "empty_fields": "Please enter a valid value.",
+    "email_format_is_not_valid": "Please enter a valid email."
 }

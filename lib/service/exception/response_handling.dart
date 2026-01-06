@@ -26,8 +26,26 @@ class ResponseHandling {
     }
   }
   dynamic handleExceptions(var response,BuildContext context) async {
-    var result = response.data;
-    if (result == null) {
+    
+    switch (response.response.statusCode) {
+      case ResponseCode.BAD_REQUEST:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+      case ResponseCode.FORBIDDEN:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+      case ResponseCode.INTERNAL_SERVER_ERROR:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+      case ResponseCode.NOT_FOUND:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+      case ResponseCode.NO_CONTENT:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+      case ResponseCode.UNAUTHORIZED:
+        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
+
+      default:
+
+    }
+    
+    if (response == null) {
       await handleDioException(response);
     } else {
       await handleOtherExceptions(response,context);

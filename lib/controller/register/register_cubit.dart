@@ -1,4 +1,5 @@
 import 'package:cinebond/models/error/error_resp.dart';
+import 'package:cinebond/models/register/register_req.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,23 +8,23 @@ import 'package:cinebond/models/login/login_req.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
 import 'package:cinebond/service/repositories/login/login_repository.dart';
 
-class LoginState {
+class RegisterState {
   final bool isLoading;
   final bool success;
   final ErrorResp? errorResp;
 
-  LoginState({
+  RegisterState({
     this.isLoading = false,
     this.success = false,
     this.errorResp
   });
 
-  LoginState copyWith({
+  RegisterState copyWith({
     bool? isLoading,
     bool? success,
     ErrorResp? errorResp
   }) {
-    return LoginState(
+    return RegisterState(
       isLoading: isLoading ?? this.isLoading,
       success: success ?? this.success,
       errorResp: errorResp ?? this.errorResp,
@@ -32,41 +33,30 @@ class LoginState {
 }
 
 
-class LoginCubit extends Cubit<LoginState> {
+class RegisterCubit extends Cubit<RegisterState> {
   final LoginRepository repo;
   final GoogleAuthService googleRepo;
   final StoreManager storeManager;
-  LoginCubit(this.repo,this.googleRepo,this.storeManager) : super(LoginState());
+  RegisterCubit(this.repo,this.googleRepo,this.storeManager) : super(RegisterState());
 
   void clearError() {
   emit(state.copyWith(errorResp: null));
   }
+  
+  void fillErrorPopup(String? text){
+    emit(state.copyWith(isLoading: false,errorResp: ErrorResp(error: "Hata",error_description: text ?? "Lütfen tekrar deneyiniz.")));
+  }
 
-  Future<void> authenticate(LoginReq req,BuildContext context) async {
+  Future<void> register(RegisterReq req,BuildContext context) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final response = await repo.login(context,req);
+      final response = await repo.register(context,req);
       print(response);
       await storeManager.saveUser(response);
       emit(state.copyWith(isLoading: false, success: true));
     } catch (e) {
       print(e);
       emit(state.copyWith(isLoading: false,errorResp: ErrorResp(error: "Hata",error_description: e.toString())));
-    }
-  }
-
-  Future<void> loginWithGoogle() async {
-    emit(state.copyWith(isLoading: true));
-
-    try {
-      final response = await googleRepo.signInWithGoogle();
-      print(response);
-      emit(state.copyWith(isLoading: false));
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-    }
-    finally {
-      emit(state.copyWith(isLoading: false));
     }
   }
 }

@@ -44,7 +44,6 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   Future<void> getMovies(BuildContext context) async {
     emit(state.copyWith(isLoading: true));
-
     try {
       final movies = await repo.getMovies(context);
       print(movies);

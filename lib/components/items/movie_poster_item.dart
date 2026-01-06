@@ -7,10 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class MoviePosterItem extends StatefulWidget {
   final MovieResp movie;
 
-  const MoviePosterItem({
-    super.key,
-    required this.movie,
-  });
+  const MoviePosterItem({super.key, required this.movie});
 
   @override
   State<MoviePosterItem> createState() => _MoviePosterItemState();
@@ -39,8 +36,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
 
     return BlocBuilder<FavoritesCubit, List<MovieResp>>(
       builder: (context, favorites) {
-        final bool isFavorite =
-            favorites.any((m) => m.id == widget.movie.id);
+        final bool isFavorite = favorites.any((m) => m.id == widget.movie.id);
 
         return GestureDetector(
           onTap: _toggleOverlay,
@@ -58,7 +54,6 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
             ),
             child: Stack(
               children: [
-                /// OVERLAY
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -79,39 +74,19 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            transitionBuilder: (child, animation) {
-                              return ScaleTransition(
-                                scale: Tween<double>(
-                                  begin: 0.6,
-                                  end: 1.0,
-                                )
-                                    .chain(
-                                      CurveTween(
-                                        curve: Curves.easeInOut,
-                                      ),
-                                    )
-                                    .animate(animation),
-                                child: child,
+                          IconButton(
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.white,
+                              size: 36,
+                            ),
+                            onPressed: () {
+                              context.read<FavoritesCubit>().toggleFavorite(
+                                widget.movie,
                               );
                             },
-                            child: IconButton(
-                              key: ValueKey<bool>(isFavorite),
-                              icon: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color:
-                                    isFavorite ? Colors.red : Colors.white,
-                                size: 36,
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<FavoritesCubit>()
-                                    .toggleFavorite(widget.movie);
-                              },
-                            ),
                           ),
 
                           /// ℹ️ DETAIL
@@ -126,8 +101,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => MovieDetailView(
-                                    movieId:
-                                        widget.movie.id.toString(),
+                                    movieId: widget.movie.id.toString(),
                                   ),
                                 ),
                               );

@@ -8,6 +8,7 @@ class AppColor {
   static const MAIN_BLUE = Color.fromARGB(255, 0, 103, 247);
   static const MAIN_TEXT_COLOR = Color.fromARGB(255, 132, 0, 144);
   static const MAIN_SCAFFOLD_COLOR = Color.fromRGBO(20, 0, 38, 1);
+  static const TEXTFIELD_TEXT_COLOR =Color.fromARGB(255, 59, 58, 58);
 
   static const BLUE = const Color.fromRGBO(0, 123, 255, 1);
   static const GREY = const Color.fromRGBO(74, 74, 74, 1);

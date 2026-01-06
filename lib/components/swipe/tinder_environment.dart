@@ -2,6 +2,7 @@ import 'package:cinebond/components/buttons/tinder_button.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
+import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,7 +41,6 @@ class TinderEnvironment extends StatelessWidget {
                   child: _buildCards(context, state),
                 ),
 
-                /// BUTONLAR
                 Positioned(
                   bottom: 20,
                   left:45,
@@ -184,15 +184,15 @@ class TinderEnvironment extends StatelessWidget {
         children: [
           TinderButton(
             onClickBtnFunc: () => cubit.undoSwipe(context),
-            icon: SvgPicture.asset(ImagesIcons.RETURN_ICON),
+            icon: SvgPicture.asset(ImagesIcons.RETURN_ICON,color: AppColor.YELLOW),
           ),
           TinderButton(
             onClickBtnFunc: () => cubit.swipeLeft(),
-            icon: SvgPicture.asset(ImagesIcons.DISLIKE_ICON),
+            icon: SvgPicture.asset(ImagesIcons.DISLIKE_ICON,color: AppColor.RED),
           ),
           TinderButton(
             onClickBtnFunc: () => cubit.swipeRight(),
-            icon: SvgPicture.asset(ImagesIcons.LIKE_ICON),
+            icon: SvgPicture.asset(ImagesIcons.LIKE_ICON,color: AppColor.GREEN,),
           ),
         ],
     );

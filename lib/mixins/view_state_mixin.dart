@@ -3,8 +3,15 @@ import 'package:lottie/lottie.dart';
 import 'package:cinebond/components/appbar/custom_app_bar.dart';
 
 mixin ViewStateMixin<T extends StatefulWidget> on State<T> {
-  buildAppbar() {
-    return CustomAppBar();
+  buildAppbarWithBackButton(
+      {
+      bool? isBackButtonActive,
+      VoidCallback? onBackButtonPressed,
+}) {
+    return CustomAppBar(
+      isBackButtonActive: true,
+      onBackButtonPressed: onBackButtonPressed
+    );
   }
 
 }

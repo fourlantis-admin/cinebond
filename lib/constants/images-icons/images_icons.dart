@@ -29,6 +29,7 @@ class ImagesIcons {
   static const SPIN_TO_DECIDE_IMAGE = "assets/images/spin_to_decide.png";
   static const TOURNAMENT_MODE_IMAGE = "assets/images/tournament_mode.png";
   static const SWIPE_TO_DECIDE = "assets/images/swipe_to_decide.png";
+  static const MCLOVIN_IMAGE = "assets/images/mclovin.jpg";
 
 
 

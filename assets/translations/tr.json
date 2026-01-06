@@ -4,5 +4,8 @@
     "submit": "Giriş Yap",
     "change_theme": "Tema Değiştir",
     "change_lang": "Dil Değiştir",
-    "empty_fields": "Lütfen geçerli bir değer giriniz."
+    "empty_fields": "Lütfen geçerli bir değer giriniz.",
+    "email_format_is_not_valid": "Lütfen geçerli bir email giriniz."
+
+    
 }

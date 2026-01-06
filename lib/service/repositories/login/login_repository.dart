@@ -1,4 +1,5 @@
 import 'package:cinebond/models/login/login_resp.dart';
+import 'package:cinebond/models/register/register_req.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cinebond/models/login/login_req.dart';
@@ -14,6 +15,17 @@ class LoginRepository {
     try {
       final response = await manager.post(
           context, req.toMap(), "api/auth/login");
+      print(response);
+      return LoginResp.fromJson(response);
+    } catch (e) {
+      throw e;
+    }
+  }
+  Future<LoginResp> register(
+      BuildContext context, RegisterReq req) async {
+    try {
+      final response = await manager.post(
+          context, req.toMap(), "api/users/register");
       print(response);
       return LoginResp.fromJson(response);
     } catch (e) {

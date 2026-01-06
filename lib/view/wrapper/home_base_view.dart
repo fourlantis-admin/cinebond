@@ -41,7 +41,8 @@ class _HomeBaseViewState extends State<HomeBaseView> with ViewStateMixin {
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: widget.bottomNavigationBar,
-      appBar: widget.isAppbarActive ? widget.appBar ?? buildAppbar() : null,
+      extendBody: true,
+      appBar: widget.isAppbarActive ? widget.appBar ?? buildAppbarWithBackButton() : null,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(

@@ -55,18 +55,15 @@ Widget build(BuildContext context) {
   );
 }
 
-
-  // ================= FEED =================
-
-  Widget _buildFeed(BuildContext context) {
-    return Column(
-      children: [
-        _buildSearchBar(context),
-        VerticalSpacing(5),
-        _buildGrid(),
-      ],
-    );
-  }
+Widget _buildFeed(BuildContext context) {
+  return Column(
+    children: [
+      _buildSearchBar(context),
+      VerticalSpacing(5),
+      _buildGrid(),
+    ],
+  );
+}
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
@@ -95,8 +92,6 @@ Widget build(BuildContext context) {
     return Expanded(
       child: BlocBuilder<ExploreCubit, ExploreState>(
         builder: (context, state) {
-
-
           return GridView.builder(
             itemCount: state.filteredMovies.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

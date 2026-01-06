@@ -1,4 +1,6 @@
 import 'package:cinebond/mixins/popup_mixin.dart';
+import 'package:cinebond/utils/storage/store_manager.dart';
+import 'package:cinebond/view/register/register_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,84 +34,85 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-@override
-Widget build(BuildContext context) {
-  return MultiBlocProvider(
-    providers: [
-      BlocProvider<LoginCubit>(
-        create: (_) => LoginCubit(LoginRepository(), GoogleAuthService()),
-      ),
-      BlocProvider<FormValidationCubit>(
-        create: (_) => FormValidationCubit(),
-      ),
-    ],
-    child: Builder( 
-      builder: (context) {
-        return MultiBlocListener(
-          listeners: [
-            
-            BlocListener<LoginCubit, LoginState>(
-              listenWhen: (prev, curr) =>
-                  prev.isLoading != curr.isLoading,
-              listener: (context, state) {
-                if (state.isLoading) {
-                  context.read<LoadingCubit>().show();
-                } else {
-                  context.read<LoadingCubit>().hide();
-                }
-              },
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LoginCubit>(
+          create: (_) => LoginCubit(
+            LoginRepository(),
+            GoogleAuthService(),
+            StoreManager(),
+          ),
+        ),
+        BlocProvider<FormValidationCubit>(create: (_) => FormValidationCubit()),
+      ],
+      child: Builder(
+        builder: (context) {
+          return MultiBlocListener(
+            listeners: [
+              BlocListener<LoginCubit, LoginState>(
+                listenWhen: (prev, curr) => prev.isLoading != curr.isLoading,
+                listener: (context, state) {
+                  if (state.isLoading) {
+                    context.read<LoadingCubit>().show();
+                  } else {
+                    context.read<LoadingCubit>().hide();
+                  }
+                },
+              ),
 
-            BlocListener<LoginCubit, LoginState>(
-              listenWhen: (prev, curr) =>
-                  prev.success != curr.success && curr.success,
-              listener: (context, state) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => MainMenuView()),
-                  (_) => false,
-                );
-              },
-            ),
+              BlocListener<LoginCubit, LoginState>(
+                listenWhen: (prev, curr) =>
+                    prev.success != curr.success && curr.success,
+                listener: (context, state) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => MainMenuView()),
+                    (_) => false,
+                  );
+                },
+              ),
 
-            BlocListener<LoginCubit, LoginState>(
-              listenWhen: (prev, curr) =>
-                  prev.errorResp != curr.errorResp &&
-                  curr.errorResp != null,
-              listener: (context, state) {
-                showGenericPopup(
-                  title: state.errorResp!.error ?? "Error",
-                  message: state.errorResp!.error_description ?? "",
-                  primaryButtonText: "Tamam",
-                  onPrimaryButtonPressed: (_) {
-                    context.read<LoginCubit>().clearError();
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            ),
-          ],
-          child: HomeBaseView(
-            isAppbarActive: false,
-            isLoadingActive: true,
-            body: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height - 40,
-                child: Column(
-                  children: [
-                    Flexible(flex: 4, child: _buildLogo()),
-                    Flexible(flex: 4, child: _buildForm(context)),
-                    VerticalSpacing(30),
-                  ],
+              BlocListener<LoginCubit, LoginState>(
+                listenWhen: (prev, curr) =>
+                    prev.errorResp != curr.errorResp && curr.errorResp != null,
+                listener: (context, state) {
+                  showGenericPopup(
+                    title: state.errorResp!.error ?? "Error",
+                    message: state.errorResp!.error_description ?? "",
+                    primaryButtonText: "Tamam",
+                    onPrimaryButtonPressed: (_) {
+                      context.read<LoginCubit>().clearError();
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ],
+            child: HomeBaseView(
+              isAppbarActive: false,
+              isLoadingActive: true,
+              body: SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Column(
+                      children: [
+                        Flexible(flex: 4, child: _buildLogo()),
+                        Flexible(flex: 5, child: _buildForm(context)),
+                        VerticalSpacing(30),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    ),
-  );
-}
-
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildForm(BuildContext context) {
     return Form(
@@ -137,6 +140,8 @@ Widget build(BuildContext context) {
               _buildPasswordField(context),
               Spacer(),
               _buildLoginButton(context),
+              VerticalSpacing(12),
+              _buildRegisterButton(context),
               VerticalSpacing(20),
               _buildSocialMediaButtons(context),
             ],
@@ -182,7 +187,6 @@ Widget build(BuildContext context) {
   Widget _googleButton(BuildContext context) {
     return SecondaryButton(
       btnWidth: 160,
-
       title: " ile Giriş Yap",
       trailingImagePath: ImagesIcons.GOOGLE_LOGO,
       onClickBtnFunc: () {
@@ -202,8 +206,19 @@ Widget build(BuildContext context) {
           onSubmitClicked(context);
         }
       },
-      btnHeight: 50,
-      btnWidth: 230,
+      btnWidth: 200,
+    );
+  }
+
+  Widget _buildRegisterButton(BuildContext context) {
+    return SecondaryButton(
+      title: "Kayıt Ol",
+      onClickBtnFunc: () {
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => RegisterView()));
+      },
+      btnWidth: 200,
     );
   }
 
