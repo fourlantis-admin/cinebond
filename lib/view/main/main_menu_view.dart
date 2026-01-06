@@ -1,13 +1,10 @@
 import 'package:cinebond/components/navbar/custom_navbar.dart';
-import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/main-menu/main_menu_cubit.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/main/match/match_view.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/view/main/explore/explore_view.dart';
 import 'package:cinebond/view/main/inbox/inbox.view.dart';
 import 'package:cinebond/view/main/play/play_view.dart';

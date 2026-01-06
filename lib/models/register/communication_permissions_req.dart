@@ -27,5 +27,13 @@ class CommunicationPermissionsReq {
       _$CommunicationPermissionsReqFromJson(json);
 
   Map<String, dynamic> toJson() => _$CommunicationPermissionsReqToJson(this);
-
+  
+  Map<String, dynamic> toMap() {
+    return {
+      "phone": phone,
+      "sms": sms,
+      "email": email,
+     
+    };
+  }
 }

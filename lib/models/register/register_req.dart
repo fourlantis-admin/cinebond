@@ -11,7 +11,7 @@ class RegisterReq {
   final String? password;
   final String? phone;
   final bool? GDPRPermission;
-  final CommunicationPermissionsReq? communicatinoPermissions;
+  final CommunicationPermissionsReq? communicationPermissions;
 
   RegisterReq({
     this.email,
@@ -20,7 +20,7 @@ class RegisterReq {
     this.password,
     this.phone,
     this.GDPRPermission,
-    this.communicatinoPermissions,
+    this.communicationPermissions,
 
   });
 
@@ -35,9 +35,9 @@ class RegisterReq {
       "firstName": firstName,
       "lastName": lastName,
       "password": password,
-      "phone": password,
-      "GDPRPermission": password,
-      "communicatinoPermissions": password,
+      "phone": phone,
+      "GDPRPermission": GDPRPermission,
+      "communicatinoPermissions": communicationPermissions,
     };
   }
 }

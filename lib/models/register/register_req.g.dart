@@ -13,10 +13,10 @@ RegisterReq _$RegisterReqFromJson(Map<String, dynamic> json) => RegisterReq(
   password: json['password'] as String?,
   phone: json['phone'] as String?,
   GDPRPermission: json['GDPRPermission'] as bool?,
-  communicatinoPermissions: json['communicatinoPermissions'] == null
+  communicationPermissions: json['communicationPermissions'] == null
       ? null
       : CommunicationPermissionsReq.fromJson(
-          json['communicatinoPermissions'] as Map<String, dynamic>,
+          json['communicationPermissions'] as Map<String, dynamic>,
         ),
 );
 
@@ -28,5 +28,5 @@ Map<String, dynamic> _$RegisterReqToJson(RegisterReq instance) =>
       'password': instance.password,
       'phone': instance.phone,
       'GDPRPermission': instance.GDPRPermission,
-      'communicatinoPermissions': instance.communicatinoPermissions,
+      'communicationPermissions': instance.communicationPermissions,
     };

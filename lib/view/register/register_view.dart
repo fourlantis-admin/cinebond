@@ -72,9 +72,16 @@ class _RegisterViewState extends State<RegisterView>
                 listenWhen: (prev, curr) =>
                     prev.success != curr.success && curr.success,
                 listener: (context, state) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => MainMenuView()),
-                    (_) => false,
+                  showGenericPopup(
+                    title: "Başarılı",
+                    message: "Kayıt oldun!",
+                    primaryButtonText: "Devam Et",
+                    onPrimaryButtonPressed: (_) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => MainMenuView()),
+                        (_) => false,
+                      );
+                    },
                   );
                 },
               ),
@@ -158,7 +165,7 @@ class _RegisterViewState extends State<RegisterView>
       lastName: "kitaptest",
       email: emailController.text, //"kubitest@gmail.com",
       GDPRPermission: true,
-      communicatinoPermissions: CommunicationPermissionsReq(
+      communicationPermissions: CommunicationPermissionsReq(
         email: true,
         phone: true,
         sms: true,

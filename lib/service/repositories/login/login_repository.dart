@@ -25,7 +25,7 @@ class LoginRepository {
       BuildContext context, RegisterReq req) async {
     try {
       final response = await manager.post(
-          context, req.toMap(), "api/users/register");
+          context, req, "api/users/register");
       print(response);
       return LoginResp.fromJson(response);
     } catch (e) {
