@@ -1,6 +1,7 @@
 import 'package:cinebond/components/items/movie_poster_item.dart';
 import 'package:cinebond/controller/explore/explore_cubit.dart';
 import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/view/main/explore/swipe_to_decide_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
@@ -72,13 +73,13 @@ Widget _buildFeed(BuildContext context) {
         onChanged: (value) {
           context.read<ExploreCubit>().searchMovie(context, value);
         },
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color:  const Color.fromARGB(255, 221, 220, 220)),
         decoration: InputDecoration(
           hintText: "Film ara...",
-          hintStyle: TextStyle(color: Colors.white54),
-          prefixIcon: Icon(Icons.search, color: Colors.white),
+          hintStyle: TextStyle(color: const Color.fromARGB(255, 221, 220, 220)),
+          prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 221, 220, 220)),
           filled: true,
-          fillColor: const Color(0xFF1F0A3D),
+          fillColor: const Color.fromARGB(255, 34, 10, 67),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -145,6 +146,11 @@ Widget _buildFeed(BuildContext context) {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return GestureDetector(
+            onTap: (){
+              Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => SwipeToDecideView()),
+            );
+            },
             child: Container(
               height: 63,
               width: 170,
@@ -152,7 +158,7 @@ Widget _buildFeed(BuildContext context) {
               child: Center(
                 child: Text(
                   images[index],
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.black,
                     fontSize: 10,
                   ),

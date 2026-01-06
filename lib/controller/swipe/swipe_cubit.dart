@@ -3,150 +3,123 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-class SwipeState {
-  final List profiles;
+class SwipeState<T> {
+  final List<T> items;
   final Offset cardOffset;
   final double rotation;
   final double swipeOpacity;
   final bool shouldLoadMore;
-  final int currentIndex;
 
-  // 🔥 SADECE BUNU EKLİYORUZ
-  final Profile? lastSwipedProfile;
+  final T? lastSwipedItem;
   final bool lastSwipeWasRight;
 
   SwipeState({
-    required this.profiles,
+    required this.items,
     this.cardOffset = Offset.zero,
     this.rotation = 0,
     this.swipeOpacity = 0,
     this.shouldLoadMore = false,
-    this.currentIndex = 0,
-    this.lastSwipedProfile,
+    this.lastSwipedItem,
     this.lastSwipeWasRight = true,
   });
 
-  SwipeState copyWith({
-    List? profiles,
+  SwipeState<T> copyWith({
+    List<T>? items,
     Offset? cardOffset,
     double? rotation,
     double? swipeOpacity,
     bool? shouldLoadMore,
-    int? currentIndex,
-    Profile? lastSwipedProfile,
+    T? lastSwipedItem,
     bool? lastSwipeWasRight,
   }) {
-    return SwipeState(
-      profiles: profiles ?? this.profiles,
+    return SwipeState<T>(
+      items: items ?? this.items,
       cardOffset: cardOffset ?? this.cardOffset,
       rotation: rotation ?? this.rotation,
       swipeOpacity: swipeOpacity ?? this.swipeOpacity,
       shouldLoadMore: shouldLoadMore ?? this.shouldLoadMore,
-      currentIndex: currentIndex ?? this.currentIndex,
-      lastSwipedProfile: lastSwipedProfile ?? this.lastSwipedProfile,
+      lastSwipedItem: lastSwipedItem ?? this.lastSwipedItem,
       lastSwipeWasRight: lastSwipeWasRight ?? this.lastSwipeWasRight,
     );
   }
 }
 
-class SwipeCubit extends Cubit<SwipeState> {
-  SwipeCubit({required List profiles}) : super(SwipeState(profiles: profiles));
+
+
+class SwipeCubit<T> extends Cubit<SwipeState<T>> {
+  SwipeCubit({required List<T> items})
+      : super(SwipeState<T>(items: items));
 
   final double swipeThreshold = 100;
   final double rotationMax = pi / 10;
 
   void swipeRight() =>
-      _swipeLogic(Offset(2000, -450), rotationMax, removeCard: true);
-  void swipeLeft() =>
-      _swipeLogic(Offset(-2000, -450), -rotationMax, removeCard: true);
+      _swipeLogic(const Offset(2000, -450), rotationMax);
 
-  void addProfiles(List<Profile> newOnes) {
-    final updated = List.of(state.profiles)..addAll(newOnes);
-    emit(state.copyWith(profiles: updated, shouldLoadMore: false));
+  void swipeLeft() =>
+      _swipeLogic(const Offset(-2000, -450), -rotationMax);
+
+  void addItems(List<T> newItems) {
+    emit(state.copyWith(
+      items: [...state.items, ...newItems],
+      shouldLoadMore: false,
+    ));
   }
 
-  void _swipeLogic(
-  Offset target,
-  double rotation, {
-  bool removeCard = false,
-}) {
-  final bool isLike = rotation > 0;
+  void _swipeLogic(Offset target, double rotation) {
+    final isLike = rotation > 0;
 
-  // 🔹 Swipe animasyonu (mevcut davranış)
-  emit(
-    state.copyWith(
+    emit(state.copyWith(
       cardOffset: target,
       rotation: rotation,
       swipeOpacity: 1,
-    ),
-  );
+    ));
 
-  Future.delayed(const Duration(milliseconds: 450), () {
-    if (removeCard && state.profiles.isNotEmpty) {
-      final swipedProfile = state.profiles.first; // 🔥 HATIRLA
-      final updated = List.of(state.profiles)..removeAt(0);
-      final bool loadMore = updated.isEmpty;
+    Future.delayed(const Duration(milliseconds: 450), () {
+      if (state.items.isEmpty) return;
 
-      emit(
-        state.copyWith(
-          profiles: updated,
-          cardOffset: Offset.zero,
-          rotation: 0,
-          swipeOpacity: 0,
-          shouldLoadMore: loadMore,
+      final swiped = state.items.first;
+      final updated = List<T>.from(state.items)..removeAt(0);
 
-          // 🔥 UNDO İÇİN KAYIT
-          lastSwipedProfile: swipedProfile,
-          lastSwipeWasRight: isLike,
-        ),
-      );
-    } else {
-      emit(
-        state.copyWith(
-          cardOffset: Offset.zero,
-          rotation: 0,
-          swipeOpacity: 0,
-        ),
-      );
-    }
-  });
-}
-
-
-  void undoSwipe(BuildContext ctx) {
-    final last = state.lastSwipedProfile;
-    if (last == null) return;
-
-    final width = MediaQuery.of(ctx).size.width;
-    
-    emit(
-      state.copyWith(
-        profiles: [last, ...state.profiles],
-        cardOffset: Offset(
-          state.lastSwipeWasRight ? width * 1.2 : -width * 1.2,
-          -200,
-        ),
-        rotation: state.lastSwipeWasRight ? rotationMax : -rotationMax,
-        swipeOpacity: 1,
-        lastSwipedProfile: null,
-      ),
-    );
-
-    Future.delayed(const Duration(milliseconds: 16), () {
-      emit(
-        state.copyWith(cardOffset: Offset.zero, rotation: 0, swipeOpacity: 0),
-      );
+      emit(state.copyWith(
+        items: updated,
+        cardOffset: Offset.zero,
+        rotation: 0,
+        swipeOpacity: 0,
+        shouldLoadMore: updated.isEmpty,
+        lastSwipedItem: swiped,
+        lastSwipeWasRight: isLike,
+      ));
     });
   }
 
+  void undoSwipe(BuildContext ctx) {
+    final last = state.lastSwipedItem;
+    if (last == null) return;
 
+    final width = MediaQuery.of(ctx).size.width;
 
+    emit(state.copyWith(
+      items: [last, ...state.items],
+      cardOffset: Offset(
+        state.lastSwipeWasRight ? width * 1.2 : -width * 1.2,
+        -200,
+      ),
+      rotation: state.lastSwipeWasRight ? rotationMax : -rotationMax,
+      swipeOpacity: 1,
+      lastSwipedItem: null,
+    ));
 
+    Future.delayed(const Duration(milliseconds: 16), () {
+      emit(state.copyWith(
+        cardOffset: Offset.zero,
+        rotation: 0,
+        swipeOpacity: 0,
+      ));
+    });
+  }
 
-
-
-
-
+  
 
   void onPanUpdate(DragUpdateDetails d, BuildContext ctx) {
     final newOffset = state.cardOffset + d.delta;
@@ -178,7 +151,6 @@ class SwipeCubit extends Cubit<SwipeState> {
       _swipeLogic(
         Offset(width * 2, state.cardOffset.dy),
         rotationMax,
-        removeCard: true,
       );
       return;
     }
@@ -187,7 +159,6 @@ class SwipeCubit extends Cubit<SwipeState> {
       _swipeLogic(
         Offset(-width * 2, state.cardOffset.dy),
         -rotationMax,
-        removeCard: true,
       );
       return;
     }
@@ -199,3 +170,5 @@ class SwipeCubit extends Cubit<SwipeState> {
     emit(state.copyWith(cardOffset: Offset.zero, rotation: 0, swipeOpacity: 0));
   }
 }
+
+

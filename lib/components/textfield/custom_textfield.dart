@@ -17,7 +17,6 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? textController;
   final bool? isDense;
 
-  // ✅ EKLENDİ
   final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
@@ -32,13 +31,12 @@ class CustomTextField extends StatefulWidget {
     this.onTap,
     this.textController,
     this.height,
-    this.inputFormatters, // ✅
+    this.inputFormatters, 
   }) : super(key: key);
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 }
-
 
 class _CustomTextFieldState extends State<CustomTextField> {
   bool isFocused = false;
@@ -68,36 +66,39 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: TextFormField(
-  controller: widget.textController,
-  keyboardType: widget.inputType,
-  inputFormatters: widget.inputFormatters, // ✅ BURASI
-  style: const TextStyle(
-    color: AppColor.TEXTFIELD_TEXT_COLOR,
-    fontSize: 15,
-  ),
-  validator: (value) {
-    final result = widget.validator?.call(value);
-    setState(() => errorMessage = result);
-    return result;
-  },
-  decoration: InputDecoration(
-    labelText: widget.labelText,
-    labelStyle: const TextStyle(color: AppColor.TEXTFIELD_TEXT_COLOR),
-    floatingLabelStyle: const TextStyle(color: AppColor.TEXTFIELD_TEXT_COLOR),
-    errorStyle: const TextStyle(
-      color: AppColor.BLACK,
-      fontSize: 0,
-      height: 0,
-    ),
-    border: InputBorder.none,
-    errorText: null,
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 10,
-      vertical: 10,
-    ),
-  ),
-),
-
+                  controller: widget.textController,
+                  keyboardType: widget.inputType,
+                  inputFormatters: widget.inputFormatters,
+                  style: const TextStyle(
+                    color: AppColor.TEXTFIELD_TEXT_COLOR,
+                    fontSize: 15,
+                  ),
+                  validator: (value) {
+                    final result = widget.validator?.call(value);
+                    setState(() => errorMessage = result);
+                    return result;
+                  },
+                  decoration: InputDecoration(
+                    labelText: widget.labelText,
+                    labelStyle: const TextStyle(
+                      color: AppColor.TEXTFIELD_TEXT_COLOR,
+                    ),
+                    floatingLabelStyle: const TextStyle(
+                      color: AppColor.TEXTFIELD_TEXT_COLOR,
+                    ),
+                    errorStyle: const TextStyle(
+                      color: AppColor.BLACK,
+                      fontSize: 0,
+                      height: 0,
+                    ),
+                    border: InputBorder.none,
+                    errorText: null,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

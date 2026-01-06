@@ -1,5 +1,6 @@
 import 'package:cinebond/components/navbar/custom_navbar.dart';
 import 'package:cinebond/controller/main-menu/main_menu_cubit.dart';
+import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/main/match/match_view.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
@@ -9,15 +10,27 @@ import 'package:cinebond/view/main/explore/explore_view.dart';
 import 'package:cinebond/view/main/inbox/inbox.view.dart';
 import 'package:cinebond/view/main/play/play_view.dart';
 
-class MainMenuView extends StatelessWidget {
+class MainMenuView extends StatefulWidget {
   const MainMenuView({super.key});
 
-  static const List<Widget> _views = [
-    ExploreView(),
-    MatchView(),
-    InboxView(),
-    PlayView(),
-  ];
+  @override
+  State<MainMenuView> createState() => _MainMenuViewState();
+}
+
+class _MainMenuViewState extends State<MainMenuView> with ViewStateMixin {
+  late final List<Widget> _views;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _views = [
+      ExploreView(),
+      MatchView(), 
+      InboxView(),
+      PlayView(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +42,10 @@ class MainMenuView extends StatelessWidget {
       child: BlocBuilder<MainMenuCubit, int>(
         builder: (context, currentIndex) {
           context.read<MainMenuCubit>().checkInfo();
+
           return HomeBaseView(
             isLoadingActive: true,
+            appBar: buildAppbarWithLogo(),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
               child: IndexedStack(

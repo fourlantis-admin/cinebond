@@ -13,5 +13,13 @@ mixin ViewStateMixin<T extends StatefulWidget> on State<T> {
       onBackButtonPressed: onBackButtonPressed
     );
   }
+buildAppbarWithLogo(
+      {
+      bool? isBackButtonActive,
+}) {
+    return CustomAppBar(
+      isBackButtonActive: false,
+    );
+  }
 
 }

@@ -22,16 +22,35 @@ class Profile {
   });
 }
 
-class TinderEnvironment extends StatelessWidget {
-  const TinderEnvironment({super.key});
+class TinderEnvironment<T> extends StatelessWidget {
+  TinderEnvironment({
+    super.key,
+    required this.getColor,
+    required this.getImage,
+    required this.getTitle,
+    required this.getSubtitle,
+    required this.getDescription,
+    this.cardHeightRatio = 0.9,
+    this.bottomPadding = 20,
+  });
+
+  final Color Function(T) getColor;
+  final Widget Function(T) getImage;
+  final String Function(T) getTitle;
+  final String Function(T) getSubtitle;
+  final String Function(T) getDescription;
+
+  final double cardHeightRatio;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SwipeCubit, SwipeState>(
+    return BlocBuilder<SwipeCubit<T>, SwipeState<T>>(
       builder: (context, state) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final cardHeight = constraints.maxHeight * 0.9;
+            final cardHeight = constraints.maxHeight * cardHeightRatio;
+
             return Stack(
               alignment: Alignment.topCenter,
               children: [
@@ -42,10 +61,11 @@ class TinderEnvironment extends StatelessWidget {
                 ),
 
                 Positioned(
-                  bottom: 20,
-                  left:45,
-                  right:45,
-                  child: _buildButtons(context)),
+                  bottom: bottomPadding,
+                  left: 45,
+                  right: 45,
+                  child: _buildButtons(context),
+                ),
               ],
             );
           },
@@ -54,96 +74,120 @@ class TinderEnvironment extends StatelessWidget {
     );
   }
 
-  Widget _buildCards(BuildContext context, SwipeState state) {
+  Widget _buildCards(BuildContext context, SwipeState<T> state) {
     return Stack(
-      children: state.profiles
+      children: state.items
+          .take(4)
+          .toList()
           .asMap()
           .entries
-          .take(4)
-          .map((entry) => _buildCard(context, entry.key, entry.value))
+          .map((e) => _buildCard(context, e.key, e.value))
           .toList()
           .reversed
           .toList(),
     );
   }
 
-  Widget _buildCard(BuildContext context, int index, Profile profile) {
-    final cubit = context.read<SwipeCubit>();
+  Widget _buildCard(BuildContext context, int index, T item) {
+    final cubit = context.read<SwipeCubit<T>>();
     final isTop = index == 0;
 
     return Positioned.fill(
-      child: Transform.translate(
-        offset: Offset(0, index * 1),
-        child: GestureDetector(
-          onPanUpdate: isTop ? (d) => cubit.onPanUpdate(d, context) : null,
-          onPanEnd: isTop ? (d) => cubit.onPanEnd(d, context) : null,
-          child: Transform(
-            transform: Matrix4.identity()
-              ..translate(
-                isTop ? cubit.state.cardOffset.dx : 0.0,
-                isTop ? cubit.state.cardOffset.dy : 0.0,
-              )
-              ..rotateZ(isTop ? cubit.state.rotation : 0.0),
-            child: Transform.scale(
-              scale: isTop ? 1.0 : 1.0, // 🔥 SABİT, ANİMASYON YOK
-              child: _cardContent(profile, context, isTop),
-            ),
-          ),
+      child: GestureDetector(
+        onPanUpdate: isTop ? (d) => cubit.onPanUpdate(d, context) : null,
+        onPanEnd: isTop ? (d) => cubit.onPanEnd(d, context) : null,
+        child: Transform(
+          transform: Matrix4.identity()
+            ..translate(
+              isTop ? cubit.state.cardOffset.dx : 0.0,
+              isTop ? cubit.state.cardOffset.dy : 0.0,
+              0.0,
+            )
+            ..rotateZ(isTop ? cubit.state.rotation : 0.0),
+          child: _cardContent(item, context, isTop),
         ),
       ),
     );
   }
 
-  Widget _cardContent(Profile profile, BuildContext ctx, bool top) {
-    final cubit = ctx.watch<SwipeCubit>();
+  Widget _cardContent(T item, BuildContext ctx, bool top) {
+    final cubit = ctx.watch<SwipeCubit<T>>();
     final opacity = cubit.state.swipeOpacity;
+    final dx = cubit.state.cardOffset.dx;
 
     return Stack(
       children: [
+        /// CARD
         Container(
           decoration: BoxDecoration(
-            color: profile.color,
+            color: getColor(item),
             borderRadius: BorderRadius.circular(20),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: SizedBox.expand(
-              child: FittedBox(fit: BoxFit.cover, child: profile.picture),
-            ),
+            child: SizedBox.expand(child: getImage(item)),
           ),
         ),
 
-        if (top)
+        if (top && dx < 0)
           Positioned(
             top: 40,
-            left: 20,
+            left: 10,
             child: Opacity(
-              opacity: cubit.state.cardOffset.dx < 0 ? opacity : 0,
+              opacity: opacity,
               child: _swipeLabel("NOPE", Colors.red),
             ),
           ),
 
-        if (top)
+        if (top && dx > 0)
           Positioned(
             top: 40,
-            right: 20,
+            right: 10,
             child: Opacity(
-              opacity: cubit.state.cardOffset.dx > 0 ? opacity : 0,
+              opacity: opacity,
               child: _swipeLabel("LIKE", Colors.green),
             ),
           ),
 
-        Positioned(bottom: 70, left: 20, child: _buildSwipeCard(profile)),
+        if (top)
+          Positioned(
+            bottom: 70,
+            left: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getTitle(item),
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  getSubtitle(item),
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  getDescription(item),
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
 
   Widget _swipeLabel(String text, Color color) {
     return Transform.rotate(
-      angle: text == "NOPE" ? -0.25 : 0.25,
+      angle: text == "NOPE" ? -0.15 : 0.15,
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(border: Border.all(color: color, width: 5)),
+        decoration: BoxDecoration(
+          border: Border.all(color: color, width: 5),
+        ),
         child: Text(
           text,
           style: TextStyle(
@@ -156,45 +200,34 @@ class TinderEnvironment extends StatelessWidget {
     );
   }
 
-  Widget _buildSwipeCard(Profile profile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          profile.nameAge,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        VerticalSpacing(5),
-        Text(profile.occupation, style: const TextStyle(color: Colors.white70)),
-        VerticalSpacing(5),
-        Text(profile.interests, style: const TextStyle(color: Colors.white70)),
-      ],
-    );
-  }
-
   Widget _buildButtons(BuildContext context) {
-    final cubit = context.read<SwipeCubit>();
+    final cubit = context.read<SwipeCubit<T>>();
 
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TinderButton(
-            onClickBtnFunc: () => cubit.undoSwipe(context),
-            icon: SvgPicture.asset(ImagesIcons.RETURN_ICON,color: AppColor.YELLOW),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TinderButton(
+          onClickBtnFunc: () => cubit.undoSwipe(context),
+          icon: SvgPicture.asset(
+            ImagesIcons.RETURN_ICON,
+            color: AppColor.YELLOW,
           ),
-          TinderButton(
-            onClickBtnFunc: () => cubit.swipeLeft(),
-            icon: SvgPicture.asset(ImagesIcons.DISLIKE_ICON,color: AppColor.RED),
+        ),
+        TinderButton(
+          onClickBtnFunc: cubit.swipeLeft,
+          icon: SvgPicture.asset(
+            ImagesIcons.DISLIKE_ICON,
+            color: AppColor.RED,
           ),
-          TinderButton(
-            onClickBtnFunc: () => cubit.swipeRight(),
-            icon: SvgPicture.asset(ImagesIcons.LIKE_ICON,color: AppColor.GREEN,),
+        ),
+        TinderButton(
+          onClickBtnFunc: cubit.swipeRight,
+          icon: SvgPicture.asset(
+            ImagesIcons.LIKE_ICON,
+            color: AppColor.GREEN,
           ),
-        ],
+        ),
+      ],
     );
   }
 }
