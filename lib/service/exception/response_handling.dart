@@ -1,21 +1,23 @@
 
+import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/constants/network/network_constants.dart';
 import 'package:cinebond/service/exception/network_exception.dart';
 
 class ResponseHandling {
-
-  dynamic returnResponse(var response,BuildContext context) async {
-    var result = response.data;
-    print(result["status"]);
-    if(result["status"] == "SUCCESS"){
-     
-    }
-    else{
-      handleExceptions(response,context);
-    }
+  StoreManager storeManager = StoreManager();
+  dynamic returnResponse(Response response, BuildContext context) {
+  if (response.data["status"] == ResponseMessage.SUCCESS) {
+    String authToken =
+        response.headers.map["authorization"]?[0].toString() ?? "";
+    storeManager.saveToken(authToken); // await gerekirse yukarı taşı
+    return response.data["data"];
+  } else {
+    handleExceptions(response, context);
   }
+}
+
     dynamic returnResponseMovie(var response) async {
     print(response);
     switch (response.statusCode) {
@@ -25,53 +27,35 @@ class ResponseHandling {
         return response.data;
     }
   }
-  dynamic handleExceptions(var response,BuildContext context) async {
-    
-    switch (response.response.statusCode) {
-      case ResponseCode.BAD_REQUEST:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
-      case ResponseCode.FORBIDDEN:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
-      case ResponseCode.INTERNAL_SERVER_ERROR:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
-      case ResponseCode.NOT_FOUND:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
-      case ResponseCode.NO_CONTENT:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
-      case ResponseCode.UNAUTHORIZED:
-        throw NetworkException(response.response.statusCode, response.response.data["error"]["message"]);
 
-      default:
-
-    }
-    
-    if (response == null) {
-      await handleDioException(response);
-    } else {
-      await handleOtherExceptions(response,context);
-    }
+  Never handleExceptions(dynamic response, BuildContext context) {
+  if (response.response == null) {
+    handleDioException(response);
   }
 
-  dynamic handleDioException(var response) async {
-    if (response.type == DioExceptionType.connectionError) {
-      throw NetworkException(408, ResponseMessage.CONNECT_TIMEOUT);
-    } else if (response.type == DioExceptionType.connectionTimeout) {
-      throw NetworkException(408, ResponseMessage.CONNECT_TIMEOUT);
-    } else if (response.type == DioExceptionType.receiveTimeout) {
-      throw NetworkException(408, ResponseMessage.RECIEVE_TIMEOUT);
-    } else if (response.type == DioExceptionType.sendTimeout) {
-      throw NetworkException(408, ResponseMessage.SEND_TIMEOUT);
-    } else if (response.type == DioExceptionType.badCertificate) {
-      throw NetworkException(408, ResponseMessage.BAD_CERTIFICATE);
-    } else {
-      throw NetworkException(408, ResponseMessage.CONNECT_TIMEOUT);
-    }
+  switch (response.response.statusCode) {
+    case ResponseCode.BAD_REQUEST:
+    case ResponseCode.FORBIDDEN:
+    case ResponseCode.INTERNAL_SERVER_ERROR:
+    case ResponseCode.NOT_FOUND:
+    case ResponseCode.NO_CONTENT:
+    case ResponseCode.UNAUTHORIZED:
+      throw NetworkException(
+        response.response.statusCode,
+        response.response.data["error"]["message"],
+      );
+    default:
+      throw NetworkException(500, "Bilinmeyen hata");
+  }
+}
+
+  Never handleDioException(dynamic response) {
+  if (response.type == DioExceptionType.connectionError ||
+      response.type == DioExceptionType.connectionTimeout) {
+    throw NetworkException(408, ResponseMessage.CONNECT_TIMEOUT);
   }
 
-  dynamic handleOtherExceptions(var response, BuildContext context) async {
-    var result = response.data;
-    print(result["error"]["message"]);
-    throw NetworkException(
-        404, result["error"]["message"].toString());
-  }
+  throw NetworkException(408, ResponseMessage.CONNECT_TIMEOUT);
+}
+
 }

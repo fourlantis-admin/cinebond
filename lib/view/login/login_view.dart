@@ -4,7 +4,6 @@ import 'package:cinebond/view/register/register_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:cinebond/components/buttons/primary_button.dart';
 import 'package:cinebond/components/buttons/secondary_button.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';

@@ -5,6 +5,7 @@ import 'package:cinebond/models/register/register_req.dart';
 import 'package:cinebond/utils/mask/phone_input_formatter.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
+import 'package:cinebond/view/create-profile/create_profile_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,7 +79,7 @@ class _RegisterViewState extends State<RegisterView>
                     primaryButtonText: "Devam Et",
                     onPrimaryButtonPressed: (_) {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => MainMenuView()),
+                        MaterialPageRoute(builder: (_) => CreateProfileView()),
                         (_) => false,
                       );
                     },
@@ -269,7 +270,6 @@ class _RegisterViewState extends State<RegisterView>
       validator: (value) {
         final error = value?.isValidEmail();
         print(error);
-
         context.read<RegisterValidationCubit>().setFieldError("email", error);
         return error;
       },

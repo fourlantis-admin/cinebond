@@ -50,7 +50,7 @@ class LoginCubit extends Cubit<LoginState> {
       await storeManager.saveUser(response);
       emit(state.copyWith(isLoading: false, success: true));
     } catch (e) {
-      print(e);
+      print(e.toString());
       emit(state.copyWith(isLoading: false,errorResp: ErrorResp(error: "Hata",error_description: e.toString())));
     }
   }

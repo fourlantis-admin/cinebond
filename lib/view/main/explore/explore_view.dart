@@ -1,3 +1,4 @@
+import 'package:cinebond/components/glass-container/glass_container.dart';
 import 'package:cinebond/components/items/movie_poster_item.dart';
 import 'package:cinebond/controller/explore/explore_cubit.dart';
 import 'package:cinebond/service/movie/movie_repository.dart';
@@ -14,15 +15,13 @@ class ExploreView extends StatefulWidget {
   State<ExploreView> createState() => _ExploreViewState();
 }
 
-class _ExploreViewState extends State<ExploreView>{
+class _ExploreViewState extends State<ExploreView> {
   late final ExploreCubit _exploreCubit;
 
   @override
   void initState() {
     super.initState();
-    _exploreCubit = ExploreCubit(
-      repo: MovieRepository(context: context),
-    );
+    _exploreCubit = ExploreCubit(repo: MovieRepository(context: context));
     _exploreCubit.getMovies(context);
   }
 
@@ -32,39 +31,29 @@ class _ExploreViewState extends State<ExploreView>{
     super.dispose();
   }
 
- @override
-Widget build(BuildContext context) {
-  return BlocProvider.value(
-    value: _exploreCubit,
-    child: Builder(
-      builder: (context) {
-        return Column(
-          children: [
-            Expanded(
-              flex: 5,
-              child: _buildFilmFinderRow(context),
-            ),
-            VerticalSpacing(20),
-            Expanded(
-              flex: 12,
-              child: _buildFeed(context),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _exploreCubit,
+      child: Builder(
+        builder: (context) {
+          return Column(
+            children: [
+              Expanded(flex: 5, child: _buildFilmFinderRow(context)),
+              VerticalSpacing(20),
+              Expanded(flex: 12, child: _buildFeed(context)),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-Widget _buildFeed(BuildContext context) {
-  return Column(
-    children: [
-      _buildSearchBar(context),
-      VerticalSpacing(5),
-      _buildGrid(),
-    ],
-  );
-}
+  Widget _buildFeed(BuildContext context) {
+    return Column(
+      children: [_buildSearchBar(context), VerticalSpacing(5), _buildGrid()],
+    );
+  }
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
@@ -73,11 +62,14 @@ Widget _buildFeed(BuildContext context) {
         onChanged: (value) {
           context.read<ExploreCubit>().searchMovie(context, value);
         },
-        style: TextStyle(color:  const Color.fromARGB(255, 221, 220, 220)),
+        style: TextStyle(color: const Color.fromARGB(255, 221, 220, 220)),
         decoration: InputDecoration(
           hintText: "Film ara...",
           hintStyle: TextStyle(color: const Color.fromARGB(255, 221, 220, 220)),
-          prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 221, 220, 220)),
+          prefixIcon: Icon(
+            Icons.search,
+            color: const Color.fromARGB(255, 221, 220, 220),
+          ),
           filled: true,
           fillColor: const Color.fromARGB(255, 34, 10, 67),
           border: OutlineInputBorder(
@@ -97,14 +89,12 @@ Widget _buildFeed(BuildContext context) {
             itemCount: state.filteredMovies.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.8,
+              childAspectRatio: 2 / 3,
             ),
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.all(8),
-                child: MoviePosterItem(
-                  movie: state.filteredMovies[index],
-                ),
+                padding: const EdgeInsets.all(4),
+                child: MoviePosterItem(movie: state.filteredMovies[index]),
               );
             },
           );
@@ -146,25 +136,12 @@ Widget _buildFeed(BuildContext context) {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => SwipeToDecideView()),
-            );
+                MaterialPageRoute(builder: (_) => SwipeToDecideView()),
+              );
             },
-            child: Container(
-              height: 63,
-              width: 170,
-              color: Colors.white,
-              child: Center(
-                child: Text(
-                  images[index],
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ),
+            child: GlassContainer(text: images[index]),
           );
         },
         separatorBuilder: (_, __) => HorizontalSpacing(10),

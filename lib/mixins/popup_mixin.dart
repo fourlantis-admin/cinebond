@@ -15,17 +15,13 @@ mixin PopupMixin<T extends StatefulWidget> on State<T> {
     showDialog(
       context: context,
       barrierDismissible: true,
+      barrierColor: Colors.transparent,
       builder: (context) {
         return Center(
           child: Material(
             color: Colors.transparent,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GenericPopup(
                 title: title,
                 message: message,

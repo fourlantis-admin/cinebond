@@ -12,6 +12,7 @@ class NetworkManager {
   String BASE_URL_MOVIE = "https://api.themoviedb.org/";
   Duration timeoutDuration = const Duration(seconds: 7);
   ResponseHandling responseHandling = ResponseHandling();
+  var responseJson;
   StoreManager storeManager = StoreManager();
   //***************************************************************
   // ********************* POST METHOD *****************************
@@ -22,6 +23,14 @@ class NetworkManager {
     bool isAuth = false,
   }) async {
     dio.options.connectTimeout = timeoutDuration;
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestBody: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
     String url = BASE_URL + urlExtension;
     context.read<LoadingCubit>().show();
     try {
@@ -31,21 +40,13 @@ class NetworkManager {
         options: Options(headers: {"Content-Type": "application/json"}),
       );
       print("RESPONSE *******: " + response.toString());
-      if (response.data["status"] == ResponseMessage.SUCCESS) {
-        String authToken =
-            response.headers.map["authorization"]?[0].toString() ?? "";
-        await storeManager.saveToken(authToken);
-        return response.data["data"];
-      } else {
-        throw response;
-      }
+      responseJson = await responseHandling.returnResponse(response, context);
     } catch (e) {
-      print("ERROR *********: " + e.toString());
       await responseHandling.handleExceptions(e, context);
     } finally {
       context.read<LoadingCubit>().hide();
-      print("final");
     }
+    return responseJson;
   }
 
   Future<dynamic> getBase(BuildContext context, String urlExtension) async {

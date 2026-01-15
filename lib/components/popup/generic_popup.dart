@@ -28,59 +28,80 @@ class GenericPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildTitle(context),
-          VerticalSpacing(16), // Space between title and icon
-          if (icon != null) ...[
-            _buildIcon(),
-            VerticalSpacing(16), // Space after the icon
-          ],
-          _buildMessage(context),
-          VerticalSpacing(16),
-          _buildPrimaryButton(context, screenHeight),
-          VerticalSpacing(16),
-          if (isSecondaryActive) ...[
-            // Space between primary and secondary button
-            _buildSecondaryButton(context, screenHeight),
-            VerticalSpacing(16)
-          ],
-          
-        ],
+
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColor.MAIN_BLUE,
+              AppColor.MAIN_PURPLE,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(5.5), // BORDER THICKNESS
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // BACKGROUND
+            borderRadius: BorderRadius.circular(18),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTitle(context),
+              VerticalSpacing(16),
+              if (icon != null) ...[
+                _buildIcon(),
+                VerticalSpacing(16),
+              ],
+              _buildMessage(context),
+              VerticalSpacing(20),
+              _buildPrimaryButton(context, screenHeight),
+              VerticalSpacing(16),
+              if (isSecondaryActive) ...[
+                _buildSecondaryButton(context, screenHeight),
+                VerticalSpacing(8),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  // Title Widget
   Widget _buildTitle(BuildContext context) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.headlineSmall,
+      style: Theme.of(context)
+          .textTheme
+          .headlineSmall
+          ?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
-  // Message Widget
   Widget _buildMessage(BuildContext context) {
     return Text(
       message,
       textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18),
+      style: Theme.of(context)
+          .textTheme
+          .bodyLarge
+          ?.copyWith(fontSize: 16, color: Colors.black87),
     );
   }
 
-  // Icon Widget with Fixed Size
   Widget _buildIcon() {
     return SizedBox(
-      width: 37,
-      height: 37,
+      width: 40,
+      height: 40,
       child: icon!,
     );
   }
 
-  // Primary Button Widget
   Widget _buildPrimaryButton(BuildContext context, double screenHeight) {
     return PrimaryButton(
       btnHeight: screenHeight * 0.06,
@@ -95,21 +116,22 @@ class GenericPopup extends StatelessWidget {
     );
   }
 
-  // Secondary Button Widget
   Widget _buildSecondaryButton(BuildContext context, double screenHeight) {
-    return TextButton(onPressed: (){
-       if (onSecondaryButtonPressed != null) {
+    return TextButton(
+      onPressed: () {
+        if (onSecondaryButtonPressed != null) {
           onSecondaryButtonPressed!(secondaryButtonText ?? "");
         } else {
           Navigator.pop(context);
         }
-    }, child: Text(
-          secondaryButtonText ?? "",
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? AppColor.BLUE
-                  : AppColor.BLUE),
-        ),);
-    
+      },
+      child: Text(
+        secondaryButtonText ?? "",
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AppColor.BLUE,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+    );
   }
 }

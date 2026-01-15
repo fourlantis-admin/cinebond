@@ -1,10 +1,11 @@
 import 'package:cinebond/controller/movie/favorites_movie_cubit.dart';
+import 'package:cinebond/splash_view.dart';
+import 'package:cinebond/view/create-profile/create_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cinebond/controller/form/form_cubit.dart';
 import 'package:cinebond/controller/theme/theme_cubit.dart';
-import 'package:cinebond/splash_view.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/utils/theme/app_theme.dart';
 
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
 
-          home: SplashView(title: "cinebond"),
+          home: SplashView(title: ""),
         );
       },
     );

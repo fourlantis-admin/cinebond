@@ -11,17 +11,5 @@ class ResponseCode {
 class ResponseMessage {
   static const String SUCCESS = "SUCCESS"; 
   static const String FAIL = "FAIL"; 
-  static const String NO_CONTENT =  "success with not content";// success with no data (no content)
-  static const String BAD_REQUEST =   "Kötü istek. tekrar deneyin veya yetkili bir kişiyle görüşün";// failure, API rejected request
-  static const String UNAUTHORIZED = "Kullanıcı yetkisi bulunmamakta, tekrar deneyin veya yetkili bir kişiyle görüşün"; // failure, user is not authorised
-  static const String FORBIDDEN ="Forbidden request. try again later";//  failure, API rejected request
-  static const String INTERNAL_SERVER_ERROR = "Bir sorun oluştu, tekrar deneyin veya yetkili bir kişiyle görüşün"; // failure, crash in server side
-  static const String NOT_FOUND ="Bulunamadı, tekrar deneyin veya yetkili bir kişiyle görüşün"; // failure, crash in server side
-  static const String EXPIRED_TOKEN ="Oturum süreniz dolmuştur. Tekrar giriş yapın"; // failure, crash in server side
-
-  static const String CONNECT_TIMEOUT = "Bağlantı Hatası, tekrar deneyin veya yetkili bir kişiyle görüşün";
-  static const String CANCEL = "İptal edildi, tekrar deneyin veya yetkili bir kişiyle görüşün";
-  static const String RECIEVE_TIMEOUT = "Bağlantı Hatası, tekrar deneyin veya yetkili bir kişiyle görüşün";
-  static const String SEND_TIMEOUT = "Bağlantı Hatası, tekrar deneyin veya yetkili bir kişiyle görüşün";
-  static const String BAD_CERTIFICATE = "Kötü sertifika, tekrar deneyin veya yetkili bir kişiyle görüşün";
+  static const String CONNECT_TIMEOUT = "Bağlantı Hatası, daha sonra tekrar deneyiniz.";
 }

@@ -16,7 +16,6 @@ class CustomTextField extends StatefulWidget {
   final void Function()? onTap;
   final TextEditingController? textController;
   final bool? isDense;
-
   final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({

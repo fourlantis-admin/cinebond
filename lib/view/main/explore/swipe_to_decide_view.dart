@@ -55,6 +55,7 @@ class _SwipeToDecideViewState extends State<SwipeToDecideView> with ViewStateMix
         providers: [
           BlocProvider.value(value: _swipeCubit),
           BlocProvider.value(value: _pageCubit),
+          
         ],
         child: BlocListener<SwipeCubit<MovieResp>, SwipeState<MovieResp>>(
           listenWhen: (p, c) => p.shouldLoadMore != c.shouldLoadMore,
