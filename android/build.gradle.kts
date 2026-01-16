@@ -5,6 +5,11 @@ allprojects {
     }
 }
 
+plugins {
+    id("com.google.gms.google-services") version "4.4.4" apply false
+}
+
+// ⬇️ Flutter’ın build dir ayarları (BUNLAR KALACAK)
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")
@@ -15,6 +20,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

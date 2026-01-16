@@ -1,4 +1,4 @@
-import 'package:cinebond/components/items/movie_poster_item.dart';
+import 'package:cinebond/components/movie/movie_poster_item.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

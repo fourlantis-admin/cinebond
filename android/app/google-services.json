@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "478512670229",
+    "project_id": "cinebond-1b2a2",
+    "storage_bucket": "cinebond-1b2a2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478512670229:android:949ac53ca77aee6260501c",
+        "android_client_info": {
+          "package_name": "com.fourlantis.cinebond"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478512670229-ihbhnahooej77n1iq9h4fiee7ib2hoed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fourlantis.cinebond",
+            "certificate_hash": "69a332acb50ce2d9b5d213f99f14a4756faf536e"
+          }
+        },
+        {
+          "client_id": "478512670229-1n74cofl0ialgj3a1edreu4i2dm74ken.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdQgYx6NmCwA-BeLB9cgG9EZ3zwDNwgew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478512670229-1n74cofl0ialgj3a1edreu4i2dm74ken.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

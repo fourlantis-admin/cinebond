@@ -1,7 +1,10 @@
 import 'package:cinebond/components/glass-container/glass_container.dart';
-import 'package:cinebond/components/items/movie_poster_item.dart';
+import 'package:cinebond/components/movie/movie_poster_item.dart';
+import 'package:cinebond/components/searchbar/custom_searchbar.dart';
+import 'package:cinebond/components/textfield/custom_title_widget.dart';
 import 'package:cinebond/controller/explore/explore_cubit.dart';
 import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:cinebond/view/main/explore/swipe_to_decide_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
@@ -51,33 +54,15 @@ class _ExploreViewState extends State<ExploreView> {
 
   Widget _buildFeed(BuildContext context) {
     return Column(
-      children: [_buildSearchBar(context), VerticalSpacing(5), _buildGrid()],
-    );
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6),
-      child: TextField(
-        onChanged: (value) {
-          context.read<ExploreCubit>().searchMovie(context, value);
-        },
-        style: TextStyle(color: const Color.fromARGB(255, 221, 220, 220)),
-        decoration: InputDecoration(
-          hintText: "Film ara...",
-          hintStyle: TextStyle(color: const Color.fromARGB(255, 221, 220, 220)),
-          prefixIcon: Icon(
-            Icons.search,
-            color: const Color.fromARGB(255, 221, 220, 220),
-          ),
-          filled: true,
-          fillColor: const Color.fromARGB(255, 34, 10, 67),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
+      children: [
+        CustomSearchBar(
+          onChanged: (value) {
+            context.read<ExploreCubit>().searchMovie(context, value);
+          },
         ),
-      ),
+        VerticalSpacing(15),
+        _buildGrid(),
+      ],
     );
   }
 
@@ -117,10 +102,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Widget _buildTitleWidgetFinder(BuildContext context) {
-    return Text(
-      "Bugün ne izlesem?",
-      style: Theme.of(context).textTheme.titleMedium,
-    );
+    return CustomTitleWidget(title: "Bugün ne izlesem?",);
   }
 
   Widget _buildListWidgetFinder() {
@@ -129,7 +111,6 @@ class _ExploreViewState extends State<ExploreView> {
       "SPIN_TO_DECIDE_IMAGE",
       "TOURNAMENT_MODE",
     ];
-
     return Expanded(
       child: ListView.separated(
         itemCount: images.length,
@@ -138,13 +119,13 @@ class _ExploreViewState extends State<ExploreView> {
           return GestureDetector(
             onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => SwipeToDecideView()),
+                MaterialPageRoute(builder: (_) => const SwipeToDecideView()),
               );
             },
             child: GlassContainer(text: images[index]),
           );
         },
-        separatorBuilder: (_, __) => HorizontalSpacing(10),
+        separatorBuilder: (_, __) => HorizontalSpacing(3),
       ),
     );
   }

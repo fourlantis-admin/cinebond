@@ -1,4 +1,4 @@
-import 'package:cinebond/components/items/movie_poster_item.dart';
+import 'package:cinebond/components/movie/movie_poster_item.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/movie/favorites_movie_cubit.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';

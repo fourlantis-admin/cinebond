@@ -79,7 +79,7 @@ class GenericPopup extends StatelessWidget {
       style: Theme.of(context)
           .textTheme
           .headlineSmall
-          ?.copyWith(fontWeight: FontWeight.bold),
+          ?.copyWith(color: Colors.black),
     );
   }
 

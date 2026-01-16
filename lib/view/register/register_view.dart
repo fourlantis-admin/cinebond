@@ -114,7 +114,7 @@ class _RegisterViewState extends State<RegisterView>
               ),
               body: SingleChildScrollView(
                 child: Container(
-                  height: MediaQuery.of(context).size.height - 50,
+                  height: MediaQuery.of(context).size.height - 150,
                   child: Column(
                     children: [
                       Container(
@@ -150,7 +150,7 @@ class _RegisterViewState extends State<RegisterView>
                 _buildPhoneField(context),
                 VerticalSpacing(spacing),
                 _buildPasswordField(context),
-                VerticalSpacing(spacing),
+                Spacer(),
                 _buildLoginButton(context),
               ],
             ),

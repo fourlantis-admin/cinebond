@@ -56,17 +56,31 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> loginWithGoogle() async {
-    emit(state.copyWith(isLoading: true));
+  emit(state.copyWith(isLoading: true));
+  try {
+    final auth = await googleRepo.signInWithGoogle();
 
-    try {
-      final response = await googleRepo.signInWithGoogle();
-      print(response);
+    if (auth == null) {
       emit(state.copyWith(isLoading: false));
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
+      return;
     }
-    finally {
-      emit(state.copyWith(isLoading: false));
-    }
+
+    print("Google ID Token: ${auth.idToken}");
+    //print("Google Access Token: ${auth.accessToken}");
+
+    emit(state.copyWith(
+      isLoading: false,
+      success: true,
+    ));
+  } catch (e) {
+    emit(state.copyWith(
+      isLoading: false,
+      errorResp: ErrorResp(
+        error: "Hata",
+        error_description: "Lütfen internetinizi kontrol ediniz veya daha sonra tekrar deneyiniz",
+      ),
+    ));
   }
+}
+
 }

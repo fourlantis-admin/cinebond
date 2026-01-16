@@ -1,47 +1,53 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cinebond/service/network_manager.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
-  NetworkManager networkManager = NetworkManager();
-  final _googleSignIn = GoogleSignIn.instance;
-  bool _isGoogleSignInInitialized = false;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _initialized = false;
 
-  AuthService() {
-    _initializeGoogleSignIn();
+  Future<void> _ensureInitialized() async {
+    if (_initialized) return;
+
+    await _googleSignIn.initialize(); // ✅ parametresiz
+    _initialized = true;
   }
 
-  Future<void> _initializeGoogleSignIn() async {
+  /// 🔐 SADECE GOOGLE TOKEN AL
+  Future<GoogleSignInAuthentication?> signInWithGoogle() async {
     try {
-      await _googleSignIn.initialize();
-      _isGoogleSignInInitialized = true;
+      await _ensureInitialized();
+
+      final GoogleSignInAccount account =
+          await _googleSignIn.authenticate(
+        scopeHint: ['email', 'profile'], // ✅ BURADA
+      );
+
+      final GoogleSignInAuthentication auth =
+          await account.authentication;
+
+      // 🔥 SENİN İSTEDİĞİN ŞEYLER
+      print("EMAIL: ${account.email}");
+      print("ID TOKEN: ${auth.idToken}");
+      //print("ACCESS TOKEN: ${auth.idToken}");
+
+      return auth;
+    } on GoogleSignInException catch (e) {
+      print(
+        'Google Sign-In error '
+        'code=${e.code.name} '
+        'description=${e.description}',
+      );
+      rethrow;
     } catch (e) {
-      print('Failed to initialize Google Sign-In: $e');
+      print("Unexpected Google Sign-In error: $e");
+      rethrow;
     }
   }
 
-  /// Always check Google sign in initialization before use
-  Future<void> _ensureGoogleSignInInitialized() async {
-    if (!_isGoogleSignInInitialized) {
-      await _initializeGoogleSignIn();
-    }
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
   }
-
-  Future<GoogleSignInAccount> signInWithGoogle() async {
-  await _ensureGoogleSignInInitialized();
-  try {
-    // authenticate() throws exceptions instead of returning null
-    final GoogleSignInAccount account = await _googleSignIn.authenticate(
-      scopeHint: ['email'],  // Specify required scopes
-    );
-    return account;
-  } on GoogleSignInException catch (e) {
-    print('Google Sign In error: code: ${e. code.name} description:${e.description} details:${e.details}, error: e');
-    rethrow;
-  } catch (error) {
-    print('Unexpected Google Sign-In error: $error');
-    rethrow;
-  }
-}
-  
-  
 }

@@ -80,7 +80,8 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 IconButton(
-                                  icon: Icon(
+                                  icon: 
+                                  Icon(
                                     isFavorite
                                         ? Icons.favorite
                                         : Icons.favorite_border,
@@ -95,6 +96,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                                         .toggleFavorite(widget.movie);
                                   },
                                 ),
+                                
                                 IconButton(
                                   icon: const Icon(
                                     Icons.arrow_circle_right_outlined,

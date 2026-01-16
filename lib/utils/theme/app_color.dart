@@ -5,7 +5,9 @@ class AppColor {
 
 
   static const MAIN_PURPLE = Color.fromARGB(255, 179, 0, 195);
+  static const MAIN_SOFT_PURPLE = Color.fromARGB(255, 168, 75, 177);
   static const MAIN_BLUE = Color.fromARGB(255, 0, 103, 247);
+  static const MAIN_SOFT_BLUE = Color.fromARGB(255, 55, 130, 236);
   static const MAIN_TEXT_COLOR = Color.fromARGB(255, 132, 0, 144);
   static const MAIN_SCAFFOLD_COLOR = Color.fromRGBO(20, 0, 38, 1);
   static const TEXTFIELD_TEXT_COLOR =Color.fromARGB(255, 59, 58, 58);

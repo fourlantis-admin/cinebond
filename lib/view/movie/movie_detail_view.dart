@@ -9,13 +9,6 @@ import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
-
-//********************************************************************************************************* */
-//Detail service will be requested. However, get movies service was contain enough information about movies
-//so i did not use any info from detail service in this view
-//********************************************************************************************************* */
-
 class MovieDetailView extends StatelessWidget {
   final String movieId;
 
@@ -31,17 +24,19 @@ class MovieDetailView extends StatelessWidget {
             ..fetchMovieDetail(context, movieId),
       child: HomeBaseView(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: BlocBuilder<MovieDetailCubit, MovieDetailState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             final movie = state.movie;
             if (movie == null) {
-              return Center(
+              return const Center(
                 child: Text(
                   "Film detayı yüklenemedi",
                   style: TextStyle(color: Colors.white),
@@ -54,10 +49,10 @@ class MovieDetailView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPoster(movie),
-                  VerticalSpacing(25),
-                  _buildMovieInfos(movie),
-                  VerticalSpacing(50),
+                  _buildHeaderInfo(movie),
+                  VerticalSpacing(28),
                   _buildContent(movie),
+                  VerticalSpacing(40),
                 ],
               ),
             );
@@ -67,38 +62,98 @@ class MovieDetailView extends StatelessWidget {
     );
   }
 
-  // ---------------- UI PARÇALARI ----------------
+  // ================= POSTER =================
 
   Widget _buildPoster(MovieResp movie) {
     return AspectRatio(
       aspectRatio: 2 / 3,
-      child: movie.poster_path == null
-          ? Container(color: Colors.grey[800])
-          : Image.network(_imageBaseUrl + movie.poster_path!, fit: BoxFit.fill),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          movie.poster_path == null
+              ? Container(color: Colors.grey[800])
+              : Image.network(
+                  _imageBaseUrl + movie.poster_path!,
+                  fit: BoxFit.cover,
+                ),
+
+          /// 🔥 CINEMATIC GRADIENT OVERLAY
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.65),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildContent(MovieResp movie) {
+  // ================= HEADER INFO =================
+
+  Widget _buildHeaderInfo(MovieResp movie) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 20, left: 12, right: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             movie.title ?? "",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+            ),
+          ),
+          VerticalSpacing(10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                movie.release_date ?? "",
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 13,
+                ),
+              ),
+              _buildMovieRatings(movie),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= CONTENT =================
+
+  Widget _buildContent(MovieResp movie) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Özet",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
           ),
-          VerticalSpacing(20),
+          VerticalSpacing(12),
           Text(
             movie.overview ?? "Açıklama bulunamadı.",
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 15,
-              height: 1.5,
+              height: 1.6,
             ),
           ),
         ],
@@ -106,21 +161,7 @@ class MovieDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildMovieInfos(MovieResp movie) {
-    return Padding(
-      padding: EdgeInsets.only(left: 15, right: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            movie.release_date ?? "",
-            style: TextStyle(color: Colors.white70),
-          ),
-          _buildMovieRatings(movie),
-        ],
-      ),
-    );
-  }
+  // ================= RATINGS =================
 
   Widget _buildMovieRatings(MovieResp movie) {
     final vote = movie.vote_average ?? 0;
@@ -128,10 +169,10 @@ class MovieDetailView extends StatelessWidget {
     return Row(
       children: [
         MovieRatingStars(voteAverage: vote),
-        HorizontalSpacing(10),
+        HorizontalSpacing(8),
         Text(
           "${vote.toStringAsFixed(1)}/10",
-          style: TextStyle(color: Colors.white70),
+          style: const TextStyle(color: Colors.white70),
         ),
       ],
     );
