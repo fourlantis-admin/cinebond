@@ -1,4 +1,3 @@
-import 'package:cinebond/components/swipe/tinder_environment.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';

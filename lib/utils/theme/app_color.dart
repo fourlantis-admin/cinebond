@@ -2,19 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 
 class AppColor {
+static const Color NEON_PURPLE = Color(0xFF9B5CFF);
+static const Color PURPLE_NEON = Color.fromARGB(255, 166, 114, 249);
 
+  static const Color DARK_BG = Color(0xFF050505);
+  static const Color DARK_CARD = Color(0xFF0B0B0B);
+  static const Color TINDER_BUTTON_COLOR = Color.fromARGB(255, 28, 28, 28);
 
-  static const MAIN_PURPLE = Color.fromARGB(255, 179, 0, 195);
+  static const Color WHITE = Colors.white;
+
+  static const MAIN_PURPLE = Color.fromARGB(255, 194, 1, 211);
   static const MAIN_SOFT_PURPLE = Color.fromARGB(255, 168, 75, 177);
   static const MAIN_BLUE = Color.fromARGB(255, 0, 103, 247);
   static const MAIN_SOFT_BLUE = Color.fromARGB(255, 55, 130, 236);
+
   static const MAIN_TEXT_COLOR = Color.fromARGB(255, 132, 0, 144);
   static const MAIN_SCAFFOLD_COLOR = Color.fromRGBO(20, 0, 38, 1);
   static const TEXTFIELD_TEXT_COLOR =Color.fromARGB(255, 59, 58, 58);
 
   static const BLUE = const Color.fromRGBO(0, 123, 255, 1);
   static const GREY = const Color.fromRGBO(74, 74, 74, 1);
-  static const WHITE = const Color.fromRGBO(255, 255, 255, 1);
   static const GREEN = const Color.fromRGBO(68, 168, 50, 1);
   static const ORANGE = const Color.fromRGBO(247, 165, 67, 1);
   static const YELLOW = const Color.fromRGBO(243, 197, 143, 1);

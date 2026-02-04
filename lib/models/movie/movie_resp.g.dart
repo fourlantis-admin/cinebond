@@ -7,33 +7,27 @@ part of 'movie_resp.dart';
 // **************************************************************************
 
 MovieResp _$MovieRespFromJson(Map<String, dynamic> json) => MovieResp(
-  adult: json['adult'] as bool?,
-  backdrop_path: json['backdrop_path'] as String?,
-  id: (json['id'] as num?)?.toInt(),
-  original_language: json['original_language'] as String?,
-  original_title: json['original_title'] as String?,
-  overview: json['overview'] as String?,
-  popularity: (json['popularity'] as num?)?.toDouble(),
-  poster_path: json['poster_path'] as String?,
-  release_date: json['release_date'] as String?,
-  title: json['title'] as String?,
-  video: json['video'] as bool?,
-  vote_average: (json['vote_average'] as num?)?.toDouble(),
-  vote_count: (json['vote_count'] as num?)?.toInt(),
+  id: (json['id'] as num?)?.toDouble(),
+  name: json['name'] as String?,
+  duration: (json['duration'] as num?)?.toDouble(),
+  year: (json['year'] as num?)?.toDouble(),
+  imageUrl: json['imageUrl'] as String?,
+  rating: json['rating'] as String?,
+  description: json['description'] as String?,
+  updatedAt: json['updatedAt'] as String?,
+  categories: (json['categories'] as List<dynamic>?)
+      ?.map((e) => CategoriesResp.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$MovieRespToJson(MovieResp instance) => <String, dynamic>{
-  'adult': instance.adult,
-  'backdrop_path': instance.backdrop_path,
   'id': instance.id,
-  'original_language': instance.original_language,
-  'original_title': instance.original_title,
-  'overview': instance.overview,
-  'popularity': instance.popularity,
-  'poster_path': instance.poster_path,
-  'release_date': instance.release_date,
-  'title': instance.title,
-  'video': instance.video,
-  'vote_average': instance.vote_average,
-  'vote_count': instance.vote_count,
+  'name': instance.name,
+  'duration': instance.duration,
+  'year': instance.year,
+  'imageUrl': instance.imageUrl,
+  'rating': instance.rating,
+  'description': instance.description,
+  'updatedAt': instance.updatedAt,
+  'categories': instance.categories,
 };

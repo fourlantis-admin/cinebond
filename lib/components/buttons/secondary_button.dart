@@ -54,6 +54,20 @@ class SecondaryButton extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: AppColor.WHITE,
+              boxShadow: isButtonDisabled
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColor.NEON_PURPLE.withOpacity(0.55),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: AppColor.MAIN_BLUE.withOpacity(0.35),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                    ),
+                  ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,9 @@
-import 'package:cinebond/components/swipe/tinder_environment.dart';
+import 'package:cinebond/view/main/match/tinder_environment.dart';
+import 'package:cinebond/controller/swipe/swipe_cubit.dart';
+import 'package:cinebond/utils/loading/loading_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cinebond/view/main/match/tinder_environment.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:flutter/material.dart';
@@ -21,24 +26,44 @@ class _MatchViewState extends State<MatchView> {
     _swipeCubit = SwipeCubit<Profile>(
       items: [
         Profile(
-          nameAge: "Kubi, 25",
-          occupation: "UX Designer",
-          interests: "Hiking, Coffee, Indie Music",
-          color: const Color(0xFFFF6384),
-          picture: Image.network(
-            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-            fit: BoxFit.cover,
-          ),
+          nameAge: "Emre, 28",
+          occupation: "Breaking Bad • Fight Club",
+          interests: "One Piece",
+          color: Colors.black,
+          pictures: [
+            Image.network(
+              'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+              fit: BoxFit.cover,
+            ),
+          ],
         ),
         Profile(
-          nameAge: "Burak, 28",
-          occupation: "Data Scientist",
-          interests: "Astronomy, Cats, 80s Movies",
-          color: const Color(0xFF4BC0C0),
-          picture: Image.network(
-            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-            fit: BoxFit.cover,
-          ),
+          nameAge: "Ayşe, 18",
+          occupation: "Breaking Bad • Fight Club",
+          interests: "One Piece",
+          color: Colors.black,
+          pictures: [
+            Image.network(
+              'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+              fit: BoxFit.cover,
+            ),
+          ],
         ),
       ],
     );
@@ -55,8 +80,7 @@ class _MatchViewState extends State<MatchView> {
     return BlocProvider.value(
       value: _swipeCubit,
       child: BlocListener<SwipeCubit<Profile>, SwipeState<Profile>>(
-        listenWhen: (prev, curr) =>
-            prev.shouldLoadMore != curr.shouldLoadMore,
+        listenWhen: (prev, curr) => prev.shouldLoadMore != curr.shouldLoadMore,
         listener: (context, state) async {
           if (!state.shouldLoadMore) return;
 
@@ -66,37 +90,39 @@ class _MatchViewState extends State<MatchView> {
 
           _swipeCubit.addItems([
             Profile(
-              nameAge: "Brit, 22",
-              occupation: "Senior Developer",
-              interests: "Godfather II, LOTR, Harry Potter",
-              color: const Color(0xFF6C63FF),
-              picture: Image.network(
-                'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Profile(
-              nameAge: "Alex, 27",
-              occupation: "Product Manager",
-              interests: "Cinema, UX, Startups",
-              color: const Color(0xFF00BFA6),
-              picture: Image.network(
-                'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-                fit: BoxFit.cover,
-              ),
+              nameAge: "Fatma, 28",
+              occupation: "Breaking Bad • Fight Club",
+              interests: "One Piece",
+              color: Colors.black,
+              pictures: [
+                Image.network(
+                  'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+                  fit: BoxFit.cover,
+                ),
+                Image.network(
+                  'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
+                  fit: BoxFit.cover,
+                ),
+                Image.network(
+                  'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+                  fit: BoxFit.cover,
+                ),
+              ],
             ),
           ]);
 
           context.read<LoadingCubit>().hide();
         },
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.78,
-          child: TinderEnvironment<Profile>(
-            getColor: (p) => p.color,
-            getImage: (p) => p.picture,
-            getTitle: (p) => p.nameAge,
-            getSubtitle: (p) => p.occupation,
-            getDescription: (p) => p.interests,
+        child: SafeArea(
+          child: SizedBox.expand(
+            child: TinderEnvironment<Profile>(
+              cardHeightRatio: 0.92,
+              bottomPadding: 30,
+              getColor: (_) => Colors.black,
+              getTitle: (p) => p.nameAge,
+              getSubtitle: (p) => p.occupation,
+              getDescription: (p) => p.interests,
+            ),
           ),
         ),
       ),

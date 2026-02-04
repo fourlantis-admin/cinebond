@@ -66,14 +66,11 @@ class CreateProfileState {
       surname: surname ?? this.surname,
       age: age ?? this.age,
       gender: gender ?? this.gender,
-
       movies: movies ?? this.movies,
       filteredMovies: filteredMovies ?? this.filteredMovies,
       selectedMovies: selectedMovies ?? this.selectedMovies,
       isMoviesLoading: isMoviesLoading ?? this.isMoviesLoading,
-
       profilePhoto: profilePhoto ?? this.profilePhoto,
-
       isValid: isValid ?? this.isValid,
     );
   }
@@ -127,7 +124,7 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
     emit(state.copyWith(isMoviesLoading: true));
 
     try {
-      final movies = await movieRepo.getMovies(context);
+      final movies = await movieRepo.getMovies(context,pageNumber: "1",filter: "");
 
       emit(
         state.copyWith(
@@ -150,7 +147,7 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
     emit(state.copyWith(isMoviesLoading: true));
 
     try {
-      final results = await movieRepo.searchMovies(context, query);
+      final results = await movieRepo.getMovies(context,filter: query);
 
       emit(state.copyWith(filteredMovies: results, isMoviesLoading: false));
     } catch (_) {

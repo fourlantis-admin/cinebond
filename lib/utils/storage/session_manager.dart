@@ -14,6 +14,8 @@ class SessionManager {
     var store = StoreManager();
     user = await store.getUser();
     authToken = await store.getToken();
+    print(user);
+    print(authToken);
   }
 
 

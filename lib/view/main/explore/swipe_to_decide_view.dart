@@ -1,4 +1,4 @@
-import 'package:cinebond/components/swipe/tinder_environment.dart';
+import 'package:cinebond/view/main/match/tinder_environment.dart';
 import 'package:cinebond/controller/explore/swipe_to_decide_cubit.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
@@ -20,7 +20,6 @@ class SwipeToDecideView extends StatefulWidget {
 class _SwipeToDecideViewState extends State<SwipeToDecideView> with ViewStateMixin {
   late final SwipeCubit<MovieResp> _swipeCubit;
   late final SwipeToDecideCubit _pageCubit;
-  static const String _imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
   @override
   void initState() {
@@ -76,10 +75,6 @@ class _SwipeToDecideViewState extends State<SwipeToDecideView> with ViewStateMix
               cardHeightRatio: 0.83,
               bottomPadding: 80,
               getColor: (m) => Colors.black,
-              getImage: (m) => Image.network(
-                _imageBaseUrl + m.poster_path!,
-                fit: BoxFit.fill,
-              ),
               getTitle: (m) => "",
               getSubtitle: (m) => "",
               getDescription: (m) =>  "",

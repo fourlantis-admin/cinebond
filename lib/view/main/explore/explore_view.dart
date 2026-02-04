@@ -1,10 +1,8 @@
 import 'package:cinebond/components/glass-container/glass_container.dart';
 import 'package:cinebond/components/movie/movie_poster_item.dart';
-import 'package:cinebond/components/searchbar/custom_searchbar.dart';
-import 'package:cinebond/components/textfield/custom_title_widget.dart';
+import 'package:cinebond/components/story-board/story_board.dart';
 import 'package:cinebond/controller/explore/explore_cubit.dart';
 import 'package:cinebond/service/movie/movie_repository.dart';
-import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:cinebond/view/main/explore/swipe_to_decide_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
@@ -42,6 +40,7 @@ class _ExploreViewState extends State<ExploreView> {
         builder: (context) {
           return Column(
             children: [
+              Expanded(flex: 3, child: _buildStoryBoard(context)),
               Expanded(flex: 5, child: _buildFilmFinderRow(context)),
               VerticalSpacing(20),
               Expanded(flex: 12, child: _buildFeed(context)),
@@ -54,12 +53,20 @@ class _ExploreViewState extends State<ExploreView> {
 
   Widget _buildFeed(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomSearchBar(
-          onChanged: (value) {
-            context.read<ExploreCubit>().searchMovie(context, value);
-          },
-        ),
+        Text(
+            "Trending",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        // CustomSearchBar(
+        //   onChanged: (value) {
+        //     context.read<ExploreCubit>().searchMovie(context, value);
+        //   },
+        // ),
         VerticalSpacing(15),
         _buildGrid(),
       ],
@@ -88,21 +95,29 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
+  Widget _buildStoryBoard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+            "Suggestions",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          VerticalSpacing(10),
+        StoryBoard(storyCount: 6),
+      ],
+    );
+  }
   // ================= FILM FINDER =================
 
   Widget _buildFilmFinderRow(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTitleWidgetFinder(context),
-        VerticalSpacing(13),
-        _buildListWidgetFinder(),
-      ],
+      children: [_buildListWidgetFinder()],
     );
-  }
-
-  Widget _buildTitleWidgetFinder(BuildContext context) {
-    return CustomTitleWidget(title: "Bugün ne izlesem?",);
   }
 
   Widget _buildListWidgetFinder() {
@@ -122,7 +137,15 @@ class _ExploreViewState extends State<ExploreView> {
                 MaterialPageRoute(builder: (_) => const SwipeToDecideView()),
               );
             },
-            child: GlassContainer(text: images[index]),
+            child: GlassContainer(
+              image: NetworkImage(
+                "https://ntvb.tmsimg.com/assets/p15791706_v_h8_ai.jpg?w=1280&h=720",
+              ),
+              titleSmall: "Günün Sorusu:",
+              titleLarge: "Hangi film?",
+              optionLeft: "Soruyu çöz puanını kazan!",
+              optionRight: "250 pts",
+            ),
           );
         },
         separatorBuilder: (_, __) => HorizontalSpacing(3),

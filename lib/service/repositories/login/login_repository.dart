@@ -14,7 +14,7 @@ class LoginRepository {
       BuildContext context, LoginReq req) async {
     try {
       final response = await manager.post(
-          context, req.toMap(), "api/auth/login");
+          context, req.toMap(), "api/auth/login",isAuth: true);
       print(response);
       return LoginResp.fromJson(response);
     } catch (e) {

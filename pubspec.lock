@@ -845,6 +845,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  simple_neon:
+    dependency: "direct main"
+    description:
+      name: simple_neon
+      sha256: "9b8982da0e24f5fb3f027daa060afa21b0fa1e6b887a19f9b5560eaf44a5b8d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

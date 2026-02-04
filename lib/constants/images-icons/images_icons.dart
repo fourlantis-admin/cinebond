@@ -24,6 +24,7 @@ class ImagesIcons {
   static const DISLIKE_ICON = "assets/icons/dislike_icon.svg";
   static const SUPERLIKE_ICON = "assets/icons/superlike_icon.svg";
   static const RETURN_ICON = "assets/icons/return_icon.svg";
+  static const POPCORN_ICON = "assets/icons/popcorn_icon.svg";
 
   //IMAGES
   static const SPIN_TO_DECIDE_IMAGE = "assets/images/spin_to_decide.png";

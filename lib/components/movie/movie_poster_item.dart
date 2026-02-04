@@ -20,7 +20,6 @@ class MoviePosterItem extends StatefulWidget {
 class _MoviePosterItemState extends State<MoviePosterItem> {
   bool _isOverlayVisible = false;
 
-  static const String _imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
   static const double posterHeight = 180;
   static const double overlayHeightRatio = 0.58;
@@ -35,7 +34,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
 
   @override
   Widget build(BuildContext context) {
-    final posterPath = widget.movie.poster_path;
+    final posterPath = widget.movie.imageUrl;
 
     return BlocBuilder<FavoritesCubit, List<MovieResp>>(
       builder: (context, favorites) {
@@ -52,7 +51,7 @@ class _MoviePosterItemState extends State<MoviePosterItem> {
                   image: posterPath == null
                       ? null
                       : DecorationImage(
-                          image: NetworkImage(_imageBaseUrl + posterPath),
+                          image: NetworkImage(posterPath),
                           fit: BoxFit.cover,
                         ),
                 ),

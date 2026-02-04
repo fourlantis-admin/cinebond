@@ -12,14 +12,14 @@ class MovieRepository {
   BuildContext context;
 
   MovieRepository({required this.context});
-   Future<List<MovieResp>> getMovies(BuildContext context,
+   Future<List<MovieResp>> getMovies(BuildContext context,{String pageNumber = "0",String filter = ""}
    ) async {
   try {
-    final response = await networkManager.getBase(
+    final response = await networkManager.get(
       context,
-      "3/movie/top_rated?api_key=6ae6730e286206d3f389407fd34b9509",
+      "api/movies?pageNumber=${pageNumber}&pageSize=15&sortedField=name&sort=ASC&filters[name]=${filter}",
     );
-    final List list = response["results"];
+    final List list = response;
     print(list);
     return list
         .map((e) => MovieResp.fromJson(e))
@@ -29,28 +29,44 @@ class MovieRepository {
   }
 }
 
- Future<List<MovieResp>> searchMovies(BuildContext context,
-  String searchQuery ) async {
+Future<MovieResp> getMovieDetail(BuildContext context,
+  String movieId ) async {
   try {
-    final response = await networkManager.getBase(
+    final response = await networkManager.get(
       context,
-      "3/search/movie?api_key=6ae6730e286206d3f389407fd34b9509&query=${searchQuery}"
+      "api/movies/${movieId}"
     );
-    final List list = response["results"];
-    print(list);
-    return list
-        .map((e) => MovieResp.fromJson(e))
-        .toList();
+    print(response);
+    return MovieResp.fromJson(response);
+      
   } catch (e) {
     rethrow;
   }
 }
-Future<MovieResp> getMovieDetail(BuildContext context,
-  String movie_id ) async {
+
+Future<MovieResp> setFavoriteMovie(BuildContext context,
+  String movieId ) async {
   try {
-    final response = await networkManager.getBase(
+    final response = await networkManager.post(
       context,
-      "3/movie/${movie_id}?api_key=6ae6730e286206d3f389407fd34b9509"
+      movieId,
+      "api/profile/favorite-movies"
+    );
+    print(response);
+    return MovieResp.fromJson(response);
+      
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<MovieResp> removeFavoriteMovie(BuildContext context,
+  String movieId ) async {
+  try {
+    final response = await networkManager.post(
+      context,
+      movieId,
+      "api/profile/favorite-movies"
     );
     print(response);
     return MovieResp.fromJson(response);

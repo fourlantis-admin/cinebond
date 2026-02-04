@@ -40,7 +40,7 @@ class NetworkManager {
         options: Options(headers: {"Content-Type": "application/json"}),
       );
       print("RESPONSE *******: " + response.toString());
-      responseJson = await responseHandling.returnResponse(response, context);
+      responseJson = await responseHandling.returnResponse(response, context,isAuth: isAuth);
     } catch (e) {
       await responseHandling.handleExceptions(e, context);
     } finally {
@@ -49,25 +49,27 @@ class NetworkManager {
     return responseJson;
   }
 
-  Future<dynamic> getBase(BuildContext context, String urlExtension) async {
+   Future<dynamic> get(
+    BuildContext context,
+    String urlExtension, {
+    bool isAuth = false,
+  }) async {
     dio.options.connectTimeout = timeoutDuration;
-    String url = BASE_URL_MOVIE + urlExtension;
+    var store = StoreManager();
+    String url = BASE_URL + urlExtension;
     context.read<LoadingCubit>().show();
-
     try {
       final response = await dio.get(
         url,
-        options: Options(headers: {"Content-Type": "application/json"}),
+        options: Options(headers: {"Content-Type": "application/json","Authorization":"Bearer ${await store.getToken()}"}),
       );
       print("RESPONSE *******: " + response.toString());
-      return responseHandling.returnResponseMovie(response);
+      responseJson = await responseHandling.returnResponse(response, context);
     } catch (e) {
-      print("ERROR *********: " + e.toString());
       await responseHandling.handleExceptions(e, context);
     } finally {
       context.read<LoadingCubit>().hide();
-
-      print("final");
     }
+    return responseJson;
   }
 }

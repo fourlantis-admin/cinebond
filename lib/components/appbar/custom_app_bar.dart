@@ -1,49 +1,99 @@
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
+import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:cinebond/view/login/login_view.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final StoreManager storeManager = StoreManager();
+
   final bool isBackButtonActive;
-  final bool isLeaderboardIconActive;
-  final bool isExitIconActive;
   final VoidCallback? onBackButtonPressed;
 
   CustomAppBar({
-    Key? key,
+    super.key,
     this.isBackButtonActive = false,
-    this.isLeaderboardIconActive = false,
-    this.isExitIconActive = false,
     this.onBackButtonPressed,
-  }) : super(key: key);
+  });
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 55,
+      toolbarHeight: 56,
       backgroundColor: Colors.black,
-      elevation: 0,
-      title: _buildTitle(isBackButtonActive),
+      title: _buildLeft(context),
       actions: [
-        _buildLeaderBoardIcon(context),
-        HorizontalSpacing(16),
-        _buildExitIcon(context),
+        _pointsBadge(),
+        HorizontalSpacing(25),
+        //_buildNotificationIcon(),
+        //_buildSignOutIcon(context),
+        _avatarPlaceholder(context),
+        HorizontalSpacing(15),
+
       ],
     );
   }
 
-  _buildLeaderBoardIcon(BuildContext context) {
-    return GestureDetector(
-      onTap: () => print("Leaderboard Icon Tapped"),
-      child: Image.asset(ImagesIcons.LEADERBOARD_ICON, height: 45),
+  // ================= LEFT =================
+
+  Widget _buildLeft(BuildContext context) {
+    if (isBackButtonActive) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: onBackButtonPressed,
+      );
+    }
+
+    return const Text(
+      "CINEBOND",
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.2,
+      ),
     );
   }
 
-  _buildExitIcon(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        print("Exit Icon Tapped");
+  // ================= POINTS BADGE =================
+
+  Widget _pointsBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 12, 12, 12).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColor.PURPLE_NEON.withOpacity(0.6),
+          width: 2
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height:20,width: 20,
+            child: SvgPicture.asset(ImagesIcons.POPCORN_ICON)),
+          SizedBox(width: 6),
+          Text(
+            "350 pts",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= ICON PLACEHOLDER =================
+
+  Widget _buildSignOutIcon(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+         print("Exit Icon Tapped");
         await storeManager.removeToken();
         await storeManager.removeUserInfo();
         Navigator.of(context).pushAndRemoveUntil(
@@ -51,19 +101,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           (Route<dynamic> route) => false,
         );
       },
-      child: Image.asset(ImagesIcons.EXIT_ICON, height: 55),
+      icon: Icon(Icons.exit_to_app)
+    );
+  }
+  Widget _buildNotificationIcon() {
+    return IconButton(
+      onPressed: (){
+      
+      },
+      icon: Icon(Icons.notification_add)
     );
   }
 
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  // ================= AVATAR =================
 
-  Widget? _buildTitle(bool isBackButtonActive) {
-    return isBackButtonActive
-        ? IconButton(
-            icon: Icon(Icons.arrow_back, size: 30),
-            onPressed: onBackButtonPressed,
-          )
-        : Image.asset(ImagesIcons.LOGO, height: 55);
-  }
+Widget _avatarPlaceholder(BuildContext context) {
+  return GestureDetector(
+    onTap: (){
+      Scaffold.of(context).openEndDrawer();
+    },
+    child: Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: AppColor.PURPLE_NEON.withOpacity(0.25),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColor.PURPLE_NEON.withOpacity(0.8),
+          width: 1.2,
+        ),
+      ),
+      child: const Icon(Icons.person, size: 18, color: Colors.white),
+    ),
+  );
+}
+
+
+  @override
+  Size get preferredSize => const Size.fromHeight(56);
 }

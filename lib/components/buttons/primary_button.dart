@@ -46,7 +46,7 @@ class PrimaryButton extends StatelessWidget {
                 ? null
                 : const LinearGradient(
                     colors: [
-                      AppColor.MAIN_PURPLE,
+                      AppColor.NEON_PURPLE,
                       AppColor.MAIN_BLUE,
                     ],
                     begin: Alignment.topLeft,
@@ -61,14 +61,20 @@ class PrimaryButton extends StatelessWidget {
                   : Colors.transparent,
               width: 1.8,
             ),
-            boxShadow: [
-              if (!isButtonDisabled)
-                BoxShadow(
-                  color: scheme.primary.withOpacity(0.28),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-            ],
+            boxShadow: isButtonDisabled
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColor.MAIN_PURPLE.withOpacity(0.55),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: AppColor.MAIN_BLUE.withOpacity(0.35),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                    ),
+                  ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

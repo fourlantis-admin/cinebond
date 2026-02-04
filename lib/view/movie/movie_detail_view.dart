@@ -70,10 +70,10 @@ class MovieDetailView extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          movie.poster_path == null
+          movie.imageUrl == null
               ? Container(color: Colors.grey[800])
               : Image.network(
-                  _imageBaseUrl + movie.poster_path!,
+                  _imageBaseUrl + movie.imageUrl!,
                   fit: BoxFit.cover,
                 ),
 
@@ -104,7 +104,7 @@ class MovieDetailView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            movie.title ?? "",
+            movie.name ?? "",
             style: const TextStyle(
               color: Colors.white,
               fontSize: 26,
@@ -117,7 +117,7 @@ class MovieDetailView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                movie.release_date ?? "",
+                movie.year.toString(),
                 style: const TextStyle(
                   color: Colors.white60,
                   fontSize: 13,
@@ -149,7 +149,7 @@ class MovieDetailView extends StatelessWidget {
           ),
           VerticalSpacing(12),
           Text(
-            movie.overview ?? "Açıklama bulunamadı.",
+            movie.description ?? "Açıklama bulunamadı.",
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 15,
@@ -164,14 +164,15 @@ class MovieDetailView extends StatelessWidget {
   // ================= RATINGS =================
 
   Widget _buildMovieRatings(MovieResp movie) {
-    final vote = movie.vote_average ?? 0;
+    final vote = movie.rating ?? 0;
 
     return Row(
       children: [
-        MovieRatingStars(voteAverage: vote),
+        MovieRatingStars(voteAverage: double.parse(vote.toString())),
         HorizontalSpacing(8),
         Text(
-          "${vote.toStringAsFixed(1)}/10",
+          "",
+          //"${vote.toStringAsFixed(1)}/10",
           style: const TextStyle(color: Colors.white70),
         ),
       ],

@@ -12,9 +12,9 @@ class StoreManager {
   //***************************** */
   Future saveUser(LoginResp? resp) async {
     var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((prefs) async {
       var info = json.encode(resp?.toJson());
-      prefs.setString(USER_RESP, info);
+      await prefs.setString(USER_RESP, info);
       session.loadUserInfo();
     });
   }
@@ -28,8 +28,8 @@ class StoreManager {
   }
   Future removeUserInfo() async {
     var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.remove(USER_RESP);
+    SharedPreferences.getInstance().then((prefs) async {
+      await prefs.remove(USER_RESP);
       session.loadUserInfo();
     });
   }
@@ -48,15 +48,15 @@ class StoreManager {
 
   Future saveToken(String token) async {
     var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setString(AUTH_TOKEN, token);
+    SharedPreferences.getInstance().then((prefs) async {
+      await prefs.setString(AUTH_TOKEN, token);
       session.loadUserInfo();
     });
   }
     Future removeToken() async {
     var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.remove(AUTH_TOKEN);
+    SharedPreferences.getInstance().then((prefs) async {
+      await prefs.remove(AUTH_TOKEN);
       session.loadUserInfo();
     });
   }

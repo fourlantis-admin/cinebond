@@ -1,40 +1,31 @@
 
+import 'package:cinebond/models/movie/categories_resp.dart';
 import 'package:json_annotation/json_annotation.dart';
-
 
 
 part 'movie_resp.g.dart';
 @JsonSerializable(includeIfNull: true)
 class MovieResp{
-  bool? adult;
-  String? backdrop_path;
-  int? id;
-  String? original_language;
-  String? original_title;
-  String? overview;
-  double? popularity;
-  String? poster_path;
-  String? release_date;
-  String? title;
-  bool? video;
-  double? vote_average;
-  int? vote_count;
-
+  double? id;
+  String? name;
+  double? duration;
+  double? year;
+  String? imageUrl;
+  String? rating;
+  String? description;
+  String? updatedAt;
+  List<CategoriesResp>? categories;
 
   MovieResp({
-    this.adult,
-    this.backdrop_path,
     this.id,
-    this.original_language,
-    this.original_title,
-    this.overview,
-    this.popularity,
-    this.poster_path,
-    this.release_date,
-    this.title,
-    this.video,
-    this.vote_average,
-    this.vote_count
+    this.name,
+    this.duration,
+    this.year,
+    this.imageUrl,
+    this.rating,
+    this.description,
+    this.updatedAt,
+    this.categories,
   });
 
   factory MovieResp.fromJson(Map<String, dynamic> json) =>

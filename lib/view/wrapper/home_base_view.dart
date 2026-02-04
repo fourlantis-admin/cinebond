@@ -1,6 +1,10 @@
+import 'package:cinebond/components/drawer/drawer_card.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
+import 'package:cinebond/components/swipe/tinder_profile_card.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
+import 'package:cinebond/models/login/login_resp.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
+import 'package:cinebond/utils/storage/session_manager.dart';
 import 'package:cinebond/view/login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
@@ -34,7 +38,11 @@ class HomeBaseView extends StatefulWidget {
 }
 
 class _HomeBaseViewState extends State<HomeBaseView> with ViewStateMixin {
-
+  SessionManager sessionManager = SessionManager();
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +50,7 @@ class _HomeBaseViewState extends State<HomeBaseView> with ViewStateMixin {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: widget.bottomNavigationBar,
       extendBody: true,
+      endDrawer: ProfileDrawer(user: sessionManager.user ?? LoginResp()),
       appBar: widget.isAppbarActive ? widget.appBar ?? buildAppbarWithBackButton() : null,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),

@@ -42,6 +42,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   ExploreCubit({required this.repo}) : super(ExploreState.initial());
 
+  //*********************** GET MOVIES **************************** */
   Future<void> getMovies(BuildContext context) async {
     emit(state.copyWith(isLoading: true));
     try {
@@ -56,7 +57,8 @@ class ExploreCubit extends Cubit<ExploreState> {
       emit(state.copyWith(isLoading: false));
     }
   }
-
+  
+  //*********************** SEARCH MOVIES **************************** */
   Future<void> searchMovie(BuildContext context, String query) async {
     if (query.length < 2) {
       emit(state.copyWith(filteredMovies: state.movies));
@@ -66,7 +68,7 @@ class ExploreCubit extends Cubit<ExploreState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final results = await repo.searchMovies(context, query);
+      final results = await repo.getMovies(context, filter: query);
 
       emit(state.copyWith(
         filteredMovies: results,
