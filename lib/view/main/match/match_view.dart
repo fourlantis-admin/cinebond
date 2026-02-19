@@ -3,11 +3,6 @@ import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cinebond/view/main/match/tinder_environment.dart';
-import 'package:cinebond/controller/swipe/swipe_cubit.dart';
-import 'package:cinebond/utils/loading/loading_cubit.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MatchView extends StatefulWidget {
   const MatchView({super.key});
@@ -27,9 +22,10 @@ class _MatchViewState extends State<MatchView> {
       items: [
         Profile(
           nameAge: "Emre, 28",
-          occupation: "Breaking Bad • Fight Club",
-          interests: "One Piece",
+          occupation: "Software Developer",
+          interests: "One Piece, LOTR, Inception",
           color: Colors.black,
+          horoscope: "Aries",
           pictures: [
             Image.network(
               'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
@@ -47,8 +43,9 @@ class _MatchViewState extends State<MatchView> {
         ),
         Profile(
           nameAge: "Ayşe, 18",
-          occupation: "Breaking Bad • Fight Club",
-          interests: "One Piece",
+          occupation: "Software Developer",
+          interests: "One Piece, LOTR, Inception",
+          horoscope: "Taurus",
           color: Colors.black,
           pictures: [
             Image.network(
@@ -83,17 +80,15 @@ class _MatchViewState extends State<MatchView> {
         listenWhen: (prev, curr) => prev.shouldLoadMore != curr.shouldLoadMore,
         listener: (context, state) async {
           if (!state.shouldLoadMore) return;
-
           context.read<LoadingCubit>().show();
-
           await Future.delayed(const Duration(seconds: 2));
-
           _swipeCubit.addItems([
             Profile(
               nameAge: "Fatma, 28",
-              occupation: "Breaking Bad • Fight Club",
-              interests: "One Piece",
+              occupation: "Software Developer",
+              interests: "One Piece, LOTR, Inception",
               color: Colors.black,
+              horoscope: "Leo",
               pictures: [
                 Image.network(
                   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',

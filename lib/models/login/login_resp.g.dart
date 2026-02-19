@@ -16,6 +16,9 @@ LoginResp _$LoginRespFromJson(Map<String, dynamic> json) => LoginResp(
   lastLoginAt: json['lastLoginAt'] as String?,
   createdAt: json['createdAt'] as String?,
   updatedAt: json['updatedAt'] as String?,
+  favoriteMovies: (json['favoriteMovies'] as List<dynamic>?)
+      ?.map((e) => MovieResp.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$LoginRespToJson(LoginResp instance) => <String, dynamic>{
@@ -28,4 +31,5 @@ Map<String, dynamic> _$LoginRespToJson(LoginResp instance) => <String, dynamic>{
   'lastLoginAt': instance.lastLoginAt,
   'createdAt': instance.createdAt,
   'updatedAt': instance.updatedAt,
+  'favoriteMovies': instance.favoriteMovies,
 };

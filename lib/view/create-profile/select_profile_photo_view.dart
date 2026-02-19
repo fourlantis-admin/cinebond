@@ -1,11 +1,3 @@
-import 'package:cinebond/components/profile/gender_selector.dart';
-import 'package:cinebond/components/spacings/vertical_spacing.dart';
-import 'package:cinebond/components/textfield/custom_textfield.dart';
-import 'package:cinebond/controller/create-profile/create_profile.cubit.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:io';
-
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/create-profile/create_profile.cubit.dart';
 import 'package:flutter/material.dart';

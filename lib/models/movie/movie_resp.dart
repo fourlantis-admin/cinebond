@@ -6,7 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'movie_resp.g.dart';
 @JsonSerializable(includeIfNull: true)
 class MovieResp{
-  double? id;
+  int? id;
   String? name;
   double? duration;
   double? year;
@@ -15,6 +15,7 @@ class MovieResp{
   String? description;
   String? updatedAt;
   List<CategoriesResp>? categories;
+  bool? isFavorite;
 
   MovieResp({
     this.id,
@@ -26,6 +27,7 @@ class MovieResp{
     this.description,
     this.updatedAt,
     this.categories,
+    this.isFavorite
   });
 
   factory MovieResp.fromJson(Map<String, dynamic> json) =>

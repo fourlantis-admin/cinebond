@@ -2,17 +2,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+
+enum SwipeDirection { none, left, right, up }
+
 class SwipeState<T> {
   final List<T> items;
   final Offset cardOffset;
   final double rotation;
   final double swipeOpacity;
   final bool shouldLoadMore;
-
   final T? lastSwipedItem;
   final bool lastSwipeWasRight;
+  final SwipeDirection activeDirection;
+  final bool isAnimating;
 
-  SwipeState({
+  const SwipeState({
     required this.items,
     this.cardOffset = Offset.zero,
     this.rotation = 0,
@@ -20,6 +27,8 @@ class SwipeState<T> {
     this.shouldLoadMore = false,
     this.lastSwipedItem,
     this.lastSwipeWasRight = true,
+    this.activeDirection = SwipeDirection.none,
+    this.isAnimating = false,
   });
 
   SwipeState<T> copyWith({
@@ -30,6 +39,8 @@ class SwipeState<T> {
     bool? shouldLoadMore,
     T? lastSwipedItem,
     bool? lastSwipeWasRight,
+    SwipeDirection? activeDirection,
+    bool? isAnimating,
   }) {
     return SwipeState<T>(
       items: items ?? this.items,
@@ -39,24 +50,42 @@ class SwipeState<T> {
       shouldLoadMore: shouldLoadMore ?? this.shouldLoadMore,
       lastSwipedItem: lastSwipedItem ?? this.lastSwipedItem,
       lastSwipeWasRight: lastSwipeWasRight ?? this.lastSwipeWasRight,
+      activeDirection: activeDirection ?? this.activeDirection,
+      isAnimating: isAnimating ?? this.isAnimating,
     );
   }
 }
 
-
+// ─────────────────────────────────────────────
+//  CUBIT
+// ─────────────────────────────────────────────
 
 class SwipeCubit<T> extends Cubit<SwipeState<T>> {
   SwipeCubit({required List<T> items})
       : super(SwipeState<T>(items: items));
 
   final double swipeThreshold = 100;
-  final double rotationMax = pi / 10;
+  final double rotationMax = pi / 12;
 
-  void swipeRight() =>
-      _swipeLogic(const Offset(2000, -450), rotationMax);
+  // ── Public API ──────────────────────────────
 
-  void swipeLeft() =>
-      _swipeLogic(const Offset(-2000, -450), -rotationMax);
+  void swipeRight() => _swipeLogic(
+        const Offset(2200, -350),
+        rotationMax,
+        SwipeDirection.right,
+      );
+
+  void swipeLeft() => _swipeLogic(
+        const Offset(-2200, -350),
+        -rotationMax,
+        SwipeDirection.left,
+      );
+
+  void swipeSuperLike() => _swipeLogic(
+        const Offset(0, -2000),
+        0,
+        SwipeDirection.up,
+      );
 
   void addItems(List<T> newItems) {
     emit(state.copyWith(
@@ -65,16 +94,106 @@ class SwipeCubit<T> extends Cubit<SwipeState<T>> {
     ));
   }
 
-  void _swipeLogic(Offset target, double rotation) {
-    final isLike = rotation > 0;
+  void undoSwipe(BuildContext ctx) {
+    final last = state.lastSwipedItem;
+    if (last == null || state.isAnimating) return;
+
+    final width = MediaQuery.of(ctx).size.width;
+    final wasRight = state.lastSwipeWasRight;
+
+    emit(state.copyWith(
+      items: [last, ...state.items],
+      cardOffset: Offset(wasRight ? width * 1.5 : -width * 1.5, -200),
+      rotation: wasRight ? rotationMax : -rotationMax,
+      swipeOpacity: 1,
+      lastSwipedItem: null,
+      isAnimating: true,
+    ));
+
+    Future.delayed(const Duration(milliseconds: 50), () {
+      emit(state.copyWith(
+        cardOffset: Offset.zero,
+        rotation: 0,
+        swipeOpacity: 0,
+        activeDirection: SwipeDirection.none,
+        isAnimating: false,
+      ));
+    });
+  }
+
+  void onPanUpdate(DragUpdateDetails d, BuildContext ctx) {
+    if (state.isAnimating) return;
+    final newOffset = state.cardOffset + d.delta;
+    final screenW = MediaQuery.of(ctx).size.width;
+
+    final dragRatio = newOffset.dx / screenW;
+    final rotation = (rotationMax * dragRatio).clamp(-rotationMax, rotationMax);
+
+    final opacity = (newOffset.dx.abs() / (swipeThreshold * 2)).clamp(0.0, 1.0);
+
+    SwipeDirection dir = SwipeDirection.none;
+    if (newOffset.dx > 30) dir = SwipeDirection.right;
+    if (newOffset.dx < -30) dir = SwipeDirection.left;
+    if (newOffset.dy < -60 && newOffset.dx.abs() < 60) dir = SwipeDirection.up;
+
+    emit(state.copyWith(
+      cardOffset: newOffset,
+      rotation: rotation,
+      swipeOpacity: opacity,
+      activeDirection: dir,
+    ));
+  }
+
+  void onPanEnd(DragEndDetails d, BuildContext ctx) {
+    if (state.isAnimating) return;
+    final velocity = d.velocity.pixelsPerSecond;
+    final screenW = MediaQuery.of(ctx).size.width;
+
+    const minFling = 700.0;
+
+    // Super like: swipe up fast
+    if (velocity.dy < -minFling && state.cardOffset.dx.abs() < 80) {
+      swipeSuperLike();
+      return;
+    }
+
+    if (velocity.dx > minFling || state.cardOffset.dx > swipeThreshold) {
+      _swipeLogic(
+        Offset(screenW * 2, state.cardOffset.dy),
+        rotationMax,
+        SwipeDirection.right,
+      );
+      return;
+    }
+
+    if (velocity.dx < -minFling || state.cardOffset.dx < -swipeThreshold) {
+      _swipeLogic(
+        Offset(-screenW * 2, state.cardOffset.dy),
+        -rotationMax,
+        SwipeDirection.left,
+      );
+      return;
+    }
+
+    _springBack();
+  }
+
+  // ── Private ─────────────────────────────────
+
+  void _swipeLogic(Offset target, double rotation, SwipeDirection dir) {
+    if (state.isAnimating || state.items.isEmpty) return;
+
+    final isLike = dir == SwipeDirection.right;
 
     emit(state.copyWith(
       cardOffset: target,
       rotation: rotation,
       swipeOpacity: 1,
+      activeDirection: dir,
+      isAnimating: true,
     ));
 
-    Future.delayed(const Duration(milliseconds: 450), () {
+    Future.delayed(const Duration(milliseconds: 380), () {
       if (state.items.isEmpty) return;
 
       final swiped = state.items.first;
@@ -88,86 +207,18 @@ class SwipeCubit<T> extends Cubit<SwipeState<T>> {
         shouldLoadMore: updated.isEmpty,
         lastSwipedItem: swiped,
         lastSwipeWasRight: isLike,
+        activeDirection: SwipeDirection.none,
+        isAnimating: false,
       ));
     });
-  }
-
-  void undoSwipe(BuildContext ctx) {
-    final last = state.lastSwipedItem;
-    if (last == null) return;
-
-    final width = MediaQuery.of(ctx).size.width;
-
-    emit(state.copyWith(
-      items: [last, ...state.items],
-      cardOffset: Offset(
-        state.lastSwipeWasRight ? width * 1.2 : -width * 1.2,
-        -200,
-      ),
-      rotation: state.lastSwipeWasRight ? rotationMax : -rotationMax,
-      swipeOpacity: 1,
-      lastSwipedItem: null,
-    ));
-
-    Future.delayed(const Duration(milliseconds: 16), () {
-      emit(state.copyWith(
-        cardOffset: Offset.zero,
-        rotation: 0,
-        swipeOpacity: 0,
-      ));
-    });
-  }
-
-  
-
-  void onPanUpdate(DragUpdateDetails d, BuildContext ctx) {
-    final newOffset = state.cardOffset + d.delta;
-
-    final dragRatio = newOffset.dx / MediaQuery.of(ctx).size.width;
-    final rotation = (rotationMax * dragRatio).clamp(-rotationMax, rotationMax);
-
-    final opacity = (newOffset.dx.abs() / (swipeThreshold * 2.5)).clamp(
-      0.0,
-      1.0,
-    );
-
-    emit(
-      state.copyWith(
-        cardOffset: newOffset,
-        rotation: rotation,
-        swipeOpacity: opacity,
-      ),
-    );
-  }
-
-  void onPanEnd(DragEndDetails d, BuildContext ctx) {
-    final velocity = d.velocity.pixelsPerSecond.dx;
-    final width = MediaQuery.of(ctx).size.width;
-
-    const minFlingVelocity = 700;
-
-    if (velocity > minFlingVelocity || state.cardOffset.dx > swipeThreshold) {
-      _swipeLogic(
-        Offset(width * 2, state.cardOffset.dy),
-        rotationMax,
-      );
-      return;
-    }
-
-    if (velocity < -minFlingVelocity || state.cardOffset.dx < -swipeThreshold) {
-      _swipeLogic(
-        Offset(-width * 2, state.cardOffset.dy),
-        -rotationMax,
-      );
-      return;
-    }
-
-    _springBack();
   }
 
   void _springBack() {
-    emit(state.copyWith(cardOffset: Offset.zero, rotation: 0, swipeOpacity: 0));
+    emit(state.copyWith(
+      cardOffset: Offset.zero,
+      rotation: 0,
+      swipeOpacity: 0,
+      activeDirection: SwipeDirection.none,
+    ));
   }
 }
-
-

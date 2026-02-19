@@ -1,13 +1,19 @@
 import 'dart:io';
 
+import 'package:cinebond/models/user/generic_by_id_req.dart';
 import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';
 import 'package:image_picker/image_picker.dart';
 
+enum CreateProfileStatus { initial, loading, success, error }
+
 class CreateProfileState {
+  final CreateProfileStatus status;
+  final String? errorMessage;
   final int step;
 
   // STEP 0
@@ -28,6 +34,8 @@ class CreateProfileState {
   final bool isValid;
 
   const CreateProfileState({
+    this.status = CreateProfileStatus.initial,
+    this.errorMessage,
     this.step = 0,
     this.name = '',
     this.surname = '',
@@ -41,10 +49,12 @@ class CreateProfileState {
 
     this.profilePhoto,
 
-    this.isValid = false,
+    this.isValid = true,
   });
 
   CreateProfileState copyWith({
+    CreateProfileStatus? status,
+    String? errorMessage,
     int? step,
     String? name,
     String? surname,
@@ -61,6 +71,8 @@ class CreateProfileState {
     bool? isValid,
   }) {
     return CreateProfileState(
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
       step: step ?? this.step,
       name: name ?? this.name,
       surname: surname ?? this.surname,
@@ -79,6 +91,7 @@ class CreateProfileState {
 class CreateProfileCubit extends Cubit<CreateProfileState> {
   final MovieRepository movieRepo;
   final ImagePicker _picker = ImagePicker();
+  final UserRepository userRepo = UserRepository();
   CreateProfileCubit({required this.movieRepo})
     : super(const CreateProfileState());
 
@@ -104,19 +117,14 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
   }
 
   // ---------- STEP NAV ----------
-  void nextStep(BuildContext context) {
+  void nextStep() {
     if (state.step == 2) {
-       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => MainMenuView()),
-          (Route<dynamic> route) => false,
-        );
+      _completeProfile();
       return;
     }
     if (!state.isValid) return;
 
-    emit(state.copyWith(step: state.step + 1, isValid: false));
-
-   
+    emit(state.copyWith(step: state.step + 1, isValid: true));
   }
 
   // ---------- STEP 1 – MOVIES ----------
@@ -124,7 +132,11 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
     emit(state.copyWith(isMoviesLoading: true));
 
     try {
-      final movies = await movieRepo.getMovies(context,pageNumber: "1",filter: "");
+      final movies = await movieRepo.getMovies(
+        context,
+        pageNumber: "1",
+        filter: "",
+      );
 
       emit(
         state.copyWith(
@@ -147,7 +159,7 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
     emit(state.copyWith(isMoviesLoading: true));
 
     try {
-      final results = await movieRepo.getMovies(context,filter: query);
+      final results = await movieRepo.getMovies(context, filter: query);
 
       emit(state.copyWith(filteredMovies: results, isMoviesLoading: false));
     } catch (_) {
@@ -180,7 +192,19 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
 
     final file = File(image.path);
     debugPrint("📸 picked image: ${file.path}");
-    
+    GenericByIdReq req = GenericByIdReq(id: file.path);
+    try {
+      final response = await userRepo.setProfilePicture(req);
+      print(response);
+
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: CreateProfileStatus.error,
+          errorMessage: "Profil fotoğraf",
+        ),
+      );
+    }
 
     emit(state.copyWith(profilePhoto: file));
     _validate();
@@ -209,5 +233,23 @@ class CreateProfileCubit extends Cubit<CreateProfileState> {
     }
 
     emit(state.copyWith(isValid: valid));
+  }
+
+  Future<void> _completeProfile() async {
+    emit(state.copyWith(status: CreateProfileStatus.loading));
+
+    try {
+      // burada userRepo save profile vs yap
+      await Future.delayed(const Duration(seconds: 2));
+
+      emit(state.copyWith(status: CreateProfileStatus.success));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: CreateProfileStatus.error,
+          errorMessage: "Profil oluşturulamadı",
+        ),
+      );
+    }
   }
 }

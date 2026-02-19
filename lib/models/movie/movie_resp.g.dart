@@ -7,7 +7,7 @@ part of 'movie_resp.dart';
 // **************************************************************************
 
 MovieResp _$MovieRespFromJson(Map<String, dynamic> json) => MovieResp(
-  id: (json['id'] as num?)?.toDouble(),
+  id: (json['id'] as num?)?.toInt(),
   name: json['name'] as String?,
   duration: (json['duration'] as num?)?.toDouble(),
   year: (json['year'] as num?)?.toDouble(),
@@ -18,6 +18,7 @@ MovieResp _$MovieRespFromJson(Map<String, dynamic> json) => MovieResp(
   categories: (json['categories'] as List<dynamic>?)
       ?.map((e) => CategoriesResp.fromJson(e as Map<String, dynamic>))
       .toList(),
+  isFavorite: json['isFavorite'] as bool?,
 );
 
 Map<String, dynamic> _$MovieRespToJson(MovieResp instance) => <String, dynamic>{
@@ -30,4 +31,5 @@ Map<String, dynamic> _$MovieRespToJson(MovieResp instance) => <String, dynamic>{
   'description': instance.description,
   'updatedAt': instance.updatedAt,
   'categories': instance.categories,
+  'isFavorite': instance.isFavorite,
 };

@@ -2,6 +2,7 @@ import 'package:cinebond/components/navbar/custom_navbar.dart';
 import 'package:cinebond/controller/main-menu/main_menu_cubit.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
+import 'package:cinebond/view/create-profile/create_profile_view.dart';
 import 'package:cinebond/view/main/match/match_view.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _MainMenuViewState extends State<MainMenuView> with ViewStateMixin {
     super.initState();
 
     _views = [
+      //CreateProfileView(),
       ExploreView(),
       MatchView(), 
       InboxView(),

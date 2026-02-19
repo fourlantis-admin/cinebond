@@ -45,9 +45,9 @@ class GlassContainer extends StatelessWidget {
             /// 🔹 BLUR + DARK OVERLAY
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(
-                  color: Colors.black.withOpacity(0.45),
+                  color: Colors.black.withOpacity(0.35),
                 ),
               ),
             ),

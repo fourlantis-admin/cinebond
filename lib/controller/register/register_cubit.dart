@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cinebond/models/login/login_req.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
-import 'package:cinebond/service/repositories/login/login_repository.dart';
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 
 class RegisterState {
   final bool isLoading;
@@ -34,7 +34,7 @@ class RegisterState {
 
 
 class RegisterCubit extends Cubit<RegisterState> {
-  final LoginRepository repo;
+  final UserRepository repo;
   final GoogleAuthService googleRepo;
   final StoreManager storeManager;
   RegisterCubit(this.repo,this.googleRepo,this.storeManager) : super(RegisterState());

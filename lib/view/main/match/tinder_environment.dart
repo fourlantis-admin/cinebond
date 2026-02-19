@@ -1,18 +1,19 @@
-import 'package:cinebond/components/buttons/tinder_button.dart';
-import 'package:cinebond/components/swipe/match_pill.dart';
-import 'package:cinebond/constants/images-icons/images_icons.dart';
-import 'package:cinebond/controller/swipe/swipe_cubit.dart';
-import 'package:cinebond/utils/theme/app_color.dart';
+import 'dart:ui';
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
+import 'package:cinebond/components/swipe/empty_state.dart';
+import 'package:cinebond/components/swipe/interest_pills.dart';
+import 'package:cinebond/components/swipe/round_button.dart';
+import 'package:cinebond/components/swipe/stamp_label.dart';
+import 'package:cinebond/components/swipe/verified_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
-
+import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 class Profile {
   final String nameAge;
   final String occupation;
   final String interests;
   final Color color;
-
+  final String? horoscope;
   final List<Widget> pictures;
 
   Profile({
@@ -21,50 +22,63 @@ class Profile {
     required this.interests,
     required this.color,
     required this.pictures,
+    this.horoscope,
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  TINDER ENVIRONMENT  –  birebir aynı parametre imzası, Bumble kalitesi UI
+// ─────────────────────────────────────────────────────────────────────────────
+
 class TinderEnvironment<T> extends StatelessWidget {
-  TinderEnvironment({
+   TinderEnvironment({
     super.key,
     required this.getColor,
     required this.getTitle,
     required this.getSubtitle,
     required this.getDescription,
     this.cardHeightRatio = 0.9,
-    this.bottomPadding = 20,
+    this.bottomPadding = 40,
+    this.onEmpty,
   });
 
+  /// Orijinal parametre isimleri korundu ↓
   final Color Function(T) getColor;
   final String Function(T) getTitle;
   final String Function(T) getSubtitle;
-  final String Function(T) getDescription;
-
+  final String Function(T) getDescription; // interests string → pill'e çevrilir
   final double cardHeightRatio;
   final double bottomPadding;
+  final Widget? onEmpty;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SwipeCubit<T>, SwipeState<T>>(
       builder: (context, state) {
+        if (state.items.isEmpty) {
+          return onEmpty ??  EmptyState();
+        }
         return LayoutBuilder(
           builder: (context, constraints) {
-            final cardHeight = constraints.maxHeight * cardHeightRatio;
-
+            final cardH = constraints.maxHeight * cardHeightRatio;
             return Stack(
               children: [
                 SizedBox(
-                  height: cardHeight,
+                  height: cardH,
                   width: constraints.maxWidth,
-                  child: _buildCards(context, state),
+                  child: CardStack<T>(
+                    constraints: constraints,
+                    getTitle: getTitle,
+                    getSubtitle: getSubtitle,
+                    getDescription: getDescription,
+                    getColor: getColor,
+                  ),
                 ),
-
-                /// BOTTOM BUTTONS
                 Positioned(
-                  bottom: 20,
-                  left: 40,
-                  right: 40,
-                  child: _buildButtons(context),
+                  bottom: 5,
+                  left: 0,
+                  right: 0,
+                  child: ActionRow<T>(),
                 ),
               ],
             );
@@ -73,274 +87,408 @@ class TinderEnvironment<T> extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildCards(BuildContext context, SwipeState<T> state) {
+
+class CardStack<T> extends StatelessWidget {
+   CardStack({
+    required this.constraints,
+    required this.getTitle,
+    required this.getSubtitle,
+    required this.getDescription,
+    required this.getColor,
+  });
+
+  final BoxConstraints constraints;
+  final String Function(T) getTitle;
+  final String Function(T) getSubtitle;
+  final String Function(T) getDescription;
+  final Color Function(T) getColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<SwipeCubit<T>>().state;
+    final visible = state.items.take(3).toList();
+
     return Stack(
-      children: state.items
-          .take(4)
-          .toList()
+      children: visible
           .asMap()
           .entries
-          .map((e) => _buildCard(context, e.key, e.value))
+          .map((e) => _buildCard(context, e.key, e.value, state))
           .toList()
           .reversed
           .toList(),
     );
   }
 
-  Widget _buildCard(BuildContext context, int index, T item) {
+  Widget _buildCard(
+    BuildContext context,
+    int index,
+    T item,
+    SwipeState<T> state,
+  ) {
     final cubit = context.read<SwipeCubit<T>>();
     final isTop = index == 0;
-    final cardKey = GlobalKey<_ProfileCardState>();
+
+    final progress = (state.cardOffset.dx.abs() / 200).clamp(0.0, 1.0);
+    final backScale = isTop
+        ? 1.0
+        : lerpDouble(0.94 - index * 0.025, 1.0, progress)!;
+    final backDY =
+        isTop ? 0.0 : lerpDouble(index * 14.0, 0.0, progress)!;
+
+    final dx = isTop ? state.cardOffset.dx : 0.0;
+    final dy = isTop ? state.cardOffset.dy : backDY;
+    final rot = isTop ? state.rotation : 0.0;
+
+    final cardKey = GlobalKey<SwipeCardState<T>>();
 
     return Positioned.fill(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-
-        onTapUp: (details) {
-          if (!isTop) return;
-
-          final box = context.findRenderObject() as RenderBox;
-          final localX = box.globalToLocal(details.globalPosition).dx;
-          final width = box.size.width;
-
-          final state = cardKey.currentState;
-          if (state == null) return;
-
-          if (localX > width / 2) {
-            state.next();
-          } else {
-            state.prev();
-          }
-        },
+        onTapUp: isTop
+            ? (d) {
+                final box = context.findRenderObject() as RenderBox;
+                final lx = box.globalToLocal(d.globalPosition).dx;
+                if (lx > constraints.maxWidth / 2) {
+                  cardKey.currentState?.next();
+                } else {
+                  cardKey.currentState?.prev();
+                }
+              }
+            : null,
         onPanUpdate: isTop ? (d) => cubit.onPanUpdate(d, context) : null,
         onPanEnd: isTop ? (d) => cubit.onPanEnd(d, context) : null,
-
-        child: Transform(
+        child: AnimatedContainer(
+          duration: state.isAnimating && isTop
+              ?  Duration(milliseconds: 380)
+              : Duration.zero,
+          curve: Curves.easeOutQuart,
           transform: Matrix4.identity()
-            ..setTranslationRaw(
-              isTop ? cubit.state.cardOffset.dx : 0.0,
-              isTop ? cubit.state.cardOffset.dy : 0.0,
-              0.0,
-            )
-            ..rotateZ(isTop ? cubit.state.rotation : 0),
-          child: ProfileCard(
+            ..translate(dx, dy)
+            ..rotateZ(rot)
+            ..scale(backScale),
+          transformAlignment: Alignment.center,
+          child: SwipeCard<T>(
             key: cardKey,
-            profile: item as Profile,
+            item: item,
             isTop: isTop,
+            getTitle: getTitle,
+            getSubtitle: getSubtitle,
+            getDescription: getDescription,
+            getColor: getColor,
           ),
         ),
       ),
     );
   }
-
-  Widget _buildButtons(BuildContext context) {
-    final cubit = context.read<SwipeCubit<T>>();
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        TinderButton(
-          customColor: AppColor.TINDER_BUTTON_COLOR,
-          onClickBtnFunc: cubit.swipeLeft,
-          icon: SvgPicture.asset(ImagesIcons.DISLIKE_ICON,color: Colors.white,),
-        ),
-        TinderButton(
-          customColor: AppColor.TINDER_BUTTON_COLOR,
-          onClickBtnFunc: () => cubit.undoSwipe(context),
-          icon: SvgPicture.asset(ImagesIcons.RETURN_ICON,color: Colors.white,),
-          btnHeight: 60,
-          btnWidth: 60,
-        ),
-        TinderButton(
-          customColor: AppColor.TINDER_BUTTON_COLOR,
-          onClickBtnFunc: cubit.swipeRight,
-          icon: SvgPicture.asset(ImagesIcons.LIKE_ICON,color: Colors.white),
-        ),
-      ],
-    );
-  }
 }
 
-class ProfileCard extends StatefulWidget {
-  final Profile profile;
-  final bool isTop;
+// ─────────────────────────────────────────────────────────────────────────────
+//  SWIPE CARD
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const ProfileCard({super.key, required this.profile, required this.isTop});
+class SwipeCard<T> extends StatefulWidget {
+   SwipeCard({
+    super.key,
+    required this.item,
+    required this.isTop,
+    required this.getTitle,
+    required this.getSubtitle,
+    required this.getDescription,
+    required this.getColor,
+  });
+
+  final T item;
+  final bool isTop;
+  final String Function(T) getTitle;
+  final String Function(T) getSubtitle;
+  final String Function(T) getDescription;
+  final Color Function(T) getColor;
 
   @override
-  State<ProfileCard> createState() => _ProfileCardState();
+  State<SwipeCard<T>> createState() => SwipeCardState<T>();
 }
 
-class _ProfileCardState extends State<ProfileCard> {
-  final ValueNotifier<int> photoIndex = ValueNotifier<int>(0);
+class SwipeCardState<T> extends State<SwipeCard<T>> {
+  final _photoIndex = ValueNotifier<int>(0);
 
-  static const Color _inactiveIcon = Color(0x66FFFFFF);
+  List<Widget> get _pictures {
+    final item = widget.item;
+    if (item is Profile) return item.pictures;
+    return [];
+  }
 
   void next() {
-    if (photoIndex.value < widget.profile.pictures.length - 1) {
-      photoIndex.value++;
-    }
+    if (_photoIndex.value < _pictures.length - 1) _photoIndex.value++;
   }
 
   void prev() {
-    if (photoIndex.value > 0) {
-      photoIndex.value--;
-    }
+    if (_photoIndex.value > 0) _photoIndex.value--;
+  }
+
+  @override
+  void dispose() {
+    _photoIndex.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.watch<SwipeCubit<Profile>>();
-    final dx = cubit.state.cardOffset.dx;
+    final state = context.watch<SwipeCubit<T>>().state;
+    final dx = widget.isTop ? state.cardOffset.dx : 0.0;
+    final pictures = _pictures;
+    final accent = widget.getColor(widget.item);
 
-    final liking = dx > 20;
-    final disliking = dx < -20;
+    // Stamp opacity
+    final likeOpacity = (dx / 100).clamp(0.0, 1.0);
+    final nopeOpacity = (-dx / 100).clamp(0.0, 1.0);
+    final superOpacity = widget.isTop &&
+            state.activeDirection == SwipeDirection.up
+        ? 1.0
+        : 0.0;
 
-    return Stack(
-      children: [
-        /// FOTO
-        ValueListenableBuilder<int>(
-          valueListenable: photoIndex,
-          builder: (_, index, __) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(26),
-              child: SizedBox.expand(child: widget.profile.pictures[index]),
-            );
-          },
-        ),
+    // interests string → liste
+    final rawDesc = widget.getDescription(widget.item);
+    final tags = rawDesc
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
 
-        Positioned(top: 25, left: 0, right: 0, child: MatchPill()),
-
-        /// FOTO BAR
-        Positioned(
-          top: 14,
-          left: 16,
-          right: 16,
-          child: ValueListenableBuilder<int>(
-            valueListenable: photoIndex,
-            builder: (_, index, __) {
-              return Row(
-                children: List.generate(
-                  widget.profile.pictures.length,
-                  (i) => Expanded(
-                    child: Container(
-                      height: 3,
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      decoration: BoxDecoration(
-                        color: i == index
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (pictures.isNotEmpty)
+            ValueListenableBuilder<int>(
+              valueListenable: _photoIndex,
+              builder: (_, idx, __) => AnimatedSwitcher(
+                duration:  Duration(milliseconds: 220),
+                child: SizedBox.expand(
+                  key: ValueKey(idx),
+                  child: pictures[idx],
                 ),
-              );
-            },
-          ),
-        ),
+              ),
+            )
+          else
+            ColoredBox(color: accent.withOpacity(0.4)),
 
-        /// GRADIENT
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.35),
-                  Colors.black.withOpacity(0.75),
-                ],
+          if (pictures.length > 1)
+            Positioned(
+              top: 12,
+              left: 12,
+              right: 12,
+              child: ValueListenableBuilder<int>(
+                valueListenable: _photoIndex,
+                builder: (_, idx, __) => Row(
+                  children: List.generate(pictures.length, (i) {
+                    return Expanded(
+                      child: AnimatedContainer(
+                        duration:  Duration(milliseconds: 200),
+                        height: 3.5,
+                        margin:  EdgeInsets.symmetric(horizontal: 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: i == idx
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.35),
+                          boxShadow: i == idx
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.25),
+                                    blurRadius: 4,
+                                  )
+                                ]
+                              : null,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+
+           Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.4, 0.7, 1.0],
+                  colors: [
+                    Colors.transparent,
+                    Color(0x88000000),
+                    Color(0xDD000000),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
 
-        /// ❌
-        Positioned(
-          left: 12,
-          top: 0,
-          bottom: 0,
-          child: Center(child: _sideActionIcon(Icons.close_rounded, disliking)),
-        ),
-
-        /// ❤️
-        Positioned(
-          right: 12,
-          top: 0,
-          bottom: 0,
-          child: Center(child: _sideActionIcon(Icons.favorite_rounded, liking)),
-        ),
-
-        Positioned(
-          bottom: 88,
-          left: 20,
-          right: 20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.profile.nameAge,
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+          // ── Profil bilgisi ──
+          Positioned(
+            bottom: 24,
+            left: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.getTitle(widget.item),
+                        style:  TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                          shadows: [
+                            Shadow(blurRadius: 10, color: Colors.black54)
+                          ],
+                        ),
+                      ),
+                    ),
+                    VerifiedBadge(),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 14),
-              Wrap(
-                spacing: 10,
-                runSpacing: 8,
-                children: _buildInterestPills(
-                  widget.profile.occupation,
-                  widget.profile.interests,
+                VerticalSpacing( 4),
+                Text(
+                  widget.getSubtitle(widget.item),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withOpacity(0.85),
+                  ),
                 ),
-              ),
-            ],
+                if (tags.isNotEmpty) ...[
+                  VerticalSpacing( 14),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: tags
+                        .take(4)
+                        .map((t) => InterestPill(label: t, accent: accent))
+                        .toList(),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-      ],
-    );
-  }
 
-  Widget _sideActionIcon(IconData icon, bool active) {
-    return ClipOval(
-      child: Container(
-        width: 64,
-        height: 64,
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.35),
-          border: Border.all(color: Colors.white.withOpacity(0.15)),
-        ),
-        child: Icon(
-          icon,
-          size: 36,
-          color: active ? Colors.white : _inactiveIcon,
-        ),
+          // ── LIKE stamp ──
+          Positioned(
+            top: 56,
+            left: 20,
+            child: AnimatedOpacity(
+              opacity: likeOpacity,
+              duration: Duration.zero,
+              child: Transform.rotate(
+                angle: -0.3,
+                child: StampLabel(label: 'LIKE', color:  Color(0xFF00E676)),
+              ),
+            ),
+          ),
+
+          // ── NOPE stamp ──
+          Positioned(
+            top: 56,
+            right: 20,
+            child: AnimatedOpacity(
+              opacity: nopeOpacity,
+              duration: Duration.zero,
+              child: Transform.rotate(
+                angle: 0.3,
+                child: StampLabel(label: 'NOPE', color:  Color(0xFFFF1744)),
+              ),
+            ),
+          ),
+
+          // ── SUPER LIKE stamp ──
+          Positioned(
+            top: 56,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+              opacity: superOpacity,
+              duration:  Duration(milliseconds: 100),
+              child:  Center(
+                child: StampLabel(
+                  label: 'SUPER\nLIKE',
+                  color: Color(0xFF2979FF),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  List<Widget> _buildInterestPills(String subtitle, String description) {
-    final interests = [
-      subtitle,
-      ...description.split(',').map((e) => e.trim()),
-    ];
+// ─────────────────────────────────────────────────────────────────────────────
+//  ACTION ROW
+// ─────────────────────────────────────────────────────────────────────────────
 
-    return interests.map((text) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          color: AppColor.NEON_PURPLE.withOpacity(0.9),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.white, fontSize: 13),
-        ),
-      );
-    }).toList();
+class ActionRow<T> extends StatelessWidget {
+   ActionRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<SwipeCubit<T>>();
+    final hasUndo =
+        context.watch<SwipeCubit<T>>().state.lastSwipedItem != null;
+
+    return Padding(
+      padding:  EdgeInsets.symmetric(horizontal: 26),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          RoundButton(
+            onTap: cubit.swipeLeft,
+            icon: Icons.close_rounded,
+            color:  Color(0xFFFF4B6E),
+            size: 64,
+            iconSize: 45,
+            glowColor:  Color(0x44FF4B6E),
+          ),
+          RoundButton(
+            onTap: hasUndo ? () => cubit.undoSwipe(context) : null,
+            icon: Icons.replay_rounded,
+            color: hasUndo ?  Color(0xFFFFB300) : Colors.grey.shade300,
+            size: 50,
+            iconSize: 30,
+            glowColor:
+                hasUndo ?  Color(0x44FFB300) : Colors.transparent,
+          ),
+          RoundButton(
+            onTap: cubit.swipeSuperLike,
+            icon: Icons.star_rounded,
+            color:  Color(0xFF2979FF),
+            size: 50,
+            iconSize: 30,
+            glowColor:  Color(0x442979FF),
+          ),
+          RoundButton(
+            onTap: cubit.swipeRight,
+            icon: Icons.favorite_rounded,
+            color:  Color(0xFF00E676),
+            size: 64,
+            iconSize: 45,
+            glowColor:  Color(0x4400E676),
+          ),
+        ],
+      ),
+    );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  SHARED WIDGETS
+// ─────────────────────────────────────────────────────────────────────────────
+
+

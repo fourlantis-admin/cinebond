@@ -16,7 +16,7 @@ import 'package:cinebond/extensions/validators.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/models/login/login_req.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
-import 'package:cinebond/service/repositories/login/login_repository.dart';
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
@@ -39,7 +39,7 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
       providers: [
         BlocProvider<LoginCubit>(
           create: (_) => LoginCubit(
-            LoginRepository(),
+            UserRepository(),
             GoogleAuthService(),
             StoreManager(),
           ),
@@ -156,7 +156,7 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
       password: "123456",
     );
     try {
-      context.read<LoginCubit>().authenticate(req, context);
+      context.read<LoginCubit>().authenticate(req);
     } catch (e) {
       print(e);
     }

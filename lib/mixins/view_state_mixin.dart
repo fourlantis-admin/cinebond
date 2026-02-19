@@ -21,7 +21,18 @@ buildAppbarWithLogo(
       isBackButtonActive: false,
     );
   }
-  
+   buildAppbarWithOnlyBackButton(
+      {
+      VoidCallback? onBackButtonPressed,
+}) {
+    return CustomAppBar(
+      isBackButtonActive: true,
+      onBackButtonPressed: onBackButtonPressed,
+      isPointBadgeActive:  false,
+      isAvatarActive: false,
+      isLogoActive: false,
+    );
+  }
 
 
 }

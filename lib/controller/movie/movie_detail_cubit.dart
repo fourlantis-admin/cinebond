@@ -16,7 +16,7 @@ class MovieDetailState {
   factory MovieDetailState.initial() {
     return const MovieDetailState(
       movie: null,
-      isLoading: true,
+      isLoading: false,
     );
   }
 
@@ -37,22 +37,22 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
   MovieDetailCubit({required this.repo})
       : super(MovieDetailState.initial());
 
-  Future<void> fetchMovieDetail(
-    BuildContext context,
-    String movieId,
-  ) async {
-    emit(state.copyWith(isLoading: true));
+  // Future<void> fetchMovieDetail(
+  //   BuildContext context,
+  //   String movieId,
+  // ) async {
+  //   emit(state.copyWith(isLoading: true));
 
-    try {
-      final movie = await repo.getMovieDetail(context, movieId);
+  //   try {
+  //     final movie = await repo.getMovieDetail(context, movieId);
 
-      emit(state.copyWith(
-        movie: movie,
-        isLoading: false,
-      ));
-    } catch (_) {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
+  //     emit(state.copyWith(
+  //       movie: movie,
+  //       isLoading: false,
+  //     ));
+  //   } catch (_) {
+  //     emit(state.copyWith(isLoading: false));
+  //   }
+  // }
 }
 

@@ -18,7 +18,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SplashCubit(StoreManager())..start(),
+      create: (_) => SplashCubit(StoreManager())..start(context),
       child: BlocListener<SplashCubit, SplashState>(
         listenWhen: (prev, curr) => curr.timeoutReached,
         listener: (context, state) {

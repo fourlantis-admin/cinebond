@@ -1,3 +1,5 @@
+import 'package:cinebond/controller/movie/movie_detail_cubit.dart';
+import 'package:cinebond/models/movie/movie_resp.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'login_resp.g.dart';
@@ -13,8 +15,7 @@ class LoginResp {
   final String? lastLoginAt;
   final String? createdAt;
   final String? updatedAt;
-
-
+  final List<MovieResp>? favoriteMovies;
   LoginResp({
     this.id,
     this.firstName,
@@ -25,6 +26,7 @@ class LoginResp {
     this.lastLoginAt,
     this.createdAt,
     this.updatedAt,
+    this.favoriteMovies
   });
 
   factory LoginResp.fromJson(Map<String, dynamic> json) =>

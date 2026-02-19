@@ -15,6 +15,7 @@ class StoreManager {
     SharedPreferences.getInstance().then((prefs) async {
       var info = json.encode(resp?.toJson());
       await prefs.setString(USER_RESP, info);
+      print(prefs);
       session.loadUserInfo();
     });
   }
@@ -22,6 +23,9 @@ class StoreManager {
   Future<LoginResp>? getUser() async {
     var shared = await SharedPreferences.getInstance();
     String? data = await shared.getString(USER_RESP);
+    if(data == null)
+      return LoginResp();
+    
     final user = LoginResp.fromJson(json.decode(data ?? ""));
     print(user);
     return user;
@@ -50,6 +54,7 @@ class StoreManager {
     var session = SessionManager();
     SharedPreferences.getInstance().then((prefs) async {
       await prefs.setString(AUTH_TOKEN, token);
+      print(prefs);
       session.loadUserInfo();
     });
   }

@@ -1,4 +1,4 @@
-import 'package:cinebond/controller/movie/favorites_movie_cubit.dart';
+import 'package:cinebond/controller/movie/favorites_cubit.dart';
 import 'package:cinebond/splash_view.dart';
 import 'package:cinebond/view/create-profile/create_profile_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,7 +26,7 @@ void main() async {
           BlocProvider(create: (_) => ThemeCubit()),
           BlocProvider(create: (_) => LoadingCubit()),
           BlocProvider(create: (_) => FormValidationCubit()),
-          BlocProvider<FavoritesCubit>(create: (_) => FavoritesCubit()),
+          //BlocProvider<FavoritesCubit>(create: (_) => FavoritesCubit()),
         ],
         child: const MyApp(),
       ),

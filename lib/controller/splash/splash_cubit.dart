@@ -1,3 +1,4 @@
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
 import 'package:flutter/material.dart';
@@ -34,11 +35,24 @@ class SplashCubit extends Cubit<SplashState> {
 
   SplashCubit(this.storeManager) : super(SplashState());
 
-  Future<void> start() async {
+  Future<void> start(BuildContext context) async {
     await Future.delayed(const Duration(seconds: 2));
-
     final token = await storeManager.getToken();
+    
+    UserRepository repo = UserRepository();
+    final user = await storeManager.getUser();
+    print(user);
     print(token);
+    if(user?.id != null)
+     {
+      try {
+        final profile = await repo.getUserProfile(context,user?.id ?? "");
+        
+      } catch (e) {
+        print(e);
+      }
+     } 
+
     emit(
       state.copyWith(
         timeoutReached: true,

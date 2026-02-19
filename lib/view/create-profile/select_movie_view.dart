@@ -41,7 +41,6 @@ class _SelectMovieViewState extends State<SelectMovieView> {
             VerticalSpacing(12),
             _buildSearchBar(context),
             VerticalSpacing(12),
-
             Expanded(
               child: state.isMoviesLoading
                   ? const Center(child: CircularProgressIndicator())

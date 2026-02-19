@@ -1,16 +1,11 @@
 import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:cinebond/constants/network/network_constants.dart';
 import 'package:cinebond/service/exception/network_exception.dart';
 
 class ResponseHandling {
   StoreManager storeManager = StoreManager();
-  dynamic returnResponse(
-    Response response,
-    BuildContext context, {
-    bool isAuth = false,
-  }) async {
+  dynamic returnResponse(Response response, {bool isAuth = false}) async {
     if (response.data["status"] == ResponseMessage.SUCCESS) {
       if (isAuth == true) {
         String authToken =
@@ -20,35 +15,45 @@ class ResponseHandling {
 
       return response.data["data"];
     } else {
-      handleExceptions(response, context);
+      if (response.data["status"] == ResponseMessage.FAIL) {
+        handleExceptions(response);
+      } else {
+        handleDioException(response);
+      }
     }
   }
 
-  dynamic returnResponseMovie(var response) async {
-    print(response);
+  Never handleExceptions(dynamic response) {
     switch (response.statusCode) {
-      //200 SUCCESS
-      //********************* */
-      case ResponseCode.SUCCESS:
-        return response.data;
-    }
-  }
-
-  Never handleExceptions(dynamic response, BuildContext context) {
-    if (response.response == null) {
-      handleDioException(response);
-    }
-
-    switch (response.response.statusCode) {
       case ResponseCode.BAD_REQUEST:
+        throw NetworkException(
+          response.statusCode,
+          response.data["error"]["message"],
+        );
       case ResponseCode.FORBIDDEN:
+        throw NetworkException(
+          response.statusCode,
+          response.data["error"]["message"],
+        );
       case ResponseCode.INTERNAL_SERVER_ERROR:
+        throw NetworkException(
+          response.statusCode,
+          response.data["error"]["message"],
+        );
       case ResponseCode.NOT_FOUND:
+        throw NetworkException(
+          response.statusCode,
+          response.data["error"]["message"],
+        );
       case ResponseCode.NO_CONTENT:
+        throw NetworkException(
+          response.statusCode,
+          response.data["error"]["message"],
+        );
       case ResponseCode.UNAUTHORIZED:
         throw NetworkException(
-          response.response.statusCode,
-          response.response.data["error"]["message"],
+          response.statusCode,
+          response.data["error"]["message"],
         );
       default:
         throw NetworkException(500, "Bilinmeyen hata");

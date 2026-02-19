@@ -10,18 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MovieDetailView extends StatelessWidget {
-  final String movieId;
+  MovieResp movie;
+  MovieDetailView({super.key, required this.movie});
 
-  const MovieDetailView({super.key, required this.movieId});
-
-  static const String _imageBaseUrl = "https://image.tmdb.org/t/p/w500";
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          MovieDetailCubit(repo: MovieRepository(context: context))
-            ..fetchMovieDetail(context, movieId),
+          MovieDetailCubit(repo: MovieRepository()),
+            //..fetchMovieDetail(context, movieId),
       child: HomeBaseView(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -34,15 +32,15 @@ class MovieDetailView extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final movie = state.movie;
-            if (movie == null) {
-              return const Center(
-                child: Text(
-                  "Film detayı yüklenemedi",
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            }
+            // final movie = state.movie;
+            // if (movie == null) {
+            //   return const Center(
+            //     child: Text(
+            //       "Film detayı yüklenemedi",
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   );
+            // }
 
             return SingleChildScrollView(
               child: Column(
@@ -73,7 +71,7 @@ class MovieDetailView extends StatelessWidget {
           movie.imageUrl == null
               ? Container(color: Colors.grey[800])
               : Image.network(
-                  _imageBaseUrl + movie.imageUrl!,
+                  "movie. + movie.imageUrl!",
                   fit: BoxFit.cover,
                 ),
 

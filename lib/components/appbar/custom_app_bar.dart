@@ -9,11 +9,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final StoreManager storeManager = StoreManager();
 
   final bool isBackButtonActive;
+  final bool isPointBadgeActive;
+  final bool isAvatarActive;
+  final bool isLogoActive;
+
   final VoidCallback? onBackButtonPressed;
 
   CustomAppBar({
     super.key,
-    this.isBackButtonActive = false,
+    this.isBackButtonActive = true,
+    this.isPointBadgeActive = true,
+    this.isAvatarActive = true,
+    this.isLogoActive = true,
     this.onBackButtonPressed,
   });
 
@@ -24,11 +31,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.black,
       title: _buildLeft(context),
       actions: [
-        _pointsBadge(),
+        isPointBadgeActive == true ? _pointsBadge() : SizedBox.shrink(),
         HorizontalSpacing(25),
-        //_buildNotificationIcon(),
-        //_buildSignOutIcon(context),
-        _avatarPlaceholder(context),
+        isAvatarActive == true ? _avatarPlaceholder(context): SizedBox.shrink(),
         HorizontalSpacing(15),
 
       ],
@@ -121,8 +126,8 @@ Widget _avatarPlaceholder(BuildContext context) {
       Scaffold.of(context).openEndDrawer();
     },
     child: Container(
-      width: 34,
-      height: 34,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: AppColor.PURPLE_NEON.withOpacity(0.25),
         shape: BoxShape.circle,
@@ -131,7 +136,7 @@ Widget _avatarPlaceholder(BuildContext context) {
           width: 1.2,
         ),
       ),
-      child: const Icon(Icons.person, size: 18, color: Colors.white),
+      child: const Icon(Icons.person, size: 24, color: Colors.white),
     ),
   );
 }

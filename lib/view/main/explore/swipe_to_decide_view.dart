@@ -27,7 +27,7 @@ class _SwipeToDecideViewState extends State<SwipeToDecideView> with ViewStateMix
 
     _swipeCubit = SwipeCubit<MovieResp>(items: []);
     _pageCubit = SwipeToDecideCubit(
-      repo: MovieRepository(context: context),
+      repo: MovieRepository(),
     );
 
     _pageCubit.getInitialMovies(context);

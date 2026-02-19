@@ -14,7 +14,7 @@ class StoryBoard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: 78,
+          height: 60,
           child: StoryRow(length: storyCount),
         ),
       ],

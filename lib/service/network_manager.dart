@@ -1,4 +1,3 @@
-import 'package:cinebond/constants/network/network_constants.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
 import 'package:dio/dio.dart';
@@ -17,7 +16,6 @@ class NetworkManager {
   //***************************************************************
   // ********************* POST METHOD *****************************
   Future<dynamic> post(
-    BuildContext context,
     dynamic data,
     String urlExtension, {
     bool isAuth = false,
@@ -32,43 +30,68 @@ class NetworkManager {
       ),
     );
     String url = BASE_URL + urlExtension;
-    context.read<LoadingCubit>().show();
     try {
       final response = await dio.post(
         url,
         data: data,
-        options: Options(headers: {"Content-Type": "application/json"}),
+        options: Options(headers: {"Content-Type": "application/json","Authorization":"Bearer ${await storeManager.getToken()}"}),
       );
       print("RESPONSE *******: " + response.toString());
-      responseJson = await responseHandling.returnResponse(response, context,isAuth: isAuth);
+      responseJson = await responseHandling.returnResponse(response,isAuth: isAuth);
     } catch (e) {
-      await responseHandling.handleExceptions(e, context);
+      await responseHandling.handleDioException(e);
     } finally {
-      context.read<LoadingCubit>().hide();
+    }
+    return responseJson;
+  }
+
+    Future<dynamic> put(
+    dynamic data,
+    String urlExtension, {
+    bool isAuth = false,
+  }) async {
+    dio.options.connectTimeout = timeoutDuration;
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestBody: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
+    String url = BASE_URL + urlExtension;
+    try {
+      final response = await dio.put(
+        url,
+        data: data,
+        options: Options(headers: {"Content-Type": "application/json","Authorization":"Bearer ${await storeManager.getToken()}"}),
+      );
+      print("RESPONSE *******: " + response.toString());
+      responseJson = await responseHandling.returnResponse(response,isAuth: isAuth);
+    } catch (e) {
+      await responseHandling.handleDioException(e);
+    } finally {
     }
     return responseJson;
   }
 
    Future<dynamic> get(
-    BuildContext context,
     String urlExtension, {
     bool isAuth = false,
   }) async {
     dio.options.connectTimeout = timeoutDuration;
     var store = StoreManager();
     String url = BASE_URL + urlExtension;
-    context.read<LoadingCubit>().show();
     try {
       final response = await dio.get(
         url,
         options: Options(headers: {"Content-Type": "application/json","Authorization":"Bearer ${await store.getToken()}"}),
       );
       print("RESPONSE *******: " + response.toString());
-      responseJson = await responseHandling.returnResponse(response, context);
+      responseJson = await responseHandling.returnResponse(response);
     } catch (e) {
-      await responseHandling.handleExceptions(e, context);
+      await responseHandling.handleDioException(e);
     } finally {
-      context.read<LoadingCubit>().hide();
     }
     return responseJson;
   }

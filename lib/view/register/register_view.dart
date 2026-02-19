@@ -18,7 +18,7 @@ import 'package:cinebond/controller/theme/theme_cubit.dart';
 import 'package:cinebond/extensions/validators.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
-import 'package:cinebond/service/repositories/login/login_repository.dart';
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
@@ -45,7 +45,7 @@ class _RegisterViewState extends State<RegisterView>
       providers: [
         BlocProvider<RegisterCubit>(
           create: (_) => RegisterCubit(
-            LoginRepository(),
+            UserRepository(),
             GoogleAuthService(),
             StoreManager(),
           ),

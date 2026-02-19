@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cinebond/models/login/login_req.dart';
 import 'package:cinebond/service/repositories/google_repository.dart';
-import 'package:cinebond/service/repositories/login/login_repository.dart';
+import 'package:cinebond/service/repositories/user/user_repository.dart';
 
 class LoginState {
   final bool isLoading;
@@ -33,7 +33,7 @@ class LoginState {
 
 
 class LoginCubit extends Cubit<LoginState> {
-  final LoginRepository repo;
+  final UserRepository repo;
   final GoogleAuthService googleRepo;
   final StoreManager storeManager;
   LoginCubit(this.repo,this.googleRepo,this.storeManager) : super(LoginState());
@@ -42,10 +42,10 @@ class LoginCubit extends Cubit<LoginState> {
   emit(state.copyWith(errorResp: null));
   }
 
-  Future<void> authenticate(LoginReq req,BuildContext context) async {
+  Future<void> authenticate(LoginReq req) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final response = await repo.login(context,req);
+      final response = await repo.login(req);
       print(response);
       await storeManager.saveUser(response);
       emit(state.copyWith(isLoading: false, success: true));

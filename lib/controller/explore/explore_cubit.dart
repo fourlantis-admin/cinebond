@@ -4,7 +4,6 @@ import 'package:cinebond/service/movie/movie_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class ExploreState {
   final List<MovieResp> movies;
   final List<MovieResp> filteredMovies;
@@ -36,18 +35,18 @@ class ExploreState {
     );
   }
 }
-
 class ExploreCubit extends Cubit<ExploreState> {
   final MovieRepository repo;
 
   ExploreCubit({required this.repo}) : super(ExploreState.initial());
 
-  //*********************** GET MOVIES **************************** */
   Future<void> getMovies(BuildContext context) async {
     emit(state.copyWith(isLoading: true));
     try {
       final movies = await repo.getMovies(context);
-      print(movies);
+
+      // 🔥 FAVORITE MERGE YOK (backend zaten veriyor)
+
       emit(state.copyWith(
         movies: movies,
         filteredMovies: movies,
@@ -57,8 +56,7 @@ class ExploreCubit extends Cubit<ExploreState> {
       emit(state.copyWith(isLoading: false));
     }
   }
-  
-  //*********************** SEARCH MOVIES **************************** */
+
   Future<void> searchMovie(BuildContext context, String query) async {
     if (query.length < 2) {
       emit(state.copyWith(filteredMovies: state.movies));
@@ -70,6 +68,8 @@ class ExploreCubit extends Cubit<ExploreState> {
     try {
       final results = await repo.getMovies(context, filter: query);
 
+      // 🔥 FAVORITE MERGE YOK
+
       emit(state.copyWith(
         filteredMovies: results,
         isLoading: false,
@@ -78,9 +78,22 @@ class ExploreCubit extends Cubit<ExploreState> {
       emit(state.copyWith(isLoading: false));
     }
   }
+
+  // 🔥 Toggle sonrası sync için bu kalır
+  void syncFavorites(Set<int> ids) {
+    final updatedMovies = state.movies.map((movie) {
+      movie.isFavorite = ids.contains(movie.id);
+      return movie;
+    }).toList();
+
+    final updatedFiltered = state.filteredMovies.map((movie) {
+      movie.isFavorite = ids.contains(movie.id);
+      return movie;
+    }).toList();
+
+    emit(state.copyWith(
+      movies: updatedMovies,
+      filteredMovies: updatedFiltered,
+    ));
+  }
 }
-
-
-
-
-
