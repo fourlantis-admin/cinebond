@@ -1,4 +1,5 @@
 import 'package:cinebond/components/navbar/custom_navbar.dart';
+import 'package:cinebond/controller/game/game_cubit.dart';
 import 'package:cinebond/controller/main-menu/main_menu_cubit.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cinebond/view/main/explore/explore_view.dart';
 import 'package:cinebond/view/main/inbox/inbox.view.dart';
-import 'package:cinebond/view/main/play/play_view.dart';
+import 'package:cinebond/view/main/play/game_lobby_screen.dart';
 
 class MainMenuView extends StatefulWidget {
   const MainMenuView({super.key});
@@ -28,9 +29,12 @@ class _MainMenuViewState extends State<MainMenuView> with ViewStateMixin {
     _views = [
       //CreateProfileView(),
       ExploreView(),
-      MatchView(), 
+      MatchView(),
       InboxView(),
-      PlayView(),
+      BlocProvider<GamesCubit>(
+        create: (_) => GamesCubit()..loadLobby(),
+        child: GamesLobbyScreen(),
+      ),
     ];
   }
 
@@ -50,14 +54,9 @@ class _MainMenuViewState extends State<MainMenuView> with ViewStateMixin {
             appBar: buildAppbarWithLogo(),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              child: IndexedStack(
-                index: currentIndex,
-                children: _views,
-              ),
+              child: IndexedStack(index: currentIndex, children: _views),
             ),
-            bottomNavigationBar: CustomNavbar(
-              currentIndex: currentIndex,
-            ),
+            bottomNavigationBar: CustomNavbar(currentIndex: currentIndex),
           );
         },
       ),

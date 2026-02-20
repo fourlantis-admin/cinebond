@@ -27,7 +27,7 @@ class PostModelCard extends StatelessWidget {
         children: [
           // Avatar
           CircleAvatar(
-            radius: 22,
+            radius: 19,
             backgroundImage: NetworkImage(post.avatarUrl),
             backgroundColor: Colors.white12,
           ),

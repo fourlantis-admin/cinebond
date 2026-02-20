@@ -22,13 +22,12 @@ class GoogleAuthService {
 
       final GoogleSignInAccount account =
           await _googleSignIn.authenticate(
-        scopeHint: ['email', 'profile'], // ✅ BURADA
+        scopeHint: ['email', 'profile'],
       );
 
       final GoogleSignInAuthentication auth =
           await account.authentication;
 
-      // 🔥 SENİN İSTEDİĞİN ŞEYLER
       print("EMAIL: ${account.email}");
       print("ID TOKEN: ${auth.idToken}");
       //print("ACCESS TOKEN: ${auth.idToken}");

@@ -17,7 +17,6 @@ class _SelectMovieViewState extends State<SelectMovieView> {
   void initState() {
     super.initState();
 
-    // 🔥 CreateProfileCubit içinden filmleri çekiyoruz
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CreateProfileCubit>().fetchMovies(context);
     });
