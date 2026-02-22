@@ -94,7 +94,7 @@ class _CreateProfileViewState extends State<CreateProfileView> with ViewStateMix
                         : null,
                   ),
                 ),
-               VerticalSpacing(65)
+               const VerticalSpacing(65)
               ],
             ),
           );

@@ -46,8 +46,6 @@ class GameCardState extends State<GameCard>
       onTapUp: (_) {
         _pressController.reverse();
         final cubit = context.read<GamesCubit>();
-        // startGame'i BURADAN kaldırdık, GamePlayScreen'in initState'inde çağrılacak
-
         Navigator.of(context)
             .push(
               PageRouteBuilder(

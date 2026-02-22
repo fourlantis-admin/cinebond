@@ -48,9 +48,9 @@ class MovieDetailView extends StatelessWidget {
                 children: [
                   _buildPoster(movie),
                   _buildHeaderInfo(movie),
-                  VerticalSpacing(28),
+                  const VerticalSpacing(28),
                   _buildContent(movie),
-                  VerticalSpacing(40),
+                  const VerticalSpacing(40),
                 ],
               ),
             );
@@ -110,7 +110,7 @@ class MovieDetailView extends StatelessWidget {
               height: 1.2,
             ),
           ),
-          VerticalSpacing(10),
+          const VerticalSpacing(10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -145,7 +145,7 @@ class MovieDetailView extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          VerticalSpacing(12),
+          const VerticalSpacing(12),
           Text(
             movie.description ?? "Açıklama bulunamadı.",
             style: const TextStyle(

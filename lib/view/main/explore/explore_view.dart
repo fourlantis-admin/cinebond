@@ -252,11 +252,11 @@ class _ExploreViewState extends State<ExploreView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildStoryBoard(context),
-          VerticalSpacing(12),
+          const VerticalSpacing(12),
           _buildGamesRow(context),
-          VerticalSpacing(16),
+          const VerticalSpacing(16),
           _buildTrendingSection(context),
-          VerticalSpacing(16),
+          const VerticalSpacing(16),
           _buildFeedSection(isExpanded: true),
         ],
       ),
@@ -278,7 +278,7 @@ class _ExploreViewState extends State<ExploreView> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        VerticalSpacing(10),
+        const VerticalSpacing(10),
         SizedBox(height: 60, child: StoryBoard(storyCount: 6)),
       ],
     );
@@ -357,7 +357,7 @@ class _ExploreViewState extends State<ExploreView> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        VerticalSpacing(12),
+        const VerticalSpacing(12),
         SizedBox(
           height: 165,
           child: BlocSelector<ExploreCubit, ExploreState, List<MovieResp>>(
@@ -427,7 +427,7 @@ class _ExploreViewState extends State<ExploreView> {
       // Expanded modda Column yeterli
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [header, VerticalSpacing(12), list, VerticalSpacing(32)],
+        children: [header, const VerticalSpacing(12), list, const VerticalSpacing(32)],
       );
     }
 
@@ -437,7 +437,7 @@ class _ExploreViewState extends State<ExploreView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               header,
-              VerticalSpacing(12),
+              const VerticalSpacing(12),
               Expanded(child: list),
             ],
           ),

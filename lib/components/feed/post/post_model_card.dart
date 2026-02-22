@@ -48,7 +48,7 @@ class PostModelCard extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
-                    VerticalSpacing(6),
+                    const VerticalSpacing(6),
                     Text(
                       post.handle,
                       style: TextStyle(

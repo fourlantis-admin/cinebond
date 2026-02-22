@@ -121,7 +121,7 @@ class _RegisterViewState extends State<RegisterView>
                         height: MediaQuery.of(context).size.height * 0.35,
                         child: _buildLogo(),
                       ),
-                      VerticalSpacing(5),
+                      const VerticalSpacing(5),
                       Expanded(child: _buildForm(context)),
                     ],
                   ),

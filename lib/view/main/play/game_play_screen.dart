@@ -171,7 +171,7 @@ class _GamePlayBody extends StatelessWidget {
                       flex: 5,
                       child: Padding(
                         padding: const EdgeInsets.all(20),
-                        child: QuestionWidget(question: q),
+                        child: QuestionWidget(question: q!),
                       ),
                     ),
                     // Options
@@ -210,7 +210,8 @@ class GameHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final session = state.session;
     final progress = session.progressPercent;
-    final timePercent = state.remainingTime / session.currentQuestion.timeLimit;
+    final timePercent =
+        state.remainingTime / (session.currentQuestion?.timeLimit ?? 1);
 
     Color timerColor = CineBondColors.correct;
     if (timePercent < 0.5) timerColor = CineBondColors.starAccent;
@@ -263,7 +264,7 @@ class GameHeader extends StatelessWidget {
               ),
             ],
           ),
-          VerticalSpacing(12),
+          const VerticalSpacing(12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -359,13 +360,13 @@ class EmojiQuestion extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          VerticalSpacing(20),
+          const VerticalSpacing(20),
           Text(
             question.movie.emoji,
             style: CineBondTextStyles.emoji,
             textAlign: TextAlign.center,
           ),
-          VerticalSpacing(12),
+          const VerticalSpacing(12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -506,7 +507,7 @@ class StarringQuestion extends StatelessWidget {
               fontSize: 13,
             ),
           ),
-          VerticalSpacing(16),
+          const VerticalSpacing(16),
           ...question.movie.cast.take(3).toList().asMap().entries.map((entry) {
             final i = entry.key;
             final actor = entry.value;

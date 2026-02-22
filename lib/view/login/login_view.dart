@@ -100,7 +100,7 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
                       children: [
                         Flexible(flex: 4, child: _buildLogo()),
                         Flexible(flex: 5, child: _buildForm(context)),
-                        VerticalSpacing(30),
+                        const VerticalSpacing(30),
                       ],
                     ),
                   ),
@@ -133,15 +133,15 @@ class _LoginViewState extends State<LoginView> with ViewStateMixin, PopupMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              VerticalSpacing(24),
+              const VerticalSpacing(24),
               _buildEmailField(context),
-              VerticalSpacing(34),
+              const VerticalSpacing(34),
               _buildPasswordField(context),
               Spacer(),
               _buildLoginButton(context),
-              VerticalSpacing(12),
+              const VerticalSpacing(12),
               _buildRegisterButton(context),
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
               _buildSocialMediaButtons(context),
             ],
           ),

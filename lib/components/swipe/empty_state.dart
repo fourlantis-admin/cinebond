@@ -15,7 +15,7 @@ class EmptyState extends StatelessWidget {
         children: [
           Icon(Icons.favorite_border_rounded,
               size: 72, color: Colors.grey.shade300),
-          VerticalSpacing( 16),
+          const VerticalSpacing( 16),
           Text(
             "Herkesi gördün!",
             style: TextStyle(
@@ -24,7 +24,7 @@ class EmptyState extends StatelessWidget {
               color: Colors.grey.shade400,
             ),
           ),
-          VerticalSpacing( 8),
+          const VerticalSpacing( 8),
           Text(
             "Daha sonra yeni profiller gelecek.",
             style: TextStyle(fontSize: 14, color: Colors.grey.shade400),

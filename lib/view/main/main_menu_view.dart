@@ -9,7 +9,7 @@ import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cinebond/view/main/explore/explore_view.dart';
-import 'package:cinebond/view/main/inbox/inbox.view.dart';
+import 'package:cinebond/view/main/inbox/messages_view.dart';
 import 'package:cinebond/view/main/play/game_lobby_screen.dart';
 
 class MainMenuView extends StatefulWidget {
@@ -30,7 +30,7 @@ class _MainMenuViewState extends State<MainMenuView> with ViewStateMixin {
       //CreateProfileView(),
       ExploreView(),
       MatchView(),
-      InboxView(),
+      MessagesView(),
       BlocProvider<GamesCubit>(
         create: (_) => GamesCubit()..loadLobby(),
         child: GamesLobbyScreen(),

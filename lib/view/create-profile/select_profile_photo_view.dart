@@ -68,7 +68,7 @@ class SelectProfilePhotoView extends StatelessWidget {
                 ),
               ),
 
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
 
               Text(
                 state.profilePhoto == null
@@ -77,7 +77,7 @@ class SelectProfilePhotoView extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
 
-              VerticalSpacing(8),
+              const VerticalSpacing(8),
 
               Text(
                 state.profilePhoto == null

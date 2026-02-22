@@ -8,6 +8,7 @@ import 'package:cinebond/components/swipe/verified_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
+
 class Profile {
   final String nameAge;
   final String occupation;
@@ -27,45 +28,52 @@ class Profile {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  TINDER ENVIRONMENT  –  birebir aynı parametre imzası, Bumble kalitesi UI
+//  TINDER ENVIRONMENT
 // ─────────────────────────────────────────────────────────────────────────────
 
 class TinderEnvironment<T> extends StatelessWidget {
-   TinderEnvironment({
+  const TinderEnvironment({
     super.key,
     required this.getColor,
     required this.getTitle,
     required this.getSubtitle,
     required this.getDescription,
+    // cardHeightRatio artık kullanılmıyor — layout otomatik hesaplanıyor.
+    // Parametre imzası uyumluluk için korundu.
     this.cardHeightRatio = 0.9,
     this.bottomPadding = 40,
     this.onEmpty,
   });
 
-  /// Orijinal parametre isimleri korundu ↓
   final Color Function(T) getColor;
   final String Function(T) getTitle;
   final String Function(T) getSubtitle;
-  final String Function(T) getDescription; // interests string → pill'e çevrilir
+  final String Function(T) getDescription;
   final double cardHeightRatio;
   final double bottomPadding;
   final Widget? onEmpty;
+
+  // Buton satırının kart üzerine ne kadar taşacağı (px).
+  static const double _buttonRowHeight = 80;
+  static const double _overlapAmount = 36;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SwipeCubit<T>, SwipeState<T>>(
       builder: (context, state) {
         if (state.items.isEmpty) {
-          return onEmpty ??  EmptyState();
+          return onEmpty ?? EmptyState();
         }
+
         return LayoutBuilder(
           builder: (context, constraints) {
-            final cardH = constraints.maxHeight * cardHeightRatio;
             return Stack(
+              clipBehavior: Clip.none,
               children: [
-                SizedBox(
-                  height: cardH,
-                  width: constraints.maxWidth,
+                // ── Kart alanı: tüm genişliği kaplar,
+                //    altta buton satırının yarısı kadar boşluk bırakır.
+                Positioned.fill(
+                  bottom: _buttonRowHeight - _overlapAmount,
                   child: CardStack<T>(
                     constraints: constraints,
                     getTitle: getTitle,
@@ -74,8 +82,10 @@ class TinderEnvironment<T> extends StatelessWidget {
                     getColor: getColor,
                   ),
                 ),
+
+                // ── Buton satırı: kartın alt kenarına _overlapAmount kadar biner.
                 Positioned(
-                  bottom: 5,
+                  bottom: bottomPadding,
                   left: 0,
                   right: 0,
                   child: ActionRow<T>(),
@@ -89,9 +99,13 @@ class TinderEnvironment<T> extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  CARD STACK
+// ─────────────────────────────────────────────────────────────────────────────
 
 class CardStack<T> extends StatelessWidget {
-   CardStack({
+  const CardStack({
+    super.key,
     required this.constraints,
     required this.getTitle,
     required this.getSubtitle,
@@ -131,9 +145,8 @@ class CardStack<T> extends StatelessWidget {
     final isTop = index == 0;
 
     final progress = (state.cardOffset.dx.abs() / 200).clamp(0.0, 1.0);
-    final backScale = isTop
-        ? 1.0
-        : lerpDouble(0.94 - index * 0.025, 1.0, progress)!;
+    final backScale =
+        isTop ? 1.0 : lerpDouble(0.94 - index * 0.025, 1.0, progress)!;
     final backDY =
         isTop ? 0.0 : lerpDouble(index * 14.0, 0.0, progress)!;
 
@@ -161,7 +174,7 @@ class CardStack<T> extends StatelessWidget {
         onPanEnd: isTop ? (d) => cubit.onPanEnd(d, context) : null,
         child: AnimatedContainer(
           duration: state.isAnimating && isTop
-              ?  Duration(milliseconds: 380)
+              ? const Duration(milliseconds: 520)
               : Duration.zero,
           curve: Curves.easeOutQuart,
           transform: Matrix4.identity()
@@ -189,7 +202,7 @@ class CardStack<T> extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SwipeCard<T> extends StatefulWidget {
-   SwipeCard({
+  const SwipeCard({
     super.key,
     required this.item,
     required this.isTop,
@@ -240,7 +253,6 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
     final pictures = _pictures;
     final accent = widget.getColor(widget.item);
 
-    // Stamp opacity
     final likeOpacity = (dx / 100).clamp(0.0, 1.0);
     final nopeOpacity = (-dx / 100).clamp(0.0, 1.0);
     final superOpacity = widget.isTop &&
@@ -248,7 +260,6 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
         ? 1.0
         : 0.0;
 
-    // interests string → liste
     final rawDesc = widget.getDescription(widget.item);
     final tags = rawDesc
         .split(',')
@@ -261,11 +272,12 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
       child: Stack(
         fit: StackFit.expand,
         children: [
+          // Fotoğraf
           if (pictures.isNotEmpty)
             ValueListenableBuilder<int>(
               valueListenable: _photoIndex,
               builder: (_, idx, __) => AnimatedSwitcher(
-                duration:  Duration(milliseconds: 220),
+                duration: const Duration(milliseconds: 220),
                 child: SizedBox.expand(
                   key: ValueKey(idx),
                   child: pictures[idx],
@@ -275,6 +287,7 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
           else
             ColoredBox(color: accent.withOpacity(0.4)),
 
+          // Fotoğraf sayacı çubukları
           if (pictures.length > 1)
             Positioned(
               top: 12,
@@ -286,9 +299,9 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
                   children: List.generate(pictures.length, (i) {
                     return Expanded(
                       child: AnimatedContainer(
-                        duration:  Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 200),
                         height: 3.5,
-                        margin:  EdgeInsets.symmetric(horizontal: 2),
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2),
                           color: i == idx
@@ -310,7 +323,8 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
               ),
             ),
 
-           Positioned.fill(
+          // Gradient overlay
+          const Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -327,9 +341,11 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
             ),
           ),
 
-          // ── Profil bilgisi ──
+          // Profil bilgisi
           Positioned(
-            bottom: 24,
+            // Buton satırı karta _overlapAmount kadar bindiği için
+            // profil bilgisini biraz daha yukarı kaydır, üste çıkmasın.
+            bottom: TinderEnvironment._overlapAmount + 16,
             left: 20,
             right: 20,
             child: Column(
@@ -341,13 +357,13 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
                     Expanded(
                       child: Text(
                         widget.getTitle(widget.item),
-                        style:  TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                           letterSpacing: -0.5,
                           shadows: [
-                            Shadow(blurRadius: 10, color: Colors.black54)
+                            Shadow(blurRadius: 10, color: Colors.black54),
                           ],
                         ),
                       ),
@@ -355,7 +371,7 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
                     VerifiedBadge(),
                   ],
                 ),
-                VerticalSpacing( 4),
+                const VerticalSpacing(4),
                 Text(
                   widget.getSubtitle(widget.item),
                   style: TextStyle(
@@ -365,7 +381,7 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
                   ),
                 ),
                 if (tags.isNotEmpty) ...[
-                  VerticalSpacing( 14),
+                  const VerticalSpacing(14),
                   Wrap(
                     spacing: 8,
                     runSpacing: 6,
@@ -379,7 +395,7 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
             ),
           ),
 
-          // ── LIKE stamp ──
+          // LIKE stamp
           Positioned(
             top: 56,
             left: 20,
@@ -388,12 +404,13 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
               duration: Duration.zero,
               child: Transform.rotate(
                 angle: -0.3,
-                child: StampLabel(label: 'LIKE', color:  Color(0xFF00E676)),
+                child: StampLabel(
+                    label: 'LIKE', color: Color(0xFF00E676)),
               ),
             ),
           ),
 
-          // ── NOPE stamp ──
+          // NOPE stamp
           Positioned(
             top: 56,
             right: 20,
@@ -402,20 +419,21 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
               duration: Duration.zero,
               child: Transform.rotate(
                 angle: 0.3,
-                child: StampLabel(label: 'NOPE', color:  Color(0xFFFF1744)),
+                child:  StampLabel(
+                    label: 'NOPE', color: Color(0xFFFF1744)),
               ),
             ),
           ),
 
-          // ── SUPER LIKE stamp ──
+          // SUPER LIKE stamp
           Positioned(
             top: 56,
             left: 0,
             right: 0,
             child: AnimatedOpacity(
               opacity: superOpacity,
-              duration:  Duration(milliseconds: 100),
-              child:  Center(
+              duration: const Duration(milliseconds: 100),
+              child: Center(
                 child: StampLabel(
                   label: 'SUPER\nLIKE',
                   color: Color(0xFF2979FF),
@@ -434,7 +452,7 @@ class SwipeCardState<T> extends State<SwipeCard<T>> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class ActionRow<T> extends StatelessWidget {
-   ActionRow({super.key});
+  const ActionRow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -443,52 +461,46 @@ class ActionRow<T> extends StatelessWidget {
         context.watch<SwipeCubit<T>>().state.lastSwipedItem != null;
 
     return Padding(
-      padding:  EdgeInsets.symmetric(horizontal: 26),
+      padding: const EdgeInsets.symmetric(horizontal: 26),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           RoundButton(
             onTap: cubit.swipeLeft,
             icon: Icons.close_rounded,
-            color:  Color(0xFFFF4B6E),
+            color: const Color(0xFFFF4B6E),
             size: 64,
             iconSize: 45,
-            glowColor:  Color(0x44FF4B6E),
+            glowColor: const Color(0x44FF4B6E),
           ),
           RoundButton(
             onTap: hasUndo ? () => cubit.undoSwipe(context) : null,
             icon: Icons.replay_rounded,
-            color: hasUndo ?  Color(0xFFFFB300) : Colors.grey.shade300,
+            color: hasUndo ? const Color(0xFFFFB300) : Colors.grey.shade300,
             size: 50,
             iconSize: 30,
             glowColor:
-                hasUndo ?  Color(0x44FFB300) : Colors.transparent,
+                hasUndo ? const Color(0x44FFB300) : Colors.transparent,
           ),
           RoundButton(
             onTap: cubit.swipeSuperLike,
             icon: Icons.star_rounded,
-            color:  Color(0xFF2979FF),
+            color: const Color(0xFF2979FF),
             size: 50,
             iconSize: 30,
-            glowColor:  Color(0x442979FF),
+            glowColor: const Color(0x442979FF),
           ),
           RoundButton(
             onTap: cubit.swipeRight,
             icon: Icons.favorite_rounded,
-            color:  Color(0xFF00E676),
+            color: const Color(0xFF00E676),
             size: 64,
             iconSize: 45,
-            glowColor:  Color(0x4400E676),
+            glowColor: const Color(0x4400E676),
           ),
         ],
       ),
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  SHARED WIDGETS
-// ─────────────────────────────────────────────────────────────────────────────
-
-

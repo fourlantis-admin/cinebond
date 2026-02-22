@@ -30,7 +30,7 @@ class ActionButton extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 18, color: color),
-          VerticalSpacing(4),
+          const VerticalSpacing(4),
           Text(
             _formatCount(count),
             style: TextStyle(

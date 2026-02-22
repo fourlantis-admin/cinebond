@@ -29,7 +29,7 @@ class ProfileDrawer extends StatelessWidget {
           ),
           child: Column(
             children: [
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
               Container(
                 width: 72,
                 height: 72,
@@ -39,7 +39,7 @@ class ProfileDrawer extends StatelessWidget {
                 ),
               ),
 
-              VerticalSpacing(12),
+              const VerticalSpacing(12),
 
               Text(
                 user.firstName.toString(),
@@ -50,10 +50,10 @@ class ProfileDrawer extends StatelessWidget {
                 ),
               ),
 
-              VerticalSpacing(10),
+              const VerticalSpacing(10),
               _buildNotifications(),
 
-              VerticalSpacing(15),
+              const VerticalSpacing(15),
               PrimaryButton(
                 title: "View Profile",
                 onClickBtnFunc: () {},
@@ -78,7 +78,7 @@ class ProfileDrawer extends StatelessWidget {
               _drawerToggle(value: false, "Cinebond Premium"),
               _drawerToggle(value: false, "TR/EN"),
 
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
             ],
           ),
         ),
@@ -173,7 +173,7 @@ class ProfileDrawer extends StatelessWidget {
             width: 15,
             child: SvgPicture.asset(ImagesIcons.POPCORN_ICON),
           ),
-          VerticalSpacing(8),
+          const VerticalSpacing(8),
           Text(
             "350 pts",
             style: TextStyle(

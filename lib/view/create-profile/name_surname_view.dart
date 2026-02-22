@@ -49,18 +49,18 @@ class _NameSurnameViewState extends State<NameSurnameView> {
                 labelText: "Ad",
                 textController: nameController,
               ),
-              VerticalSpacing(12),
+              const VerticalSpacing(12),
               CustomTextField(
                 labelText: "Soyad",
                 textController: surnameController,
               ),
-              VerticalSpacing(12),
+              const VerticalSpacing(12),
               CustomTextField(
                 labelText: "Yaş",
                 inputType: TextInputType.number,
                 textController: ageController,
               ),
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
 
               GenderSelector(
                 selectedGender: state.gender,

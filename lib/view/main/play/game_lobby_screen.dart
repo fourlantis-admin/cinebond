@@ -83,7 +83,7 @@ class _GamesLobbyScreenState extends State<GamesLobbyScreen>
                       color: CineBondColors.primary,
                     ),
                   ),
-                  VerticalSpacing(4),
+                  const VerticalSpacing(4),
                   Text(
                     'Film Bilgini Test Et',
                     style: CineBondTextStyles.cardTitle,
@@ -194,7 +194,7 @@ class _GamesLobbyScreenState extends State<GamesLobbyScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Lider Tablosu', style: CineBondTextStyles.cardTitle),
-                    VerticalSpacing(2),
+                    const VerticalSpacing(2),
                     Text(
                       'Bu haftanın en iyi oyuncuları',
                       style: CineBondTextStyles.body.copyWith(fontSize: 12),
@@ -269,14 +269,14 @@ class DailyChallengeCard extends StatelessWidget {
                     color: CineBondColors.primary,
                   ),
                 ),
-                VerticalSpacing(6),
+                const VerticalSpacing(6),
                 Text('Bugünün Filmi', style: CineBondTextStyles.sectionTitle),
-                VerticalSpacing(4),
+                const VerticalSpacing(4),
                 Text(
                   'Her gün yeni bir film, özel ödüller!',
                   style: CineBondTextStyles.body.copyWith(fontSize: 12),
                 ),
-                VerticalSpacing(12),
+                const VerticalSpacing(12),
                 Row(
                   children: [
                     PillBadge(

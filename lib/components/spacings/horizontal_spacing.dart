@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HorizontalSpacing extends StatelessWidget{
-  HorizontalSpacing(this.width);
+  const HorizontalSpacing(this.width);
 
   final double width;
   @override

@@ -1,4 +1,5 @@
 import 'package:cinebond/view/main/match/tinder_environment.dart';
+import 'package:cinebond/view/main/match/match_effect_overlay.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _MatchViewState extends State<MatchView> {
         ),
         Profile(
           nameAge: "Ayşe, 18",
-          occupation: "Software Developer",
+          occupation: "UX Designer",
           interests: "One Piece, LOTR, Inception",
           horoscope: "Taurus",
           color: Colors.black,
@@ -77,10 +78,10 @@ class _MatchViewState extends State<MatchView> {
     return BlocProvider.value(
       value: _swipeCubit,
       child: BlocListener<SwipeCubit<Profile>, SwipeState<Profile>>(
-        listenWhen: (prev, curr) => prev.shouldLoadMore != curr.shouldLoadMore,
+        listenWhen: (prev, curr) =>
+            prev.shouldLoadMore != curr.shouldLoadMore,
         listener: (context, state) async {
           if (!state.shouldLoadMore) return;
-          context.read<LoadingCubit>().show();
           await Future.delayed(const Duration(seconds: 2));
           _swipeCubit.addItems([
             Profile(
@@ -94,29 +95,50 @@ class _MatchViewState extends State<MatchView> {
                   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
                   fit: BoxFit.cover,
                 ),
-                Image.network(
-                  'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
-                  fit: BoxFit.cover,
-                ),
-                Image.network(
-                  'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
-                  fit: BoxFit.cover,
-                ),
               ],
             ),
           ]);
-
-          context.read<LoadingCubit>().hide();
         },
         child: SafeArea(
           child: SizedBox.expand(
-            child: TinderEnvironment<Profile>(
-              cardHeightRatio: 0.92,
-              bottomPadding: 30,
-              getColor: (_) => Colors.black,
-              getTitle: (p) => p.nameAge,
-              getSubtitle: (p) => p.occupation,
-              getDescription: (p) => p.interests,
+            child: Stack(
+              children: [
+                // ── Ana swipe alanı ─────────────────
+                TinderEnvironment<Profile>(
+                  cardHeightRatio: 0.92,
+                  bottomPadding: 0,
+                  getColor: (_) => Colors.black,
+                  getTitle: (p) => p.nameAge,
+                  getSubtitle: (p) => p.occupation,
+                  getDescription: (p) => p.interests,
+                ),
+
+                // ── Match effect overlay ─────────────
+                // showMatchEffect true olduğunda ekranı kaplar.
+                // matchedItem üzerinden servis entegrasyonu yapılacak:
+                // → SwipeCubit._completeSwipe içindeki isMatch satırını
+                //   MatchService.checkMatch(swiped) ile değiştir.
+                BlocBuilder<SwipeCubit<Profile>, SwipeState<Profile>>(
+                  buildWhen: (prev, curr) =>
+                      prev.showMatchEffect != curr.showMatchEffect ||
+                      prev.matchedItem != curr.matchedItem,
+                  builder: (context, state) {
+                    if (!state.showMatchEffect || state.matchedItem == null) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return MatchEffectOverlay<Profile>(
+                      item: state.matchedItem!,
+                      getName: (p) => p.nameAge,
+                      getAvatarWidget: (p) => p.pictures.isNotEmpty
+                          ? p.pictures.first
+                          : const SizedBox.shrink(),
+                      onDismiss: () =>
+                          context.read<SwipeCubit<Profile>>().dismissMatchEffect(),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

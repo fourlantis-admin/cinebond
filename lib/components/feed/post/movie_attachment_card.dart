@@ -88,7 +88,7 @@ class MovieAttachmentCard extends StatelessWidget {
                 ),
               ),
             ),
-            VerticalSpacing(12),
+            const VerticalSpacing(12),
           ],
         ),
       ),

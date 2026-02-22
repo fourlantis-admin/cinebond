@@ -133,19 +133,19 @@ class _GameResultViewState extends State<GameResultView>
                       ),
                     ),
                   ),
-                  VerticalSpacing(20),
+                  const VerticalSpacing(20),
                   Text(
                     _gradeMessage,
                     style: CineBondTextStyles.sectionTitle,
                     textAlign: TextAlign.center,
                   ),
-                  VerticalSpacing(8),
+                  const VerticalSpacing(8),
                   Text(
                     'Oyun bitti!',
                     style: CineBondTextStyles.body,
                     textAlign: TextAlign.center,
                   ),
-                  VerticalSpacing(36),
+                  const VerticalSpacing(36),
                   // Score counter
                   AnimatedBuilder(
                     animation: _scoreAnim,
@@ -166,7 +166,7 @@ class _GameResultViewState extends State<GameResultView>
                       );
                     },
                   ),
-                  VerticalSpacing(36),
+                  const VerticalSpacing(36),
                   // Stats
                   _StatsRow(result: result),
                   const Spacer(),
@@ -293,7 +293,7 @@ class _StatItem extends StatelessWidget {
     return Column(
       children: [
         Text(icon, style: const TextStyle(fontSize: 20)),
-        VerticalSpacing(4),
+        const VerticalSpacing(4),
         Text(value, style: CineBondTextStyles.sectionTitle),
         Text(label, style: CineBondTextStyles.label),
       ],
@@ -344,7 +344,7 @@ class _ActionButtons extends StatelessWidget {
             ),
           ),
         ),
-        VerticalSpacing(12),
+        const VerticalSpacing(12),
         GestureDetector(
           onTap: () {
             context.read<GamesCubit>().backToLobby();

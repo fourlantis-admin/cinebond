@@ -36,7 +36,7 @@ class GamesLobby extends GamesState {
 class GameInProgress extends GamesState {
   final GameSession session;
   final int remainingTime;
-  final String? selectedAnswer; // kullanıcı bu turu seçti
+  final String? selectedAnswer;
   final bool isAnswerRevealed;
 
   const GameInProgress({
@@ -92,7 +92,8 @@ class GamesError extends GamesState {
 class GamesCubit extends Cubit<GamesState> {
   GamesCubit() : super(const GamesInitial());
 
-  // Simüle edilmiş high score store
+  final _preparation = GamePreparation();
+
   final Map<GameType, int> _highScores = {
     GameType.emojiGuess: 0,
     GameType.blurredPoster: 0,
@@ -107,7 +108,7 @@ class GamesCubit extends Cubit<GamesState> {
 
   DateTime? _sessionStart;
 
-  // Lobby yükle
+  // ─── Lobby ──────────────────────────────────
   Future<void> loadLobby() async {
     emit(const GamesLoading());
     await Future.delayed(const Duration(milliseconds: 400));
@@ -119,41 +120,48 @@ class GamesCubit extends Cubit<GamesState> {
     );
   }
 
-  // Oyunu başlat
+  // ─── Oyun Başlat ────────────────────────────
   Future<void> startGame(GameType type) async {
-    List<GameQuestion> questions;
-    switch (type) {
-      case GameType.emojiGuess:
-        questions = await GamePreparation.getEmojiQuestions();
-        break;
-      case GameType.blurredPoster:
-        questions = await GamePreparation.getBlurredPosterQuestions();
-        break;
-      case GameType.starringGuess:
-        questions = await GamePreparation.getStarringQuestions();
-        break;
+    emit(const GamesLoading());
+
+    try {
+      final List<GameQuestion> questions;
+      switch (type) {
+        case GameType.emojiGuess:
+          questions = await _preparation.getEmojiQuestions();
+        case GameType.blurredPoster:
+          questions = await _preparation.getBlurredPosterQuestions();
+        case GameType.starringGuess:
+          questions = await _preparation.getStarringQuestions();
+      }
+
+      questions.shuffle();
+
+      final session = GameSession(
+        sessionId: DateTime.now().millisecondsSinceEpoch.toString(),
+        gameType: type,
+        questions: questions,
+        userAnswers: List.filled(questions.length, null),
+        startedAt: DateTime.now(),
+      );
+
+      _sessionStart = DateTime.now();
+
+      final firstQuestion = session.currentQuestion;
+      if (firstQuestion == null) {
+        emit(const GamesError(message: 'Soru listesi boş.'));
+        return;
+      }
+
+      emit(GameInProgress(session: session, remainingTime: firstQuestion.timeLimit));
+    } catch (e, stack) {
+      // ignore: avoid_print
+      print('startGame error: $e\n$stack');
+      emit(GamesError(message: e.toString()));
     }
-
-    questions.shuffle();
-    final session = GameSession(
-      sessionId: DateTime.now().millisecondsSinceEpoch.toString(),
-      gameType: type,
-      questions: questions,
-      userAnswers: List.filled(questions.length, null),
-      startedAt: DateTime.now(),
-    );
-
-    _sessionStart = DateTime.now();
-
-    emit(
-      GameInProgress(
-        session: session,
-        remainingTime: questions.first.timeLimit,
-      ),
-    );
   }
 
-  // Cevap seç
+  // ─── Cevap Seç ──────────────────────────────
   void selectAnswer(String answer) {
     final current = state;
     if (current is! GameInProgress) return;
@@ -162,61 +170,71 @@ class GamesCubit extends Cubit<GamesState> {
     emit(current.copyWith(selectedAnswer: answer, isAnswerRevealed: true));
   }
 
-  // Zamanlayıcı tick
+  // ─── Timer Tick ─────────────────────────────
   void tick() {
     final current = state;
     if (current is! GameInProgress) return;
     if (current.isAnswerRevealed) return;
 
     if (current.remainingTime <= 1) {
-      // Süre doldu – cevapsız geç
-      emit(
-        current.copyWith(isAnswerRevealed: true, selectedAnswer: '__timeout__'),
-      );
+      emit(current.copyWith(
+        isAnswerRevealed: true,
+        selectedAnswer: '__timeout__',
+      ));
     } else {
       emit(current.copyWith(remainingTime: current.remainingTime - 1));
     }
   }
 
-  // Sonraki soruya geç
+  // ─── Sonraki Soru ───────────────────────────
   void nextQuestion() {
     final current = state;
     if (current is! GameInProgress) return;
 
     final session = current.session;
     final q = session.currentQuestion;
+    if (q == null) return;
+
     final isCorrect = current.selectedAnswer == q.movie.title;
     final earned = isCorrect ? q.points : 0;
 
     final newAnswers = List<String?>.from(session.userAnswers);
     newAnswers[session.currentIndex] = current.selectedAnswer;
 
-    final updatedSession = session.copyWith(
-      currentIndex: session.currentIndex + 1,
-      score: session.score + earned,
-      userAnswers: newAnswers,
-    );
-
     if (session.isLastQuestion) {
-      _finishGame(updatedSession.copyWith(isComplete: true));
-    } else {
-      emit(
-        GameInProgress(
-          session: updatedSession,
-          remainingTime: updatedSession.currentQuestion.timeLimit,
-        ),
+      final completedSession = session.copyWith(
+        score: session.score + earned,
+        userAnswers: newAnswers,
+        isComplete: true,
       );
+      _finishGame(completedSession);
+    } else {
+      final updatedSession = session.copyWith(
+        currentIndex: session.currentIndex + 1,
+        score: session.score + earned,
+        userAnswers: newAnswers,
+      );
+
+      final nextQ = updatedSession.currentQuestion;
+      if (nextQ == null) return;
+
+      emit(GameInProgress(
+        session: updatedSession,
+        remainingTime: nextQ.timeLimit,
+      ));
     }
   }
 
+  // ─── Oyunu Bitir ────────────────────────────
   void _finishGame(GameSession session) {
+    final start = _sessionStart;
+    if (start == null) return; // Güvenli null check — force unwrap yok.
+
     final correctAnswers = session.userAnswers
         .asMap()
         .entries
         .where((e) => e.value == session.questions[e.key].movie.title)
         .length;
-
-    final timeTaken = DateTime.now().difference(_sessionStart!);
 
     final result = GameResult(
       gameType: session.gameType,
@@ -224,10 +242,9 @@ class GamesCubit extends Cubit<GamesState> {
       totalQuestions: session.totalQuestions,
       correctAnswers: correctAnswers,
       pointsEarned: session.score,
-      timeTaken: timeTaken,
+      timeTaken: DateTime.now().difference(start),
     );
 
-    // High score güncelle
     if (session.score > (_highScores[session.gameType] ?? 0)) {
       _highScores[session.gameType] = session.score;
     }

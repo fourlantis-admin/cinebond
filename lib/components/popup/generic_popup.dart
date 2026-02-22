@@ -53,18 +53,18 @@ class GenericPopup extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildTitle(context),
-              VerticalSpacing(16),
+              const VerticalSpacing(16),
               if (icon != null) ...[
                 _buildIcon(),
-                VerticalSpacing(16),
+                const VerticalSpacing(16),
               ],
               _buildMessage(context),
-              VerticalSpacing(20),
+              const VerticalSpacing(20),
               _buildPrimaryButton(context, screenHeight),
-              VerticalSpacing(16),
+              const VerticalSpacing(16),
               if (isSecondaryActive) ...[
                 _buildSecondaryButton(context, screenHeight),
-                VerticalSpacing(8),
+                const VerticalSpacing(8),
               ],
             ],
           ),

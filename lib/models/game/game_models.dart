@@ -1,13 +1,15 @@
 // ─────────────────────────────────────────────
 // CineBond – Games Module: Models
 // ─────────────────────────────────────────────
-
 import 'dart:ui';
+
+import 'package:cinebond/service/repositories/game/game_repository.dart';
 
 enum GameType { emojiGuess, blurredPoster, starringGuess }
 
 enum GameDifficulty { easy, medium, hard }
 
+// ─── Movie ────────────────────────────────────
 class Movie {
   final String id;
   final String title;
@@ -28,6 +30,7 @@ class Movie {
   });
 }
 
+// ─── GameQuestion ─────────────────────────────
 class GameQuestion {
   final String id;
   final Movie movie;
@@ -48,13 +51,14 @@ class GameQuestion {
   });
 }
 
+// ─── GameSession ──────────────────────────────
 class GameSession {
   final String sessionId;
   final GameType gameType;
   final List<GameQuestion> questions;
   final int currentIndex;
   final int score;
-  final List<String?> userAnswers; // null = cevaplamadı
+  final List<String?> userAnswers;
   final bool isComplete;
   final DateTime startedAt;
 
@@ -87,12 +91,21 @@ class GameSession {
     );
   }
 
-  GameQuestion get currentQuestion => questions[currentIndex];
+  // Null-safe getter — index taşması durumunda crash vermez.
+  GameQuestion? get currentQuestion {
+    if (currentIndex >= questions.length) return null;
+    return questions[currentIndex];
+  }
+
   bool get isLastQuestion => currentIndex >= questions.length - 1;
   int get totalQuestions => questions.length;
-  double get progressPercent => (currentIndex + 1) / totalQuestions;
+
+  // currentIndex + 1 kullanıyoruz çünkü "şu anki soru kaçıncı" gösterimi için.
+  double get progressPercent =>
+      questions.isEmpty ? 0 : (currentIndex + 1) / totalQuestions;
 }
 
+// ─── GameResult ───────────────────────────────
 class GameResult {
   final GameType gameType;
   final int score;
@@ -110,7 +123,9 @@ class GameResult {
     required this.timeTaken,
   });
 
-  double get accuracy => correctAnswers / totalQuestions;
+  double get accuracy =>
+      totalQuestions == 0 ? 0 : correctAnswers / totalQuestions;
+
   String get grade {
     if (accuracy >= 0.9) return 'S';
     if (accuracy >= 0.7) return 'A';
@@ -120,120 +135,83 @@ class GameResult {
   }
 }
 
-// ─── Mock Data ────────────────────────────────
+// ─── GamePreparation ──────────────────────────
+// Repository'den filmleri çeker, soru listesine dönüştürür.
+// Tüm metodlar async — backend geçişinde Cubit'e dokunmana gerek kalmaz.
 class GamePreparation {
-  static const List<Movie> _movies = [
-    Movie(
-      id: '1',
-      title: 'Inception',
-      posterUrl: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
-      cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'],
-      emoji: '🌀💤🏙️',
-      year: 2010,
-      genre: 'Sci-Fi',
-    ),
-    Movie(
-      id: '2',
-      title: 'The Godfather',
-      posterUrl: 'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsLe1rjUC4LMH.jpg',
-      cast: ['Marlon Brando', 'Al Pacino', 'James Caan'],
-      emoji: '🌹🐟💼',
-      year: 1972,
-      genre: 'Crime',
-    ),
-    Movie(
-      id: '3',
-      title: 'Interstellar',
-      posterUrl: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-      cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain'],
-      emoji: '🚀⭐🕳️',
-      year: 2014,
-      genre: 'Sci-Fi',
-    ),
-    Movie(
-      id: '4',
-      title: 'Joker',
-      posterUrl: 'https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg',
-      cast: ['Joaquin Phoenix', 'Robert De Niro', 'Zazie Beetz'],
-      emoji: '🃏😂🩸',
-      year: 2019,
-      genre: 'Thriller',
-    ),
-    Movie(
-      id: '5',
-      title: 'Parasite',
-      posterUrl: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg',
-      cast: ['Song Kang-ho', 'Lee Sun-kyun', 'Cho Yeo-jeong'],
-      emoji: '🏠🪲💰',
-      year: 2019,
-      genre: 'Thriller',
-    ),
-  ];
+  final IGameRepository _repository;
 
-  static List<GameQuestion> getEmojiQuestions() {
-    return _movies.map((movie) {
-      final otherTitles = _movies
-          .where((m) => m.id != movie.id)
-          .map((m) => m.title)
-          .toList()
-        ..shuffle();
-      final options = [movie.title, ...otherTitles.take(3)]..shuffle();
+  GamePreparation({IGameRepository? repository})
+      : _repository = repository ?? GameRepository();
 
-      return GameQuestion(
-        id: 'emoji_${movie.id}',
-        movie: movie,
-        type: GameType.emojiGuess,
-        difficulty: GameDifficulty.medium,
-        options: options,
-        points: 100,
-        timeLimit: 20,
-      );
-    }).toList();
+  Future<List<GameQuestion>> getEmojiQuestions() async {
+    final movies = await _repository.getEmojiQuestions();
+    return _buildQuestions(
+      movies: movies,
+      idPrefix: 'emoji',
+      type: GameType.emojiGuess,
+      difficulty: GameDifficulty.medium,
+      points: 100,
+      timeLimit: 20,
+    );
   }
 
-  static List<GameQuestion> getBlurredPosterQuestions() {
-    return _movies.map((movie) {
-      final otherTitles = _movies
-          .where((m) => m.id != movie.id)
-          .map((m) => m.title)
-          .toList()
-        ..shuffle();
-      final options = [movie.title, ...otherTitles.take(3)]..shuffle();
-
-      return GameQuestion(
-        id: 'blur_${movie.id}',
-        movie: movie,
-        type: GameType.blurredPoster,
-        difficulty: GameDifficulty.hard,
-        options: options,
-        points: 150,
-        timeLimit: 25,
-      );
-    }).toList();
+  Future<List<GameQuestion>> getBlurredPosterQuestions() async {
+    final movies = await _repository.getBlurredPosterQuestions();
+    return _buildQuestions(
+      movies: movies,
+      idPrefix: 'blur',
+      type: GameType.blurredPoster,
+      difficulty: GameDifficulty.hard,
+      points: 150,
+      timeLimit: 25,
+    );
   }
 
-  static List<GameQuestion> getStarringQuestions() {
-    return _movies.map((movie) {
-      final otherTitles = _movies
+  Future<List<GameQuestion>> getStarringQuestions() async {
+    final movies = await _repository.getStarringQuestions();
+    return _buildQuestions(
+      movies: movies,
+      idPrefix: 'star',
+      type: GameType.starringGuess,
+      difficulty: GameDifficulty.easy,
+      points: 75,
+      timeLimit: 30,
+    );
+  }
+
+  // Tekrar eden soru oluşturma mantığı tek yerde.
+  List<GameQuestion> _buildQuestions({
+    required List<Movie> movies,
+    required String idPrefix,
+    required GameType type,
+    required GameDifficulty difficulty,
+    required int points,
+    required int timeLimit,
+  }) {
+    return movies.map((movie) {
+      final otherTitles = movies
           .where((m) => m.id != movie.id)
           .map((m) => m.title)
           .toList()
         ..shuffle();
+
       final options = [movie.title, ...otherTitles.take(3)]..shuffle();
 
       return GameQuestion(
-        id: 'star_${movie.id}',
+        id: '${idPrefix}_${movie.id}',
         movie: movie,
-        type: GameType.starringGuess,
-        difficulty: GameDifficulty.easy,
+        type: type,
+        difficulty: difficulty,
         options: options,
-        points: 75,
-        timeLimit: 30,
+        points: points,
+        timeLimit: timeLimit,
       );
     }).toList();
   }
 }
 
+// ─── GameCardData ─────────────────────────────
 class GameCardData {
   final GameType type;
   final String title;
