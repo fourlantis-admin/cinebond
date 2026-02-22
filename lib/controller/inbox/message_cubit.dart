@@ -50,7 +50,6 @@ class MessagesCubit extends Cubit<MessagesState> {
 
   Future<void> loadConversations() async {
     emit(const MessagesLoading());
-    // TODO: gerçek servis → MessageRepository.getConversations()
     await Future.delayed(const Duration(milliseconds: 400));
     emit(MessagesLoaded(conversations: MessagesData.getMockConversations()));
   }
@@ -59,7 +58,6 @@ class MessagesCubit extends Cubit<MessagesState> {
     final current = state;
     if (current is! MessagesLoaded) return;
 
-    // Okunmamış sıfırla
     final updated = current.conversations.map((c) {
       if (c.match.id == conversation.match.id) {
         return Conversation(

@@ -31,7 +31,7 @@ class _MessagesBody extends StatelessWidget {
       backgroundColor: const Color(0xFF0A0A0C),
       body: Stack(
         children: [
-          const SafeArea(child: _MessagesList()),
+          const SafeArea(child: MessagesList()),
 
           BlocBuilder<MessagesCubit, MessagesState>(
             buildWhen: (p, c) {
@@ -42,7 +42,7 @@ class _MessagesBody extends StatelessWidget {
             },
             builder: (context, state) {
               final chat = state is MessagesLoaded ? state.activeChat : null;
-              return _ChatPanel(conversation: chat);
+              return ChatPanel(conversation: chat);
             },
           ),
         ],
@@ -54,8 +54,8 @@ class _MessagesBody extends StatelessWidget {
 // ─────────────────────────────────────────────
 //  MESSAGES LIST
 // ─────────────────────────────────────────────
-class _MessagesList extends StatelessWidget {
-  const _MessagesList();
+class MessagesList extends StatelessWidget {
+  const MessagesList();
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +109,7 @@ class _MessagesList extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const VerticalSpacing( 18),
 
             // Match strip label
             const Padding(
@@ -133,14 +133,14 @@ class _MessagesList extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 itemCount: convos.length,
                 separatorBuilder: (_, __) => const HorizontalSpacing( 12),
-                itemBuilder: (context, i) => _MatchBubble(
+                itemBuilder: (context, i) => MatchedStoryboard(
                   conversation: convos[i],
                   onTap: () => context.read<MessagesCubit>().openChat(convos[i]),
                 ),
               ),
             ),
 
-            const SizedBox(height: 6),
+            const VerticalSpacing( 6),
 
             // Divider
             Container(
@@ -168,7 +168,7 @@ class _MessagesList extends StatelessWidget {
               child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 itemCount: convos.length,
-                itemBuilder: (context, i) => _ConversationRow(
+                itemBuilder: (context, i) => ConversationRow(
                   conversation: convos[i],
                   onTap: () => context.read<MessagesCubit>().openChat(convos[i]),
                 ),
@@ -184,8 +184,8 @@ class _MessagesList extends StatelessWidget {
 // ─────────────────────────────────────────────
 //  MATCH BUBBLE  (story halkası)
 // ─────────────────────────────────────────────
-class _MatchBubble extends StatelessWidget {
-  const _MatchBubble({required this.conversation, required this.onTap});
+class MatchedStoryboard extends StatelessWidget {
+  const MatchedStoryboard({required this.conversation, required this.onTap});
 
   final Conversation conversation;
   final VoidCallback onTap;
@@ -253,7 +253,7 @@ class _MatchBubble extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 6),
+          const VerticalSpacing( 6),
           Text(
             match.name.split(' ').first,
             style: TextStyle(
@@ -275,8 +275,8 @@ class _MatchBubble extends StatelessWidget {
 // ─────────────────────────────────────────────
 //  CONVERSATION ROW
 // ─────────────────────────────────────────────
-class _ConversationRow extends StatelessWidget {
-  const _ConversationRow({required this.conversation, required this.onTap});
+class ConversationRow extends StatelessWidget {
+  const ConversationRow({required this.conversation, required this.onTap});
 
   final Conversation conversation;
   final VoidCallback onTap;
@@ -368,7 +368,7 @@ class _ConversationRow extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 3),
+                    const VerticalSpacing( 3),
                     Text(
                       conversation.lastMessagePreview,
                       maxLines: 1,
@@ -420,15 +420,15 @@ class _ConversationRow extends StatelessWidget {
 // ─────────────────────────────────────────────
 //  CHAT PANEL  (sağdan açılan)
 // ─────────────────────────────────────────────
-class _ChatPanel extends StatefulWidget {
-  const _ChatPanel({this.conversation});
+class ChatPanel extends StatefulWidget {
+  const ChatPanel({this.conversation});
   final Conversation? conversation;
 
   @override
-  State<_ChatPanel> createState() => _ChatPanelState();
+  State<ChatPanel> createState() => ChatPanelState();
 }
 
-class _ChatPanelState extends State<_ChatPanel>
+class ChatPanelState extends State<ChatPanel>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<Offset> _slide;
@@ -451,7 +451,7 @@ class _ChatPanelState extends State<_ChatPanel>
   }
 
   @override
-  void didUpdateWidget(_ChatPanel old) {
+  void didUpdateWidget(ChatPanel old) {
     super.didUpdateWidget(old);
     if (widget.conversation != null && old.conversation == null) {
       _ctrl.forward();
@@ -699,7 +699,7 @@ class _ChatPanelState extends State<_ChatPanel>
         final isMe = msg.isMe;
 
         if (msg.type == MessageType.movieCard) {
-          return _MovieCardBubble(movieTitle: msg.movieTitle ?? '');
+          return MovieCardBubble(movieTitle: msg.movieTitle ?? '');
         }
 
         return Padding(
@@ -734,7 +734,7 @@ class _ChatPanelState extends State<_ChatPanel>
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              const VerticalSpacing( 2),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
@@ -809,8 +809,8 @@ class _ChatPanelState extends State<_ChatPanel>
 // ─────────────────────────────────────────────
 //  MOVIE CARD BUBBLE  (özel mesaj tipi)
 // ─────────────────────────────────────────────
-class _MovieCardBubble extends StatelessWidget {
-  const _MovieCardBubble({required this.movieTitle});
+class MovieCardBubble extends StatelessWidget {
+  const MovieCardBubble({required this.movieTitle});
   final String movieTitle;
 
   @override
@@ -853,7 +853,7 @@ class _MovieCardBubble extends StatelessWidget {
                       color: Color(0xFFF0F0F5),
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const VerticalSpacing( 2),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 6, vertical: 2),
