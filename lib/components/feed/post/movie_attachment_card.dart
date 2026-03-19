@@ -1,4 +1,3 @@
-
 // -----------------------------------------------------------------------------
 // Movie Attachment Card
 // -----------------------------------------------------------------------------
@@ -13,7 +12,11 @@ class MovieAttachmentCard extends StatelessWidget {
   final String title;
   final PostModel model;
 
-  MovieAttachmentCard({required this.posterUrl, required this.title,required this.model});
+  MovieAttachmentCard({
+    required this.posterUrl,
+    required this.title,
+    required this.model,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +76,7 @@ class MovieAttachmentCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 6),
+                    VerticalSpacing(6),
                     Text(
                       title,
                       style: TextStyle(

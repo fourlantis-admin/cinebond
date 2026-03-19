@@ -1,8 +1,8 @@
-
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/inbox/message_cubit.dart';
-import 'package:cinebond/models/inbox/message_model.dart' show Conversation, MessageType;
+import 'package:cinebond/models/inbox/message_model.dart'
+    show Conversation, MessageType;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,8 +68,10 @@ class MessagesList extends StatelessWidget {
         }
         if (state is MessagesError) {
           return Center(
-            child: Text(state.message,
-                style: const TextStyle(color: Colors.white54)),
+            child: Text(
+              state.message,
+              style: const TextStyle(color: Colors.white54),
+            ),
           );
         }
         if (state is! MessagesLoaded) return const SizedBox.shrink();
@@ -102,14 +104,17 @@ class MessagesList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: const Color(0xFF1E1E26)),
                     ),
-                    child: const Icon(Icons.notifications_none_rounded,
-                        color: Color(0xFF888899), size: 18),
+                    child: const Icon(
+                      Icons.notifications_none_rounded,
+                      color: Color(0xFF888899),
+                      size: 18,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            const VerticalSpacing( 18),
+            const VerticalSpacing(18),
 
             // Match strip label
             const Padding(
@@ -132,15 +137,16 @@ class MessagesList extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 itemCount: convos.length,
-                separatorBuilder: (_, __) => const HorizontalSpacing( 12),
+                separatorBuilder: (_, __) => const HorizontalSpacing(12),
                 itemBuilder: (context, i) => MatchedStoryboard(
                   conversation: convos[i],
-                  onTap: () => context.read<MessagesCubit>().openChat(convos[i]),
+                  onTap: () =>
+                      context.read<MessagesCubit>().openChat(convos[i]),
                 ),
               ),
             ),
 
-            const VerticalSpacing( 6),
+            const VerticalSpacing(6),
 
             // Divider
             Container(
@@ -170,7 +176,8 @@ class MessagesList extends StatelessWidget {
                 itemCount: convos.length,
                 itemBuilder: (context, i) => ConversationRow(
                   conversation: convos[i],
-                  onTap: () => context.read<MessagesCubit>().openChat(convos[i]),
+                  onTap: () =>
+                      context.read<MessagesCubit>().openChat(convos[i]),
                 ),
               ),
             ),
@@ -247,21 +254,21 @@ class MatchedStoryboard extends StatelessWidget {
                       color: const Color(0xFF00E676),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: const Color(0xFF0A0A0C), width: 2),
+                        color: const Color(0xFF0A0A0C),
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
             ],
           ),
-          const VerticalSpacing( 6),
+          const VerticalSpacing(6),
           Text(
             match.name.split(' ').first,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: isNew
-                  ? const Color(0xFFF0F0F5)
-                  : const Color(0xFF888899),
+              color: isNew ? const Color(0xFFF0F0F5) : const Color(0xFF888899),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -332,14 +339,16 @@ class ConversationRow extends StatelessWidget {
                           color: const Color(0xFF00E676),
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: const Color(0xFF0A0A0C), width: 2),
+                            color: const Color(0xFF0A0A0C),
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
                 ],
               ),
 
-              const HorizontalSpacing( 14),
+              const HorizontalSpacing(14),
 
               // İsim + preview
               Expanded(
@@ -368,7 +377,7 @@ class ConversationRow extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const VerticalSpacing( 3),
+                    const VerticalSpacing(3),
                     Text(
                       conversation.lastMessagePreview,
                       maxLines: 1,
@@ -553,8 +562,11 @@ class ChatPanelState extends State<ChatPanel>
                 color: const Color(0xFF18181D),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Color(0xFFF0F0F5), size: 16),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Color(0xFFF0F0F5),
+                size: 16,
+              ),
             ),
           ),
           const HorizontalSpacing(10),
@@ -574,7 +586,7 @@ class ChatPanelState extends State<ChatPanel>
               ),
             ),
           ),
-          const HorizontalSpacing( 10),
+          const HorizontalSpacing(10),
 
           // İsim + durum
           Expanded(
@@ -593,9 +605,10 @@ class ChatPanelState extends State<ChatPanel>
                   const Text(
                     '● Çevrimiçi',
                     style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF00E676),
-                        fontWeight: FontWeight.w500),
+                      fontSize: 12,
+                      color: Color(0xFF00E676),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
               ],
             ),
@@ -609,10 +622,13 @@ class ChatPanelState extends State<ChatPanel>
               color: const Color(0xFF18181D),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.movie_filter_outlined,
-                color: Color(0xFF888899), size: 18),
+            child: const Icon(
+              Icons.movie_filter_outlined,
+              color: Color(0xFF888899),
+              size: 18,
+            ),
           ),
-          const HorizontalSpacing( 8),
+          const HorizontalSpacing(8),
           Container(
             width: 36,
             height: 36,
@@ -620,8 +636,11 @@ class ChatPanelState extends State<ChatPanel>
               color: const Color(0xFF18181D),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.more_horiz_rounded,
-                color: Color(0xFF888899), size: 18),
+            child: const Icon(
+              Icons.more_horiz_rounded,
+              color: Color(0xFF888899),
+              size: 18,
+            ),
           ),
         ],
       ),
@@ -645,7 +664,7 @@ class ChatPanelState extends State<ChatPanel>
       child: Row(
         children: [
           const Text('🎉', style: TextStyle(fontSize: 22)),
-          const HorizontalSpacing( 10),
+          const HorizontalSpacing(10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -661,7 +680,9 @@ class ChatPanelState extends State<ChatPanel>
                 Text(
                   'Ortak: ${convo.match.commonMovies.join(', ')}',
                   style: const TextStyle(
-                      fontSize: 11, color: Color(0xFF888899)),
+                    fontSize: 11,
+                    color: Color(0xFF888899),
+                  ),
                 ),
               ],
             ),
@@ -671,8 +692,9 @@ class ChatPanelState extends State<ChatPanel>
             decoration: BoxDecoration(
               color: const Color(0xFF7B5CF5).withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
-              border:
-                  Border.all(color: const Color(0xFF7B5CF5).withOpacity(0.4)),
+              border: Border.all(
+                color: const Color(0xFF7B5CF5).withOpacity(0.4),
+              ),
             ),
             child: const Text(
               'Match',
@@ -705,15 +727,18 @@ class ChatPanelState extends State<ChatPanel>
         return Padding(
           padding: const EdgeInsets.only(bottom: 6),
           child: Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isMe
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.72,
                 ),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 10),
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isMe
                       ? const Color(0xFF7B5CF5)
@@ -734,13 +759,15 @@ class ChatPanelState extends State<ChatPanel>
                   ),
                 ),
               ),
-              const VerticalSpacing( 2),
+              const VerticalSpacing(2),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   _formatTime(msg.sentAt),
                   style: const TextStyle(
-                      fontSize: 10, color: Color(0xFF444455)),
+                    fontSize: 10,
+                    color: Color(0xFF444455),
+                  ),
                 ),
               ),
             ],
@@ -767,20 +794,21 @@ class ChatPanelState extends State<ChatPanel>
               ),
               child: TextField(
                 controller: _inputCtrl,
-                style: const TextStyle(
-                    fontSize: 14, color: Color(0xFFF0F0F5)),
+                style: const TextStyle(fontSize: 14, color: Color(0xFFF0F0F5)),
                 onSubmitted: (_) => _send(),
                 decoration: const InputDecoration(
                   hintText: 'Mesaj yaz...',
                   hintStyle: TextStyle(color: Color(0xFF444455)),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 11),
+                    horizontal: 16,
+                    vertical: 11,
+                  ),
                 ),
               ),
             ),
           ),
-          const HorizontalSpacing( 10),
+          const HorizontalSpacing(10),
           GestureDetector(
             onTap: _send,
             child: Container(
@@ -790,8 +818,11 @@ class ChatPanelState extends State<ChatPanel>
                 color: Color(0xFF7B5CF5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.arrow_upward_rounded,
-                  color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.arrow_upward_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -838,10 +869,13 @@ class MovieCardBubble extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.movie_outlined,
-                    color: Colors.white54, size: 18),
+                child: const Icon(
+                  Icons.movie_outlined,
+                  color: Colors.white54,
+                  size: 18,
+                ),
               ),
-              const HorizontalSpacing( 10),
+              const HorizontalSpacing(10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -853,10 +887,12 @@ class MovieCardBubble extends StatelessWidget {
                       color: Color(0xFFF0F0F5),
                     ),
                   ),
-                  const VerticalSpacing( 2),
+                  const VerticalSpacing(2),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF7B5CF5).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(4),

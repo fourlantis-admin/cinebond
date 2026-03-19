@@ -6,7 +6,8 @@ import 'package:cinebond/controller/explore/explore_cubit.dart';
 import 'package:cinebond/controller/movie/favorites_cubit.dart';
 import 'package:cinebond/models/movie/movie_question_model.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
+import 'package:cinebond/utils/storage/session_manager.dart';
 import 'package:cinebond/view/main/explore/swipe_to_decide_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
@@ -77,12 +78,13 @@ class _ExploreViewState extends State<ExploreView> {
   @override
   void initState() {
     super.initState();
+    SessionManager().loadUserInfo();
     final repo = MovieRepository();
     _exploreCubit = ExploreCubit(repo: repo)..getMovies(context);
     _favoritesCubit = FavoritesCubit(movieRepository: repo);
     _postModels = _buildMockFeed();
-
     _scrollController.addListener(_onScroll);
+    _exploreCubit.getActors(context);
   }
 
   void _onScroll() {
@@ -427,7 +429,12 @@ class _ExploreViewState extends State<ExploreView> {
       // Expanded modda Column yeterli
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [header, const VerticalSpacing(12), list, const VerticalSpacing(32)],
+        children: [
+          header,
+          const VerticalSpacing(12),
+          list,
+          const VerticalSpacing(32),
+        ],
       );
     }
 

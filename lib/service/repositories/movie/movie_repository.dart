@@ -1,3 +1,4 @@
+import 'package:cinebond/models/movie/actors_resp.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';
 import 'package:cinebond/models/user/generic_by_id_req.dart';
 import 'package:cinebond/service/network_manager.dart';
@@ -9,8 +10,8 @@ import 'package:flutter/material.dart';
 
 class MovieRepository {
   NetworkManager networkManager = NetworkManager();
-
   MovieRepository();
+
   Future<List<MovieResp>> getMovies(
     BuildContext context, {
     String pageNumber = "0",
@@ -62,6 +63,39 @@ class MovieRepository {
       );
       print(response);
       return MovieResp.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ActorsResp>> getActors(
+    BuildContext context, {
+    String pageNumber = "0",
+    String filter = "",
+  }) async {
+    try {
+      final response = await networkManager.get(
+        "api/actors?pageNumber=${pageNumber}&pageSize=15&sortedField=name&sort=DESC",
+      );
+      final List list = response;
+      print(list);
+      return list.map((e) => ActorsResp.fromJson(e)).toList();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+  Future<List<MovieResp>> getActorById(
+  {
+    String? id,
+  }) async {
+    try {
+      final response = await networkManager.get(
+        "api/actors/${id}"
+      );
+      final List list = response;
+      print(list);
+      return list.map((e) => MovieResp.fromJson(e)).toList();
     } catch (e) {
       rethrow;
     }

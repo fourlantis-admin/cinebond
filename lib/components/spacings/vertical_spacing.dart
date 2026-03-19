@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class VerticalSpacing extends StatelessWidget{
-  const VerticalSpacing(this.height);
+class VerticalSpacing extends StatelessWidget {
+  const VerticalSpacing(this.height, {super.key});
 
   final double height;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(height: MediaQuery.of(context).size.height / 1000 * height);
   }
-  }
-  
+}

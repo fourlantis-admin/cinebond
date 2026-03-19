@@ -1,5 +1,5 @@
 import 'package:cinebond/models/movie/movie_resp.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

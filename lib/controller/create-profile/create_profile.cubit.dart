@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cinebond/models/user/generic_by_id_req.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
 import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
 import 'package:flutter/material.dart';

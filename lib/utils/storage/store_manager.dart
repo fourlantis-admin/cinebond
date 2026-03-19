@@ -2,67 +2,44 @@ import 'dart:convert';
 import 'package:cinebond/models/login/login_resp.dart';
 import 'package:cinebond/utils/storage/session_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class StoreManager {
   static const String USER_RESP = 'user_info';
   static const String AUTH_TOKEN = 'auth_token';
 
-  //***************************** */
-  //USER OPERATIONS HERE
-  //***************************** */
-  Future saveUser(LoginResp? resp) async {
-    var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) async {
-      var info = json.encode(resp?.toJson());
-      await prefs.setString(USER_RESP, info);
-      print(prefs);
-      session.loadUserInfo();
-    });
+  Future<void> saveUser(LoginResp? resp) async {
+    final prefs = await SharedPreferences.getInstance();
+    final info = json.encode(resp?.toJson());
+    await prefs.setString(USER_RESP, info);
+    await SessionManager().loadUserInfo(); // ← await ile sıralı çalışır
   }
 
-  Future<LoginResp>? getUser() async {
-    var shared = await SharedPreferences.getInstance();
-    String? data = await shared.getString(USER_RESP);
-    if(data == null)
-      return LoginResp();
-    
-    final user = LoginResp.fromJson(json.decode(data ?? ""));
-    print(user);
-    return user;
-  }
-  Future removeUserInfo() async {
-    var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) async {
-      await prefs.remove(USER_RESP);
-      session.loadUserInfo();
-    });
+  Future<LoginResp?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString(USER_RESP);
+    if (data == null || data.isEmpty) return null;
+    return LoginResp.fromJson(json.decode(data));
   }
 
-  Future<String>? getToken() async {
-    var shared = await SharedPreferences.getInstance();
-    var data;
-    try {
-      data = await shared.getString(AUTH_TOKEN);
-    } catch (e) {
-      print(e);
-    }
-    print(data);
-    return data ?? "";
+  Future<void> removeUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(USER_RESP);
+    await SessionManager().loadUserInfo();
   }
 
-  Future saveToken(String token) async {
-    var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) async {
-      await prefs.setString(AUTH_TOKEN, token);
-      print(prefs);
-      session.loadUserInfo();
-    });
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AUTH_TOKEN) ?? "";
   }
-    Future removeToken() async {
-    var session = SessionManager();
-    SharedPreferences.getInstance().then((prefs) async {
-      await prefs.remove(AUTH_TOKEN);
-      session.loadUserInfo();
-    });
+
+  Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AUTH_TOKEN, token);
+    await SessionManager().loadUserInfo();
+  }
+
+  Future<void> removeToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(AUTH_TOKEN);
+    await SessionManager().loadUserInfo();
   }
 }

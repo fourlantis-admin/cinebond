@@ -3,7 +3,7 @@ import 'package:cinebond/controller/explore/swipe_to_decide_cubit.dart';
 import 'package:cinebond/controller/swipe/swipe_cubit.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';

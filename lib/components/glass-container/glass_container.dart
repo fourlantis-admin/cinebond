@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cinebond/components/spacings/horizontal_spacing.dart';
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/constants/images-icons/images_icons.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:flutter/material.dart';
@@ -36,19 +37,14 @@ class GlassContainer extends StatelessWidget {
           children: [
             /// 🔹 BACKGROUND IMAGE
             Positioned.fill(
-              child: Image(
-                image: image,
-                fit: BoxFit.cover,
-              ),
+              child: Image(image: image, fit: BoxFit.cover),
             ),
 
             /// 🔹 BLUR + DARK OVERLAY
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
-                  color: Colors.black.withOpacity(0.35),
-                ),
+                child: Container(color: Colors.black.withOpacity(0.35)),
               ),
             ),
 
@@ -71,7 +67,7 @@ class GlassContainer extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const VerticalSpacing(4),
                       Text(
                         titleLarge,
                         style: const TextStyle(
@@ -88,7 +84,10 @@ class GlassContainer extends StatelessWidget {
                     children: [
                       _OptionChip(text: optionLeft),
                       const SizedBox(width: 8),
-                      _OptionChip(text: optionRight,path: ImagesIcons.POPCORN_ICON,),
+                      _OptionChip(
+                        text: optionRight,
+                        path: ImagesIcons.POPCORN_ICON,
+                      ),
                     ],
                   ),
                 ],
@@ -100,11 +99,12 @@ class GlassContainer extends StatelessWidget {
     );
   }
 }
+
 class _OptionChip extends StatelessWidget {
   final String text;
   final String? path;
 
-  const _OptionChip({required this.text,this.path});
+  const _OptionChip({required this.text, this.path});
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +116,13 @@ class _OptionChip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          path!=null ? Container(width:15,height: 15, child: SvgPicture.asset(path??"")) : Container(),
+          path != null
+              ? Container(
+                  width: 15,
+                  height: 15,
+                  child: SvgPicture.asset(path ?? ""),
+                )
+              : Container(),
           HorizontalSpacing(2),
           Text(
             text,

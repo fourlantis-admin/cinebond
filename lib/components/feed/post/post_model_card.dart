@@ -66,7 +66,7 @@ class PostModelCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 6),
+                VerticalSpacing( 6),
                 // Post text
                 Text(
                   post.content,
@@ -78,14 +78,14 @@ class PostModelCard extends StatelessWidget {
                 ),
                 // Movie card (optional)
                 if (post.moviePosterUrl != null) ...[
-                  SizedBox(height: 10),
+                  VerticalSpacing( 10),
                   MovieAttachmentCard(
                     posterUrl: post.moviePosterUrl!,
                     title: post.movieTitle ?? "",
                     model: post,
                   ),
                 ],
-                SizedBox(height: 12),
+                VerticalSpacing( 12),
                 // Action row
                 Row(
                   children: [

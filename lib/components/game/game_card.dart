@@ -1,4 +1,5 @@
 import 'package:cinebond/components/game/pill_badge.dart';
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/game/game_cubit.dart';
 import 'package:cinebond/models/game/game_models.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
@@ -115,7 +116,7 @@ class GameCardState extends State<GameCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(d.subtitle),
-                        const SizedBox(height: 8),
+                        const VerticalSpacing(8),
                         Row(
                           children: [
                             PillBadge(label: d.difficulty, color: d.accent),

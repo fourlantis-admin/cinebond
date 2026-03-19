@@ -3,37 +3,18 @@
 // ─────────────────────────────────────────────
 import 'dart:ui';
 
+import 'package:cinebond/models/game/game_movies_resp.dart';
 import 'package:cinebond/service/repositories/game/game_repository.dart';
 
 enum GameType { emojiGuess, blurredPoster, starringGuess }
 
 enum GameDifficulty { easy, medium, hard }
 
-// ─── Movie ────────────────────────────────────
-class Movie {
-  final String id;
-  final String title;
-  final String posterUrl;
-  final List<String> cast;
-  final String emoji;
-  final int year;
-  final String genre;
-
-  const Movie({
-    required this.id,
-    required this.title,
-    required this.posterUrl,
-    required this.cast,
-    required this.emoji,
-    required this.year,
-    required this.genre,
-  });
-}
 
 // ─── GameQuestion ─────────────────────────────
 class GameQuestion {
   final String id;
-  final Movie movie;
+  final GameMoviesResp movie;
   final GameType type;
   final GameDifficulty difficulty;
   final List<String> options;
@@ -145,7 +126,7 @@ class GamePreparation {
       : _repository = repository ?? GameRepository();
 
   Future<List<GameQuestion>> getEmojiQuestions() async {
-    final movies = await _repository.getEmojiQuestions();
+    final movies = await _repository.getGameMovies();
     return _buildQuestions(
       movies: movies,
       idPrefix: 'emoji',
@@ -157,7 +138,7 @@ class GamePreparation {
   }
 
   Future<List<GameQuestion>> getBlurredPosterQuestions() async {
-    final movies = await _repository.getBlurredPosterQuestions();
+    final movies = await _repository.getGameMovies();
     return _buildQuestions(
       movies: movies,
       idPrefix: 'blur',
@@ -169,7 +150,7 @@ class GamePreparation {
   }
 
   Future<List<GameQuestion>> getStarringQuestions() async {
-    final movies = await _repository.getStarringQuestions();
+    final movies = await _repository.getGameMovies();
     return _buildQuestions(
       movies: movies,
       idPrefix: 'star',
@@ -179,10 +160,9 @@ class GamePreparation {
       timeLimit: 30,
     );
   }
-
   // Tekrar eden soru oluşturma mantığı tek yerde.
   List<GameQuestion> _buildQuestions({
-    required List<Movie> movies,
+    required List<GameMoviesResp> movies,
     required String idPrefix,
     required GameType type,
     required GameDifficulty difficulty,

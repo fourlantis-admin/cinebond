@@ -1,5 +1,7 @@
 import 'package:cinebond/mixins/popup_mixin.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
+import 'package:cinebond/view/create-profile/create_profile_view.dart';
+import 'package:cinebond/view/create-profile/select_profile_photo_view.dart';
 import 'package:cinebond/view/register/register_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ import 'package:cinebond/service/repositories/user/user_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:cinebond/view/main/main_menu_view.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

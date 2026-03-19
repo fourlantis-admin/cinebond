@@ -1,66 +1,38 @@
-
-
 import 'package:cinebond/models/login/login_resp.dart';
 import 'package:cinebond/utils/storage/store_manager.dart';
+import 'package:flutter/material.dart';
 
 class SessionManager {
-  LoginResp? user;
-  String? authToken;
-
   static SessionManager? _instance;
   SessionManager._internal();
 
-  loadUserInfo() async {
-    var store = StoreManager();
-    user = await store.getUser();
-    authToken = await store.getToken();
-    print(user);
-    print(authToken);
+  factory SessionManager() {
+    _instance ??= SessionManager._internal();
+    return _instance!;
   }
 
+  final ValueNotifier<LoginResp?> userNotifier = ValueNotifier<LoginResp?>(null);
+  String? authToken;
+  LoginResp? get user => userNotifier.value;
 
+  void setUser(LoginResp user) {
+    userNotifier.value = user;
+  }
 
+  void clearUser() {
+    userNotifier.value = null;
+  }
 
+  Future<void> loadUserInfo() async {
+    var store = StoreManager();
+    final loadedUser = await store.getUser();
+    authToken = await store.getToken();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-   factory SessionManager() {
-    if (_instance == null) {
-      _instance = SessionManager._internal();
+    if (loadedUser != null) {
+      userNotifier.value = loadedUser;
     }
-    return _instance!;
+
+    print(user);
+    print(authToken);
   }
 }

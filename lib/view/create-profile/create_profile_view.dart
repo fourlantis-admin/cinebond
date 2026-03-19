@@ -3,7 +3,7 @@ import 'package:cinebond/components/profile/step_header.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/create-profile/create_profile.cubit.dart';
 import 'package:cinebond/mixins/view_state_mixin.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
 import 'package:cinebond/utils/loading/loading_cubit.dart';
 import 'package:cinebond/view/create-profile/name_surname_view.dart';
 import 'package:cinebond/view/create-profile/select_movie_view.dart';
@@ -75,10 +75,11 @@ class _CreateProfileViewState extends State<CreateProfileView> with ViewStateMix
                 Expanded(
                   child: IndexedStack(
                     index: state.step,
-                    children: const [
+                    children: [
                       NameSurnameView(),
                       SelectMovieView(),
                       SelectProfilePhotoView(),
+
                     ],
                   ),
                 ),

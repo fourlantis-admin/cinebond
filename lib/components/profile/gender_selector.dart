@@ -1,3 +1,4 @@
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/create-profile/create_profile.cubit.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,7 @@ class GenderSelector extends StatelessWidget {
                   borderRadius: BorderRadius.circular(22),
                   gradient: active
                       ? const LinearGradient(
-                          colors: [
-                            AppColor.MAIN_PURPLE,
-                            AppColor.MAIN_BLUE,
-                          ],
+                          colors: [AppColor.MAIN_PURPLE, AppColor.MAIN_BLUE],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         )
@@ -64,8 +62,7 @@ class GenderSelector extends StatelessWidget {
                   boxShadow: active
                       ? [
                           BoxShadow(
-                            color:
-                                AppColor.MAIN_PURPLE.withOpacity(0.45),
+                            color: AppColor.MAIN_PURPLE.withOpacity(0.45),
                             blurRadius: 18,
                             spreadRadius: 1,
                           ),
@@ -80,13 +77,14 @@ class GenderSelector extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _genderIcon(g, active),
-                      const SizedBox(height: 6),
+                      const VerticalSpacing(6),
                       Text(
                         g,
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight:
-                              active ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: active
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                       ),
                     ],
@@ -123,11 +121,7 @@ class GenderSelector extends StatelessWidget {
             ? Colors.white.withOpacity(0.2)
             : Colors.white.withOpacity(0.1),
       ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: 20,
-      ),
+      child: Icon(icon, color: Colors.white, size: 20),
     );
   }
 }

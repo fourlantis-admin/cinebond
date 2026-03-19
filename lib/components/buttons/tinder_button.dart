@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:cinebond/components/spacings/horizontal_spacing.dart';
-import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
 
 class TinderButton extends StatelessWidget {

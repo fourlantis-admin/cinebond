@@ -35,53 +35,55 @@ class HomeBaseView extends StatefulWidget {
   @override
   State<HomeBaseView> createState() => _HomeBaseViewState();
 }
-
 class _HomeBaseViewState extends State<HomeBaseView> with ViewStateMixin {
-  SessionManager sessionManager = SessionManager();
-  var user;
+  final SessionManager _sessionManager = SessionManager();
+
   @override
   void initState() {
-    user = sessionManager.user;
     super.initState();
+    // Session boşsa SharedPrefs'ten yükle
+    if (_sessionManager.user == null) {
+      _sessionManager.loadUserInfo();
+    }
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      bottomNavigationBar: widget.bottomNavigationBar,
-      extendBody: true,
-      endDrawer: ProfileDrawer(user: user ?? LoginResp()),
-      appBar: widget.isAppbarActive ? widget.appBar ?? buildAppbarWithBackButton() : null,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Center(
-              child: Container(
-                color: const Color.fromARGB(255, 15, 15, 15),
-              ),
+    return ValueListenableBuilder<LoginResp?>(
+      valueListenable: _sessionManager.userNotifier,
+      builder: (context, user, _) {
+        return Scaffold(
+          resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          bottomNavigationBar: widget.bottomNavigationBar,
+          extendBody: true,
+          endDrawer: ProfileDrawer(user: user ?? LoginResp()),
+          appBar: widget.isAppbarActive
+              ? widget.appBar ?? buildAppbarWithBackButton()
+              : null,
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(color: const Color.fromARGB(255, 15, 15, 15)),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: widget.horizontalPadding,
+                    vertical: widget.verticalPadding,
+                  ),
+                  child: widget.body,
+                ),
+                if (widget.isLoadingActive)
+                  BlocBuilder<LoadingCubit, LoadingState>(
+                    builder: (context, state) =>
+                        state.isLoading ? LoadingOverlay() : SizedBox.shrink(),
+                  ),
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: widget.horizontalPadding,
-                vertical: widget.verticalPadding,
-              ),
-              child: widget.body,
-            ),
-            if (widget.isLoadingActive)
-              BlocBuilder<LoadingCubit, LoadingState>(
-                builder: (context, state) {
-                  return state.isLoading
-                      ? LoadingOverlay()
-                      : SizedBox.shrink();
-                },
-              ),
-
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

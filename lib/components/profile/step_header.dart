@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:cinebond/utils/theme/app_color.dart';
 
@@ -6,11 +7,7 @@ class StepHeader extends StatelessWidget {
   final int step;
   final int totalSteps;
 
-  const StepHeader({
-    super.key,
-    required this.step,
-    this.totalSteps = 3,
-  });
+  const StepHeader({super.key, required this.step, this.totalSteps = 3});
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +31,7 @@ class StepHeader extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.15),
-              ),
+              border: Border.all(color: Colors.white.withOpacity(0.15)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,14 +42,15 @@ class StepHeader extends StatelessWidget {
                     _StepBadge(step: step + 1),
                     const SizedBox(width: 12),
                     Text(
-                      step == 0 ? "Profil Bilgiler" : step == 1 ? "En sevdiğiniz 10 film" : "Profil fotoğrafı ekleme",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      step == 0
+                          ? "Profil Bilgiler"
+                          : step == 1
+                          ? "En sevdiğiniz 10 film"
+                          : "Profil fotoğrafı ekleme",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const Spacer(),
                     Text(
@@ -67,7 +63,7 @@ class StepHeader extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 14),
+                const VerticalSpacing(14),
 
                 /// 🔹 PROGRESS BAR
                 ClipRRect(
@@ -76,9 +72,7 @@ class StepHeader extends StatelessWidget {
                     value: progress,
                     minHeight: 6,
                     backgroundColor: Colors.white.withOpacity(0.15),
-                    valueColor: AlwaysStoppedAnimation(
-                      AppColor.MAIN_PURPLE,
-                    ),
+                    valueColor: AlwaysStoppedAnimation(AppColor.MAIN_PURPLE),
                   ),
                 ),
               ],
@@ -103,10 +97,7 @@ class _StepBadge extends StatelessWidget {
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [
-            AppColor.MAIN_PURPLE,
-            AppColor.MAIN_BLUE,
-          ],
+          colors: [AppColor.MAIN_PURPLE, AppColor.MAIN_BLUE],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

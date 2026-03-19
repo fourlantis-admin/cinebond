@@ -4,7 +4,7 @@ import 'package:cinebond/components/spacings/horizontal_spacing.dart';
 import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:cinebond/controller/movie/movie_detail_cubit.dart';
 import 'package:cinebond/models/movie/movie_resp.dart';
-import 'package:cinebond/service/movie/movie_repository.dart';
+import 'package:cinebond/service/repositories/movie/movie_repository.dart';
 import 'package:cinebond/view/wrapper/home_base_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

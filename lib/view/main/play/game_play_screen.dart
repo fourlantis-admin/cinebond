@@ -47,8 +47,6 @@ class _GamePlayScreenState extends State<GamePlayScreen>
       curve: Curves.easeOut,
     );
 
-    // _startTimerAndAnimation() buradan kaldırıldı
-    // startGame, ekran mount olduktan sonra çağrılıyor
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GamesCubit>().startGame(widget.gameType);
       _startTimerAndAnimation();
@@ -97,14 +95,13 @@ class _GamePlayScreenState extends State<GamePlayScreen>
   Widget build(BuildContext context) {
     return BlocListener<GamesCubit, GamesState>(
       listener: (context, state) {
-        // game_play_screen.dart - BlocListener içinde:
         if (state is GameFinished) {
           _timer?.cancel();
-          final cubit = context.read<GamesCubit>(); // ← ekle
+          final cubit = context.read<GamesCubit>();
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (ctx, anim, _) => BlocProvider.value(
-                value: cubit, // ← ekle
+                value: cubit,
                 child: GameResultView(result: state.result),
               ),
               transitionsBuilder: (ctx, anim, _, child) =>
@@ -166,7 +163,6 @@ class _GamePlayBody extends StatelessWidget {
                 opacity: questionFadeAnim,
                 child: Column(
                   children: [
-                    // Question area
                     Expanded(
                       flex: 5,
                       child: Padding(
@@ -174,7 +170,6 @@ class _GamePlayBody extends StatelessWidget {
                         child: QuestionWidget(question: q!),
                       ),
                     ),
-                    // Options
                     Expanded(
                       flex: 5,
                       child: OptionsGrid(
@@ -189,7 +184,6 @@ class _GamePlayBody extends StatelessWidget {
                 ),
               ),
             ),
-            // Next Button
             if (state.isAnswerRevealed)
               NextButton(isLast: state.session.isLastQuestion, onTap: onNext),
           ],
@@ -268,7 +262,6 @@ class GameHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Score
               Row(
                 children: [
                   const Text('🍿', style: TextStyle(fontSize: 16)),
@@ -281,7 +274,6 @@ class GameHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              // Timer
               AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.symmetric(
@@ -361,8 +353,9 @@ class EmojiQuestion extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const VerticalSpacing(20),
+          // ✅ List<String> → join ile tek string'e çevriliyor
           Text(
-            question.movie.emoji,
+            question.movie.emoji.join(' '),
             style: CineBondTextStyles.emoji,
             textAlign: TextAlign.center,
           ),
@@ -397,7 +390,6 @@ class BlurredPosterQuestion extends StatefulWidget {
 
 class BlurredPosterQuestionState extends State<BlurredPosterQuestion> {
   @override
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<GamesCubit, GamesState>(
       builder: (context, state) {
@@ -413,7 +405,6 @@ class BlurredPosterQuestionState extends State<BlurredPosterQuestion> {
           ),
           child: Stack(
             children: [
-              // Poster
               Positioned.fill(
                 child: Image.network(
                   widget.question.movie.posterUrl,
@@ -426,7 +417,6 @@ class BlurredPosterQuestionState extends State<BlurredPosterQuestion> {
                   ),
                 ),
               ),
-              // Blur overlay — Positioned.fill KALDIRILDI, yerine Positioned.fill dışarıda
               if (!isRevealed)
                 Positioned.fill(
                   child: BackdropFilter(
@@ -438,7 +428,7 @@ class BlurredPosterQuestionState extends State<BlurredPosterQuestion> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text('🌫️', style: TextStyle(fontSize: 40)),
-                            SizedBox(height: 8),
+                            VerticalSpacing(8),
                             Text(
                               'Bu filmi tanıyabilir misin?',
                               style: TextStyle(
@@ -452,7 +442,6 @@ class BlurredPosterQuestionState extends State<BlurredPosterQuestion> {
                     ),
                   ),
                 ),
-              // Points badge
               Positioned(
                 top: 12,
                 right: 12,
@@ -761,7 +750,7 @@ class LoadingScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('🎬', style: TextStyle(fontSize: 56)),
-            SizedBox(height: 16),
+            VerticalSpacing(16),
             CircularProgressIndicator(color: CineBondColors.primary),
           ],
         ),

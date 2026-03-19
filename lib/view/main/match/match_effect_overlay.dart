@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cinebond/components/spacings/vertical_spacing.dart';
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,21 +51,23 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
     // Partiküller
     final rng = Random();
     for (int i = 0; i < 28; i++) {
-      Particles.add(Particle(
-        x: rng.nextDouble(),
-        y: rng.nextDouble() * 0.6,
-        size: rng.nextDouble() * 7 + 3,
-        color: [
-          const Color(0xFFFF4B6E),
-          const Color(0xFFFF8C42),
-          const Color(0xFF2979FF),
-          const Color(0xFFFFD740),
-          const Color(0xFF00E676),
-          Colors.white,
-        ][rng.nextInt(6)],
-        speed: rng.nextDouble() * 0.4 + 0.2,
-        angle: rng.nextDouble() * 2 * pi,
-      ));
+      Particles.add(
+        Particle(
+          x: rng.nextDouble(),
+          y: rng.nextDouble() * 0.6,
+          size: rng.nextDouble() * 7 + 3,
+          color: [
+            const Color(0xFFFF4B6E),
+            const Color(0xFFFF8C42),
+            const Color(0xFF2979FF),
+            const Color(0xFFFFD740),
+            const Color(0xFF00E676),
+            Colors.white,
+          ][rng.nextInt(6)],
+          speed: rng.nextDouble() * 0.4 + 0.2,
+          angle: rng.nextDouble() * 2 * pi,
+        ),
+      );
     }
 
     _bgCtrl = AnimationController(
@@ -85,9 +88,10 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
       CurvedAnimation(parent: _contentCtrl, curve: Curves.easeOutQuart),
     );
     _titleFade = CurvedAnimation(parent: _contentCtrl, curve: Curves.easeOut);
-    _avatarScale = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _contentCtrl, curve: Curves.elasticOut),
-    );
+    _avatarScale = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _contentCtrl, curve: Curves.elasticOut));
     _buttonFade = CurvedAnimation(
       parent: _contentCtrl,
       curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
@@ -125,10 +129,7 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFF1A0A2E),
-                    const Color(0xFF0D0D1A),
-                  ],
+                  colors: [const Color(0xFF1A0A2E), const Color(0xFF0D0D1A)],
                 ),
               ),
             ),
@@ -162,12 +163,8 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                       child: Column(
                         children: [
                           ShaderMask(
-                            shaderCallback: (bounds) =>
-                                const LinearGradient(
-                              colors: [
-                                Color(0xFFFF4B6E),
-                                Color(0xFFFF8C42),
-                              ],
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Color(0xFFFF4B6E), Color(0xFFFF8C42)],
                             ).createShader(bounds),
                             child: const Text(
                               "IT'S A MATCH!",
@@ -179,7 +176,7 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const VerticalSpacing(8),
                           Text(
                             '${widget.getName(widget.item)} ile eşleştin',
                             style: TextStyle(
@@ -194,15 +191,13 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const VerticalSpacing(40),
 
                 // Avatar
                 AnimatedBuilder(
                   animation: _contentCtrl,
-                  builder: (_, child) => Transform.scale(
-                    scale: _avatarScale.value,
-                    child: child,
-                  ),
+                  builder: (_, child) =>
+                      Transform.scale(scale: _avatarScale.value, child: child),
                   child: Container(
                     width: 140,
                     height: 140,
@@ -235,7 +230,7 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                const VerticalSpacing(48),
 
                 // Butonlar
                 FadeTransition(
@@ -255,8 +250,7 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFFF4B6E),
                               foregroundColor: Colors.white,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -271,7 +265,7 @@ class _MatchEffectOverlayState<T> extends State<MatchEffectOverlay<T>>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const VerticalSpacing(12),
                         TextButton(
                           onPressed: widget.onDismiss,
                           child: Text(
@@ -321,10 +315,7 @@ class ParticlePainter extends CustomPainter {
   final List<Particle> particles;
   final double progress;
 
-  const ParticlePainter({
-    required this.particles,
-    required this.progress,
-  });
+  const ParticlePainter({required this.particles, required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
